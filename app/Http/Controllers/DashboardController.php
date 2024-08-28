@@ -5,11 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\Place;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Detail Of Dashboard Controller
+    |--------------------------------------------------------------------------
+    |
+    | This Controllers Contains :
+    | -> For User/Admin to see detail of users, approved, place, event total
+    |  1. /dashboard, Func Name : index, Route Name : dashboard
+    |
+    */
+
+    // (1) This function to show detail of all data in qrun website
     function index(){
         if(Auth::user()->hasRole('superadmin')){
             $data = [
@@ -19,12 +30,9 @@ class DashboardController extends Controller
                 'event_count' => Event::where('is_deleted', 0)->count()
             ];
         }else{
-            $place = Place::where('creator_id', Auth::user()->id)->first();
-            if($place){
-                $event = Event::where('place_id', $place->id)->count();
-            }else{
-                $event = 0;
-            }
+            $place = Place::select('id')->where('creator_id', Auth::user()->id)->first();
+            $event = $place ? Event::where('place_id', $place->id)->count() : 0;
+           
             $data = [
                 'event_count' => $event
             ];

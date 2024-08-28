@@ -110,6 +110,7 @@ class AuthController extends Controller
         return redirect('/auth/login');
     }
 
+    // (6) Redirect Login Function
     function redirectToLogin(){
         return redirect()->route('login');
     }
