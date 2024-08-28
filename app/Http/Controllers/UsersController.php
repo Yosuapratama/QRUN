@@ -13,8 +13,33 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Detail Of Users Controller
+    |--------------------------------------------------------------------------
+    |
+    | This Controllers Contains :
+    | -> For Superadmin : 
+    |  1. /users, Func Name : index, Route Name : users
+    |  2. /users/blocked, Func Name : indexBlocked, Route Name : users.blocked
+    |  3. /users/pending-approval, Func Name : pendingApproval, Route Name : users.pending
+    |  4. /users/store, Func Name : store, Route Name : users.store
+    |  5. /users/update, Func Name : update, Route Name : users.update
+    |  6. /users/{id}/approve, Func Name : approve, Route Name : users.approve
+    |  7. /users/{id}/unapprove, Func Name : unapprove, Route Name : users.unapprove
+    |  8. /users/{id}/block, Func Name : block, Route Name : users.block
+    |  9. /users/{id}/unblock, Func Name : unblock, Route Name : users.unblock
+    |  10. /users/detail/{id}, Func Name : getUserDetail, Route Name : users.detail
+    | 
+    | -> For Users :
+    |  11. /profile, Func Name : viewProfile, Route Name : profile
+    |  12. /profile/update, Func Name : updateProfile, Route Name : profile.update
+    |  
+    */
+
+    // (1) This index function is superadmin to manage all data of users
     function index(Request $request)
-    {   
+    {
         if ($request->ajax()) {
             $data = User::latest()->get();
 
@@ -33,39 +58,41 @@ class UsersController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex justify-content-center'>";
-                    if(Auth::user()->id !== $row->id){
-                        if($row->is_deleted === 0){
-                            if($row->is_approved === 1){
-                                $btn = $btn. "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
-                            }else{
-                                $btn = $btn. "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
+                    if (Auth::user()->id !== $row->id) {
+                        if ($row->is_deleted === 0) {
+                            if ($row->is_approved === 1) {
+                                $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+                            } else {
+                                $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
                             }
                         }
-                        $btn = $btn."<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
-                        $btn = $btn."<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                        if($row->is_deleted === 0){
-                            $btn = $btn."<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
-                        }else{
-                            $btn = $btn."<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
+                        $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
+                        $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
+                        if ($row->is_deleted === 0) {
+                            $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
+                        } else {
+                            $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
                         }
-                    }else{
-                        $btn = $btn."<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
-                        $btn = $btn."<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
+                    } else {
+                        $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
+                        $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
                     }
-                   
-                  
-                    $btn = $btn."</div>";
+
+
+                    $btn = $btn . "</div>";
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-    
+
 
         return view('Pages.Users.Users');
     }
+    
     // Setup Blocked Page
-    function indexBlocked(Request $request){
+    function indexBlocked(Request $request)
+    {
         if ($request->ajax()) {
             $data = User::where('is_deleted', 1)->latest()->get();
 
@@ -85,32 +112,33 @@ class UsersController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex'>";
 
-                    if($row->is_deleted === 0){
-                        if($row->is_approved === 1){
-                            $btn = $btn. "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
-                        }else{
-                            $btn = $btn. "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
+                    if ($row->is_deleted === 0) {
+                        if ($row->is_approved === 1) {
+                            $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+                        } else {
+                            $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
                         }
                     }
 
-                    $btn = $btn."<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
-                    $btn = $btn."<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                    if($row->is_deleted === 0){
-                        $btn = $btn."<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
-                    }else{
-                        $btn = $btn."<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
+                    $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
+                    $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
+                    if ($row->is_deleted === 0) {
+                        $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
+                    } else {
+                        $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
                     }
-                    $btn = $btn."</div>";
+                    $btn = $btn . "</div>";
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-    
+
 
         return view('Pages.Users.BlockedUsers');
     }
-    function pendingApproval(Request $request){
+    function pendingApproval(Request $request)
+    {
         if ($request->ajax()) {
             $data = User::where('is_deleted', 0)->where('is_approved', 0)->latest()->get();
 
@@ -130,22 +158,22 @@ class UsersController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex'>";
 
-                    if($row->is_deleted === 0){
-                        if($row->is_approved === 1){
-                            $btn = $btn. "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
-                        }else{
-                            $btn = $btn. "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
+                    if ($row->is_deleted === 0) {
+                        if ($row->is_approved === 1) {
+                            $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+                        } else {
+                            $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
                         }
                     }
 
-                    $btn = $btn."<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
-                    $btn = $btn."<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                    if($row->is_deleted === 0){
-                        $btn = $btn."<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
-                    }else{
-                        $btn = $btn."<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
+                    $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
+                    $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
+                    if ($row->is_deleted === 0) {
+                        $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
+                    } else {
+                        $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
                     }
-                    $btn = $btn."</div>";
+                    $btn = $btn . "</div>";
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -166,21 +194,21 @@ class UsersController extends Controller
         ], [
             'password2.required' => 'Confirm Password Required'
         ]);
-        if($Validator->fails()){
+        if ($Validator->fails()) {
             return response()->json([
                 'errors' => 'Invalid Fields !',
                 'status' => 'All fields must be filled',
                 'detail' => $Validator->errors()
             ]);
         }
-        
+
         if ($request->password !== $request->password2) {
             return response()->json([
                 'errors' => 'Password Not Match !',
                 'status' => 'Failed To Save Data'
             ]);
         }
-    
+
         $user = User::create([
             'name' => $request->name,
             'address' => $request->address,
@@ -198,7 +226,8 @@ class UsersController extends Controller
             'status' => 'Success'
         ]);
     }
-    function update(Request $request){
+    function update(Request $request)
+    {
         $Validator = Validator::make($request->all(), [
             'id' => 'required',
             'address' => 'required',
@@ -206,10 +235,10 @@ class UsersController extends Controller
             'phone' => 'required',
             'password' => 'required'
         ]);
-  
+
         $User = User::find($request->id);
 
-        if(!$User){
+        if (!$User) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
@@ -223,12 +252,12 @@ class UsersController extends Controller
         return response()->json([
             'message' => 'Update Data Success !'
         ], 200);
-       
     }
-    function approve($id){
+    function approve($id)
+    {
         $FindUsers = User::find($id);
 
-        if(!$FindUsers){
+        if (!$FindUsers) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
@@ -242,10 +271,11 @@ class UsersController extends Controller
         ], 200);
     }
 
-    function unapprove($id){
+    function unapprove($id)
+    {
         $FindUsers = User::find($id);
 
-        if(!$FindUsers){
+        if (!$FindUsers) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
@@ -258,11 +288,12 @@ class UsersController extends Controller
             'status' => $FindUsers->email . ' has been downgraded to user'
         ], 200);
     }
-    
-    function getUserDetail($id){
+
+    function getUserDetail($id)
+    {
         $FindUsers = User::find($id);
 
-        if(!$FindUsers){
+        if (!$FindUsers) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
@@ -273,11 +304,12 @@ class UsersController extends Controller
             'data' => $FindUsers
         ], 200);
     }
-    
-    function block($id){
+
+    function block($id)
+    {
         $FindUsers = User::find($id);
 
-        if(!$FindUsers){
+        if (!$FindUsers) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
@@ -285,7 +317,7 @@ class UsersController extends Controller
         $FindPlace = Place::where('creator_id', $id)->latest()->first();
         $FindPlace->is_deleted = 1;
         $FindPlace->save();
-       
+
         $FindUsers->is_deleted = 1;
         $FindUsers->update();
 
@@ -294,10 +326,11 @@ class UsersController extends Controller
             'status' => $FindUsers->email . ' has been blocked by admin'
         ], 200);
     }
-    function unblock($id){
+    function unblock($id)
+    {
         $FindUsers = User::find($id);
 
-        if(!$FindUsers){
+        if (!$FindUsers) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
@@ -315,12 +348,14 @@ class UsersController extends Controller
         ], 200);
     }
 
-    function viewProfile(){
+    function viewProfile()
+    {
         $User = User::where('id', Auth::user()->id)->first();
 
         return view('Pages.profile', compact('User'));
     }
-    function updateProfile(Request $request){
+    function updateProfile(Request $request)
+    {
         $Validate = $request->validate([
             'address' => 'required',
             'name' => 'required',
@@ -331,35 +366,32 @@ class UsersController extends Controller
         $User->address = $request->address;
         $User->name = $request->name;
         $User->phone = $request->phone;
-        
-        if($request->currpassword){
-            if($request->password){
-                if($request->password2){
-                    if($request->password !== $request->password2){
+
+        if ($request->currpassword) {
+            if ($request->password) {
+                if ($request->password2) {
+                    if ($request->password !== $request->password2) {
                         return back()->withErrors('Your Confirm Password Is Wrong !');
                     }
-                    if(strlen($request->password) < 8){
+                    if (strlen($request->password) < 8) {
                         return back()->withErrors('Your New Password Min 8 Characters !');
                     }
-                    if(strlen($request->password2) < 8){
+                    if (strlen($request->password2) < 8) {
                         return back()->withErrors('Your Confirm Password Min 8 Characters !');
                     }
-                    if(Hash::check($request->currpassword,Auth::user()->password )){
+                    if (Hash::check($request->currpassword, Auth::user()->password)) {
                         $User->password = $request->password;
-                    }else{
+                    } else {
                         return back()->withErrors('Your Current Password is Wrong !');
                     }
-                }else{
+                } else {
                     return back()->withErrors('Confirm Password Required');
                 }
-                
-            }else{
+            } else {
                 return back()->withErrors('New Password Required');
-
             }
-            
         }
-        
+
         $User->update();
 
         return back()->with('success', 'Profile Updated Successfully !');
