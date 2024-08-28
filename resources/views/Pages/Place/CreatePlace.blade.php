@@ -27,15 +27,25 @@
                         <label class="form-label" for="title">Title</label>
                         <input class="form-control" name="title" type="text" id="title"
                             placeholder="Place Title...">
+                        @error('title')
+                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        @enderror
                     </div>
-                    
+
+
                     <div class="mb-3">
                         <label class="form-label" for="description">Description</label>
                         <input class="form-control" name="description" type="text" id="description"
                             placeholder="Place Description...">
+                        @error('description')
+                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <textarea class="form-control" name="content" id="summernote"></textarea>
+                        @error('content')
+                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        @enderror
                     </div>
                     <button type="submit" class="btn btn-success btn-md">Create Place</button>
                 </form>
