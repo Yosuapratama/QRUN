@@ -25,7 +25,7 @@
                                         @csrf
                                         <div class="form-group">
                                             <label for="nameLogin">Name<small class="text-danger">*required</small></label>
-                                            <input type="text" class="form-control form-control-user" id="nameLogin"
+                                            <input value="{{old('name')}}" type="text" class="form-control form-control-user" id="nameLogin"
                                                 name="name" placeholder="Enter name Address..." required>
                                             @error('name')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -33,7 +33,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="phoneNum">Phone Number<small class="text-danger">*required</small></label>
-                                            <input type="number" class="form-control form-control-user" id="phoneNum"
+                                            <input value="{{old('phone')}}" type="number" class="form-control form-control-user" id="phoneNum"
                                                 name="phone" placeholder="Enter Phone Num (08..).." required>
                                             @error('phone')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -43,7 +43,7 @@
                                         <div class="form-group">
                                             <label for="exampleInputEmail">Email<small
                                                     class="text-danger">*required</small></label>
-                                            <input type="email" class="form-control form-control-user"
+                                            <input  value="{{old('email')}}" type="email" class="form-control form-control-user"
                                                 id="exampleInputEmail" name="email" aria-describedby="emailHelp"
                                                 placeholder="Enter Email Address..." required>
                                             @error('email')
@@ -53,7 +53,7 @@
                                         <div class="form-group">
                                             <label for="exampleInputPassword">Password<small
                                                     class="text-danger">*required</small></label>
-                                            <input type="password" name="password" class="form-control form-control-user"
+                                            <input  value="{{old('password')}}" type="password" name="password" class="form-control form-control-user"
                                                 id="exampleInputPassword" placeholder="Password" required>
                                             @error('password')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -62,7 +62,7 @@
                                         <div class="form-group">
                                             <label for="exampleInputPassword2">Confirm Password<small
                                                     class="text-danger">*required</small></label>
-                                            <input type="password" name="password2" class="form-control form-control-user"
+                                            <input  value="{{old('password2')}}" type="password" name="password2" class="form-control form-control-user"
                                                 id="exampleInputPassword2" placeholder="Confirm Password..." required>
                                             @error('password2')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -71,7 +71,7 @@
                                         <div class="form-group">
                                             <label for="inputAddress">Address<small
                                                     class="text-danger">*required</small></label>
-                                            <textarea name="address" class="form-control" id="inputAddress" required></textarea>
+                                            <textarea name="address" class="form-control" id="inputAddress" required>{{ old('address')}}</textarea>
                                             @error('address')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
