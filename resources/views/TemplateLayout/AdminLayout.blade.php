@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('Layout.App')
 
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
+@push('mainTitle')
     @stack('title')
+@endpush
 
-
-    <!-- CSRF Token -->
+@push('css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Custom fonts for this template-->
     <link href="{{ asset('AdminBS2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -22,8 +14,6 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('AdminBS2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     {{-- <link rel="stylesheet" href="//cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css"> --}}
-
-
 
     <style>
         .sorting {
@@ -103,53 +93,15 @@
             content: '';
             background-color: rgba(0, 0, 0, 0.331);
         }
-        .note-editor.note-airframe .note-editing-area .note-editable, .note-editor.note-frame .note-editing-area .note-editable {
+
+        .note-editor.note-airframe .note-editing-area .note-editable,
+        .note-editor.note-frame .note-editing-area .note-editable {
             background-color: white !important;
         }
     </style>
+@endpush
 
-</head>
-
-<body id="page-top">
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-        @include('Components.Modal')
-        @include('Components.Sidebar')
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                @include('Components.TopBar')
-                @yield('content')
-            </div>
-            @include('Components.Footer')
-        </div>
-        <!-- End of Content Wrapper -->
-    </div>
-    <!-- End of Page Wrapper -->
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+@push('scriptApp')
     <!-- Insert Jquery Min Js -->
     <script src="{{ asset('AdminBS2/vendor/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap core JavaScript-->
@@ -179,9 +131,49 @@
     {{-- Import SweetAlert Notification --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
     @stack('script')
+@endpush
 
-</body>
+@section('contentApp')
+    <!-- Page Wrapper -->
+    <div id="page-top">
+        <div id="wrapper">
+            @include('Components.Modal')
+            @include('Components.Sidebar')
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+                <div id="content">
+                    @include('Components.TopBar')
+                    @yield('content')
+                </div>
+                @include('Components.Footer')
+            </div>
+            <!-- End of Content Wrapper -->
+        </div>
+        <!-- End of Page Wrapper -->
+        <!-- Scroll to Top Button-->
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+        </a>
+        <!-- Logout Modal-->
+        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                        <a class="btn btn-primary" href="">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</html>
+    </div>
+@endsection

@@ -14,7 +14,7 @@
             <small class="font-weight-bold text-gray-900">{{ $place->description }}</small>
         </div>
         <div class="card-body m-2 d-flex justify-content-center">
-            {{ QrCode::size(700)->generate('ABCD') }}
+            {{ QrCode::size(700)->generate($printUrl) }}
         </div>
     </div>
 

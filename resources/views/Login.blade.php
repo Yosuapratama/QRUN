@@ -3,6 +3,24 @@
 @push('title')
     <title>QRUN Website - Login</title>
 @endpush
+
+@push('script')
+    <script>
+        // This is for password icon show/hide
+        document.querySelector('#eyeShowIcon').addEventListener('click', (e) => {
+            document.querySelector('#pw').type = 'text';
+            document.querySelector('#eyeShowIcon').style.display = 'none';
+            document.querySelector('#eyeShowIcon2').style.display = 'block';
+        });
+
+        document.querySelector('#eyeShowIcon2').addEventListener('click', (e) => {
+            document.querySelector('#pw').type = 'password';
+            document.querySelector('#eyeShowIcon').style.display = 'block';
+            document.querySelector('#eyeShowIcon2').style.display = 'none';
+        });
+
+    </script>
+@endpush
 @section('content')
     <div class="container">
 
@@ -16,7 +34,7 @@
                         <!-- Nested Row within Card Body -->
                         <div class="row">
                             {{-- <div class="col-lg-6 d-none d-lg-block bg-login-image"></div> --}}
-                            <div class="col-lg-6 col-xl-12">
+                            <div class="col-lg-12 col-xl-12">
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4 font-weight-bold">Welcome To QRUN</h1>
@@ -38,9 +56,14 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="exampleInputPassword">Password</label>
-                                            <input type="password" name="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Your Password...">
+                                            <label for="pw">Password</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text" id="eyeShowIcon"><i class="fas fa-eye"></i></span>
+                                                <span class="input-group-text" id="eyeShowIcon2" style="display: none"><i class="fas fa-eye-slash"></i></span>
+                                                <input id="pw" type="password" class="form-control"
+                                                    placeholder="Password" aria-label="Password" name="password"
+                                                    aria-describedby="eyeShowIcon">
+                                            </div>
                                         </div>
 
                                         <div class="form-group">

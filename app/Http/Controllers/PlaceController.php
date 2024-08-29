@@ -339,9 +339,11 @@ class PlaceController extends Controller
     function print($placeCode)
     {
         $place = Place::where('place_code', $placeCode)->first();
+        $printUrl = $this->applicationURLLocal . '/detail-place/' . $place->place_code;
+
         if (!$place) {
             return back()->withErrors('Place Code Not Found !');
         }
-        return view('Pages.Print', compact('place'));
+        return view('Pages.Print', compact('place', 'printUrl'));
     }
 }

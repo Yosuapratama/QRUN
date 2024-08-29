@@ -4,19 +4,48 @@
     <title>QRUN Website - Register</title>
 @endpush
 
+@push('script')
+    <script>
+        // This is for password icon show/hide
+        document.querySelector('#eyeShowIcon').addEventListener('click', (e) => {
+            document.querySelector('#pw').type = 'text';
+            document.querySelector('#eyeShowIcon').style.display = 'none';
+            document.querySelector('#eyeShowIcon2').style.display = 'block';
+        });
+
+        document.querySelector('#eyeShowIcon2').addEventListener('click', (e) => {
+            document.querySelector('#pw').type = 'password';
+            document.querySelector('#eyeShowIcon').style.display = 'block';
+            document.querySelector('#eyeShowIcon2').style.display = 'none';
+        });
+
+        // This is for confirmation password
+        document.querySelector('#eyeShowIconconfirm').addEventListener('click', (e) => {
+            document.querySelector('#pw-2').type = 'text';
+            document.querySelector('#eyeShowIconconfirm').style.display = 'none';
+            document.querySelector('#eyeShowIconconfirm2').style.display = 'block';
+        });
+
+        document.querySelector('#eyeShowIconconfirm2').addEventListener('click', (e) => {
+            document.querySelector('#pw-2').type = 'password';
+            document.querySelector('#eyeShowIconconfirm').style.display = 'block';
+            document.querySelector('#eyeShowIconconfirm2').style.display = 'none';
+        });
+
+    </script>
+@endpush
+
 @section('content')
     <div class="container">
 
         <!-- Outer Row -->
         <div class="row justify-content-center">
-
             <div class="col-xl-5 col-lg-6 col-md-9">
-
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 col-xl-12">
+                            <div class="col-lg-12 col-xl-12">
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4 font-weight-bold">Register To QRUN</h1>
@@ -25,16 +54,19 @@
                                         @csrf
                                         <div class="form-group">
                                             <label for="nameLogin">Name<small class="text-danger">*required</small></label>
-                                            <input value="{{old('name')}}" type="text" class="form-control form-control-user" id="nameLogin"
-                                                name="name" placeholder="Enter name Address..." required>
+                                            <input value="{{ old('name') }}" type="text"
+                                                class="form-control form-control-user" id="nameLogin" name="name"
+                                                placeholder="Enter name Address..." required>
                                             @error('name')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
                                         </div>
                                         <div class="form-group">
-                                            <label for="phoneNum">Phone Number<small class="text-danger">*required</small></label>
-                                            <input value="{{old('phone')}}" type="number" class="form-control form-control-user" id="phoneNum"
-                                                name="phone" placeholder="Enter Phone Num (08..).." required>
+                                            <label for="phoneNum">Phone Number<small
+                                                    class="text-danger">*required</small></label>
+                                            <input value="{{ old('phone') }}" type="number"
+                                                class="form-control form-control-user" id="phoneNum" name="phone"
+                                                placeholder="Enter Phone Num (08..).." required>
                                             @error('phone')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
@@ -43,27 +75,50 @@
                                         <div class="form-group">
                                             <label for="exampleInputEmail">Email<small
                                                     class="text-danger">*required</small></label>
-                                            <input  value="{{old('email')}}" type="email" class="form-control form-control-user"
-                                                id="exampleInputEmail" name="email" aria-describedby="emailHelp"
-                                                placeholder="Enter Email Address..." required>
+                                            <input value="{{ old('email') }}" type="email"
+                                                class="form-control form-control-user" id="exampleInputEmail" name="email"
+                                                aria-describedby="emailHelp" placeholder="Enter Email Address..." required>
                                             @error('email')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
                                         </div>
+
+                                        {{-- Form Password --}}
                                         <div class="form-group">
-                                            <label for="exampleInputPassword">Password<small
+                                            <label for="pw">New Password<small
                                                     class="text-danger">*required</small></label>
-                                            <input  value="{{old('password')}}" type="password" name="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password" required>
+                                            <div class="input-group">
+                                                <span class="input-group-text" id="eyeShowIcon"><i
+                                                        class="fas fa-eye"></i></span>
+                                                <span class="input-group-text" id="eyeShowIcon2" style="display: none"><i
+                                                        class="fas fa-eye-slash"></i></span>
+                                                <input value="{{ old('password') }}" id="pw" type="password"
+                                                    class="form-control" placeholder="Password" aria-label="Password"
+                                                    name="password" aria-describedby="eyeShowIcon">
+                                            </div>
                                             @error('password')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
                                         </div>
+
                                         <div class="form-group">
-                                            <label for="exampleInputPassword2">Confirm Password<small
-                                                    class="text-danger">*required</small></label>
-                                            <input  value="{{old('password2')}}" type="password" name="password2" class="form-control form-control-user"
-                                                id="exampleInputPassword2" placeholder="Confirm Password..." required>
+                                            <label for="pw-2">Confirm Password<small
+                                                class="text-danger">*required</small></label>
+                                                
+                                            <div class="input-group">
+                                                <span class="input-group-text" id="eyeShowIconconfirm"><i
+                                                        class="fas fa-eye"></i></span>
+                                                <span class="input-group-text" id="eyeShowIconconfirm2" style="display: none"><i
+                                                        class="fas fa-eye-slash"></i></span>
+                                                <input value="{{ old('password2') }}" id="pw-2" type="password"
+                                                    class="form-control" placeholder="Confirm Password..." aria-label="Password"
+                                                    name="password" aria-describedby="eyeShowIcon">
+                                            </div>
+
+                                           
+                                            {{-- <input value="{{ old('password2') }}" type="password" name="password2"
+                                                class="form-control form-control-user" id="exampleInputPassword2"
+                                                placeholder="Confirm Password..." required> --}}
                                             @error('password2')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
@@ -71,7 +126,7 @@
                                         <div class="form-group">
                                             <label for="inputAddress">Address<small
                                                     class="text-danger">*required</small></label>
-                                            <textarea name="address" class="form-control" id="inputAddress" required>{{ old('address')}}</textarea>
+                                            <textarea name="address" class="form-control" id="inputAddress" required>{{ old('address') }}</textarea>
                                             @error('address')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror

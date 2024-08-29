@@ -89,7 +89,7 @@ class UsersController extends Controller
 
         return view('Pages.Users.Users');
     }
-    
+
     // (2) This for admin to see blocked users
     function indexBlocked(Request $request)
     {
@@ -323,8 +323,11 @@ class UsersController extends Controller
             ], 404);
         }
         $FindPlace = Place::where('creator_id', $id)->latest()->first();
-        $FindPlace->is_deleted = 1;
-        $FindPlace->save();
+        if ($FindPlace) {
+            $FindPlace->is_deleted = 1;
+            $FindPlace->update();
+        }
+
 
         $FindUsers->is_deleted = 1;
         $FindUsers->update();
@@ -346,8 +349,10 @@ class UsersController extends Controller
             ], 404);
         }
         $FindPlace = Place::where('creator_id', $id)->latest()->first();
-        $FindPlace->is_deleted = 0;
-        $FindPlace->save();
+        if($FindPlace){
+            $FindPlace->is_deleted = 0;
+            $FindPlace->save();
+        }
 
         $FindUsers->is_deleted = 0;
         $FindUsers->update();
@@ -361,7 +366,7 @@ class UsersController extends Controller
     // (11) This is for users to see their profile data 
     function viewProfile()
     {
-        $User = User::where('id', Auth::user()->id)->first();
+        $User = User::where('id', Auth::user()->id)->select('id', 'name', 'address', 'phone', 'email')->first();
 
         return view('Pages.profile', compact('User'));
     }
@@ -371,16 +376,11 @@ class UsersController extends Controller
         $Validate = $request->validate([
             'address' => 'required',
             'name' => 'required',
-            'phone' => 'required',
-            'password' => 'min:8',
-            'password2' => 'min:8|same:password',
+            'phone' => 'required'
         ], [
             'address.required' => 'Address is required',
             'name.required' => 'Name is required',
-            'phone.required' => 'Phone Number is required',
-            'password.min' => 'Password Length Min 8 Characters',
-            'password2.min' => 'Confirm Password Length Min 8 Characters',
-            'password2.same' => 'Your Confirm Password Is Wrong !'
+            'phone.required' => 'Phone Number is required'
         ]);
 
         $User = User::where('id', Auth::user()->id)->first();
@@ -391,6 +391,15 @@ class UsersController extends Controller
         if ($request->currpassword) {
             if ($request->password) {
                 if ($request->password2) {
+                    if ($request->password !== $request->password2) {
+                        return back()->withErrors('Your Confirm Password Is Wrong !');
+                    }
+                    if (strlen($request->password) < 8) {
+                        return back()->withErrors('Your New Password Min 8 Characters !');
+                    }
+                    if (strlen($request->password2) < 8) {
+                        return back()->withErrors('Your Confirm Password Min 8 Characters !');
+                    }
                     if (Hash::check($request->currpassword, Auth::user()->password)) {
                         $User->password = $request->password;
                     } else {
@@ -405,6 +414,7 @@ class UsersController extends Controller
         }
 
         $User->update();
+
         return back()->with('success', 'Profile Updated Successfully !');
     }
 }
