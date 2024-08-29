@@ -100,8 +100,8 @@
                             $('#detailTitle').val(response.data.title);
                             $('#description').val(response.data.description);
                             $('#created_by').val(response.data.creator_id.email);
-                            $('#updated_at').val(response.data.creator_id.updated_at);
-                            $('#created_at').val(response.data.creator_id.created_at);
+                            $('#updated_at').val(response.data.updated_at);
+                            $('#created_at').val(response.data.created_at);
                             $('#total_event').val(response.total_event);
 
                         },

@@ -9,13 +9,16 @@
     <div class="container-fluid">
         <!-- Page Heading -->
         <h1 class="h3 text-gray-800 font-weight-bold m-2">Create Place/Object</h1>
-        
+
         @if (session()->has('success'))
             <div class="alert alert-success">
                 {{ session()->get('success') }}
             </div>
         @endif
-        <a href="{{$url}}" target="_blank" class="btn btn-primary m-2">Visit Your Live Preview</a>
+        @if ($Place)
+            <a href="{{ $url }}" target="_blank" class="btn btn-primary m-2">Visit Your Live Preview</a>
+            <a href="{{$printUrl}}" target="_blank" class="btn btn-success m-2">Print Barcode</a>
+        @endif
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">

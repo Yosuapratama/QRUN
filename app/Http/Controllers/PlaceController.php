@@ -140,12 +140,14 @@ class PlaceController extends Controller
 
             if ($Place) {
                 $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
-
-                return view('Pages.Place.CreateUserPlace', compact('Place', 'url'));
+                $printUrl = $this->applicationURLLocal.'/management/master/print-barcode/'.$Place->place_code;
+                
+                return view('Pages.Place.CreateUserPlace', compact('Place', 'url', 'printUrl'));
             } else {
                 $Place = null;
                 $url = '#';
-                return view('Pages.Place.CreateUserPlace', compact('Place', 'url'));
+                $printUrl = '#';
+                return view('Pages.Place.CreateUserPlace', compact('Place', 'url', 'printUrl'));
             }
         } else {
             return back()->withErrors('Your Account Need Approval First !');
