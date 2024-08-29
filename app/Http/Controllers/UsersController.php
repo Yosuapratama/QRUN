@@ -90,7 +90,7 @@ class UsersController extends Controller
         return view('Pages.Users.Users');
     }
     
-    // Setup Blocked Page
+    // (2) This for admin to see blocked users
     function indexBlocked(Request $request)
     {
         if ($request->ajax()) {
@@ -137,6 +137,8 @@ class UsersController extends Controller
 
         return view('Pages.Users.BlockedUsers');
     }
+
+    // (3) This is for admin to see the users pending approval
     function pendingApproval(Request $request)
     {
         if ($request->ajax()) {
@@ -182,6 +184,7 @@ class UsersController extends Controller
 
         return view('Pages.Users.PendingApproval');
     }
+    // (4) This is for admin to store users data
     function store(Request $request)
     {
         $Validator = Validator::make($request->all(), [
@@ -226,6 +229,7 @@ class UsersController extends Controller
             'status' => 'Success'
         ]);
     }
+    // (5) This update function is used to update users data by admin
     function update(Request $request)
     {
         $Validator = Validator::make($request->all(), [
@@ -253,6 +257,7 @@ class UsersController extends Controller
             'message' => 'Update Data Success !'
         ], 200);
     }
+    // (6) This is for admin to approve users account
     function approve($id)
     {
         $FindUsers = User::find($id);
@@ -271,6 +276,7 @@ class UsersController extends Controller
         ], 200);
     }
 
+    // (7) This is for admin to unapprove an users
     function unapprove($id)
     {
         $FindUsers = User::find($id);
@@ -289,6 +295,7 @@ class UsersController extends Controller
         ], 200);
     }
 
+    // (8) This function is used to get user detail data by json response
     function getUserDetail($id)
     {
         $FindUsers = User::find($id);
@@ -305,6 +312,7 @@ class UsersController extends Controller
         ], 200);
     }
 
+    // (9) This function is used to block users account by admin
     function block($id)
     {
         $FindUsers = User::find($id);
@@ -326,6 +334,8 @@ class UsersController extends Controller
             'status' => $FindUsers->email . ' has been blocked by admin'
         ], 200);
     }
+
+    // (10) This is for admin to unblock users account
     function unblock($id)
     {
         $FindUsers = User::find($id);
@@ -348,18 +358,29 @@ class UsersController extends Controller
         ], 200);
     }
 
+    // (11) This is for users to see their profile data 
     function viewProfile()
     {
         $User = User::where('id', Auth::user()->id)->first();
 
         return view('Pages.profile', compact('User'));
     }
+    // (12) This is for users to modify their account profile
     function updateProfile(Request $request)
     {
         $Validate = $request->validate([
             'address' => 'required',
             'name' => 'required',
-            'phone' => 'required'
+            'phone' => 'required',
+            'password' => 'min:8',
+            'password2' => 'min:8|same:password',
+        ], [
+            'address.required' => 'Address is required',
+            'name.required' => 'Name is required',
+            'phone.required' => 'Phone Number is required',
+            'password.min' => 'Password Length Min 8 Characters',
+            'password2.min' => 'Confirm Password Length Min 8 Characters',
+            'password2.same' => 'Your Confirm Password Is Wrong !'
         ]);
 
         $User = User::where('id', Auth::user()->id)->first();
@@ -370,15 +391,6 @@ class UsersController extends Controller
         if ($request->currpassword) {
             if ($request->password) {
                 if ($request->password2) {
-                    if ($request->password !== $request->password2) {
-                        return back()->withErrors('Your Confirm Password Is Wrong !');
-                    }
-                    if (strlen($request->password) < 8) {
-                        return back()->withErrors('Your New Password Min 8 Characters !');
-                    }
-                    if (strlen($request->password2) < 8) {
-                        return back()->withErrors('Your Confirm Password Min 8 Characters !');
-                    }
                     if (Hash::check($request->currpassword, Auth::user()->password)) {
                         $User->password = $request->password;
                     } else {
@@ -393,7 +405,6 @@ class UsersController extends Controller
         }
 
         $User->update();
-
         return back()->with('success', 'Profile Updated Successfully !');
     }
 }
