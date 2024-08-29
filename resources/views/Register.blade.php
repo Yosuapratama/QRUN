@@ -31,7 +31,6 @@
             document.querySelector('#eyeShowIconconfirm').style.display = 'block';
             document.querySelector('#eyeShowIconconfirm2').style.display = 'none';
         });
-
     </script>
 @endpush
 
@@ -61,7 +60,22 @@
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
                                         </div>
+                                        {{-- Phone Num --}}
                                         <div class="form-group">
+                                            <label for="phoneNum">Phone Number<small
+                                                    class="text-danger">*required</small></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">+62</span>
+                                                <input value="{{ old('phone') }}" id="phoneNum" type="number"
+                                                    class="form-control" placeholder="Phone..."
+                                                    name="phone">
+                                            </div>
+                                            @error('phone')
+                                                <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                        {{-- End of phone --}}
+                                        {{-- <div class="form-group">
                                             <label for="phoneNum">Phone Number<small
                                                     class="text-danger">*required</small></label>
                                             <input value="{{ old('phone') }}" type="number"
@@ -70,7 +84,7 @@
                                             @error('phone')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
-                                        </div>
+                                        </div> --}}
 
                                         <div class="form-group">
                                             <label for="exampleInputEmail">Email<small
@@ -103,19 +117,19 @@
 
                                         <div class="form-group">
                                             <label for="pw-2">Confirm Password<small
-                                                class="text-danger">*required</small></label>
-                                                
+                                                    class="text-danger">*required</small></label>
+
                                             <div class="input-group">
                                                 <span class="input-group-text" id="eyeShowIconconfirm"><i
                                                         class="fas fa-eye"></i></span>
-                                                <span class="input-group-text" id="eyeShowIconconfirm2" style="display: none"><i
-                                                        class="fas fa-eye-slash"></i></span>
+                                                <span class="input-group-text" id="eyeShowIconconfirm2"
+                                                    style="display: none"><i class="fas fa-eye-slash"></i></span>
                                                 <input value="{{ old('password2') }}" id="pw-2" type="password"
-                                                    class="form-control" placeholder="Confirm Password..." aria-label="Password"
-                                                    name="password" aria-describedby="eyeShowIcon">
+                                                    class="form-control" placeholder="Confirm Password..."
+                                                    aria-label="Password" name="password2" aria-describedby="eyeShowIcon">
                                             </div>
 
-                                           
+
                                             {{-- <input value="{{ old('password2') }}" type="password" name="password2"
                                                 class="form-control form-control-user" id="exampleInputPassword2"
                                                 placeholder="Confirm Password..." required> --}}
@@ -134,7 +148,8 @@
                                         <button type="submit" class="btn btn-success btn-user btn-block">
                                             Register
                                         </button>
-                                        <p class="mt-3">Have An Account ? <a href="{{ route('login') }}" class="">
+                                        <p class="mt-3">Have An Account ? <a href="{{ route('login') }}"
+                                                class="">
                                                 Login Here
                                             </a></p>
 

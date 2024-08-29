@@ -55,7 +55,7 @@
                                                 placeholder="Enter Your Email...">
                                         </div>
 
-                                        <div class="form-group">
+                                        <div class="form-group pb-4">
                                             <label for="pw">Password</label>
                                             <div class="input-group">
                                                 <span class="input-group-text" id="eyeShowIcon"><i class="fas fa-eye"></i></span>
@@ -66,13 +66,13 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group">
+                                        {{-- <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
                                                 <input type="checkbox" class="custom-control-input" id="customCheck">
                                                 <label class="custom-control-label" for="customCheck">Remember
                                                     Me</label>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                         <button type="submit" class="btn btn-success btn-user btn-block">
                                             Login
                                         </button>

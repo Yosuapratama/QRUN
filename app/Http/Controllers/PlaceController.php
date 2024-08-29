@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\Place;
 use App\Models\Image;
 use App\Models\Event;
-
+use DateTime;
 use DOMDocument;
 
 class PlaceController extends Controller
@@ -331,7 +331,24 @@ class PlaceController extends Controller
         if ($place->is_deleted) {
             return redirect()->route('dashboard')->withErrors('This Place has been deleted !');
         }
+        $ValidEvent = [];
+
         $event = Event::where('place_id', $place->id)->get();
+        foreach($event as $evnt){
+            $expirydate = \Carbon\Carbon::parse($evnt->date);
+            $today = \Carbon\Carbon::now();
+            $difference = $today->diffInDays($expirydate, false);
+
+            if($difference >= 0){
+                $ValidEvent[] = $evnt;
+            }
+        }
+        
+        if($ValidEvent){
+            $event = $ValidEvent;
+        }else{
+            $event = [];
+        }
 
         return view('Pages.DetailPlace', compact('place', 'event'));
     }

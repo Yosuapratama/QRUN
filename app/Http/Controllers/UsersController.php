@@ -366,7 +366,7 @@ class UsersController extends Controller
     // (11) This is for users to see their profile data 
     function viewProfile()
     {
-        $User = User::where('id', Auth::user()->id)->select('id', 'name', 'address', 'phone', 'email')->first();
+        $User = User::where('id', Auth::user()->id)->first();
 
         return view('Pages.profile', compact('User'));
     }

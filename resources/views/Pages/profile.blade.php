@@ -47,7 +47,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone</label>
-                        <input id="phone" value="{{ $User->phone }}" name="phone" type="number" class="form-control"
+                        <input id="phone" value="{{ $User->phone }}" name="phone" type="text" class="form-control"
                             placeholder="Phone...Ex: 0812">
                         @error('phone')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
