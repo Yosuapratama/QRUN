@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthController extends Controller
 {
@@ -26,15 +27,17 @@ class AuthController extends Controller
     */
 
     // (1) Login View For Users
-    function ViewLogin(){
-        if(Auth::check()){
+    function ViewLogin()
+    {
+        if (Auth::check()) {
             return redirect()->route('dashboard')->withErrors('You Already Logged in !');
         }
         return view('Login');
     }
 
     // (2) Store Login & Check The User login is true/false
-    function store(Request $request){
+    function store(Request $request)
+    {
         $Validate = $request->validate([
             'email' => 'required',
             'password' => 'required'
@@ -43,7 +46,13 @@ class AuthController extends Controller
             'password.required' => 'Password is required'
         ]);
 
-        if(Auth::attempt($request->only(['email', 'password']))){
+
+        if (Auth::attempt($request->only(['email', 'password']))) {
+            if ($request->has('remember')) {
+                Cookie::queue('email', $request->email, 1440);
+                Cookie::queue('password', $request->password, 1440);
+            }
+
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 
@@ -51,15 +60,17 @@ class AuthController extends Controller
     }
 
     // (3) Register View For Users
-    function ViewRegister(){
-        if(Auth::check()){
+    function ViewRegister()
+    {
+        if (Auth::check()) {
             return redirect()->route('dashboard')->withErrors('You Already Logged in !');
         }
         return view('Register');
     }
 
     // (4) Store Register & Auto attempt/login to dashboard admin
-    function storeRegister(Request $request){
+    function storeRegister(Request $request)
+    {
         $Validate = $request->validate([
             'name' => 'required|min:6',
             'phone' => 'required|numeric',
@@ -86,7 +97,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'address' => $request->address,
-            'phone' => '+62'.$request->phone,
+            'phone' => '+62' . $request->phone,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'is_approved' => 0,
@@ -95,25 +106,25 @@ class AuthController extends Controller
 
         $user->assignRole('localadmin');
 
-        if(Auth::attempt($request->only(['email', 'password']))){
+        if (Auth::attempt($request->only(['email', 'password']))) {
             return redirect()->route('dashboard')->with('success', 'Register Success !');
         }
     }
     // (5) Logout function for all users
-    function logout(Request $request){
+    function logout(Request $request)
+    {
         Auth::logout();
 
         $request->session()->invalidate();
- 
+
         $request->session()->regenerateToken();
-     
+
         return redirect('/auth/login');
     }
 
     // (6) Redirect Login Function
-    function redirectToLogin(){
+    function redirectToLogin()
+    {
         return redirect()->route('login');
     }
-    
-   
 }

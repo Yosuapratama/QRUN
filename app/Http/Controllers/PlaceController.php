@@ -52,7 +52,7 @@ class PlaceController extends Controller
     function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Place::where('is_deleted', 0)->with('creator_id')->latest()->get();
+            $data = Place::where('is_deleted', 0)->select('id', 'place_code', 'title', 'description', 'creator_id', 'is_deleted', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
 
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
@@ -95,7 +95,7 @@ class PlaceController extends Controller
     function indexDeletedPlace(Request $request)
     {
         if ($request->ajax()) {
-            $data = Place::where('is_deleted', 1)->with('creator_id')->latest()->get();
+            $data = Place::where('is_deleted', 1)->select('id', 'place_code', 'title', 'description', 'creator_id', 'is_deleted', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
 
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
@@ -140,8 +140,8 @@ class PlaceController extends Controller
 
             if ($Place) {
                 $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
-                $printUrl = $this->applicationURLLocal.'/management/master/print-barcode/'.$Place->place_code;
-                
+                $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
+
                 return view('Pages.Place.CreateUserPlace', compact('Place', 'url', 'printUrl'));
             } else {
                 $Place = null;
@@ -161,16 +161,33 @@ class PlaceController extends Controller
             return back()->withErrors('Your Account Need Approval First !');
         }
 
-        $Validate = $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'content' => 'required'
-        ],
-        [
-            'title.required' => 'Title Fields is required',
-            'description.required' => 'Description is required',
-            'content.required' => 'Content is required',
-        ]);
+        $Validate = $request->validate(
+            [
+                'title' => 'required',
+                'description' => 'required',
+                'content' => 'required'
+            ],
+            [
+                'title.required' => 'Title Fields is required',
+                'description.required' => 'Description is required',
+                'content.required' => 'Content is required',
+            ]
+        );
+
+        if ($request->id) {
+            $Place = Place::where('id', $request->id)->first();
+        } else {
+            $Place = Place::where('creator_id', Auth::user()->id)->where('is_deleted', 0)->latest()->first();
+        }
+
+        $GetCurrentImage = Image::where('place_id', $Place->id)->get();
+        if ($GetCurrentImage) {
+            foreach ($GetCurrentImage as $key => $img) {
+                $image = public_path($GetCurrentImage[$key]->src);
+                unlink($image);
+                $GetCurrentImage[$key]->delete();
+            }
+        }
 
         $dom = new DOMDocument();
         $content = $request->content;
@@ -179,6 +196,8 @@ class PlaceController extends Controller
 
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
+
+        // Setup Images
         if ($images) {
             foreach ($images as $key => $img) {
                 $data = $img->getAttribute('src');
@@ -192,9 +211,9 @@ class PlaceController extends Controller
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
 
-                    $image_name = "/UploadImage/PlaceImage/" . time() . '-' . $key . Str::random(10) . $trim2;
+                    $image_name = "/UploadImage/PlaceImage/" . time() . '-' . $key . Str::random(10) . '.' . $trim2;
 
-                    $menu = file_put_contents(public_path() . $image_name, $data);
+                    $menu = file_put_contents(public_path() . $image_name, $dataConvert);
 
                     $img->removeAttribute('src');
                     $img->setAttribute('src', $image_name);
@@ -203,32 +222,16 @@ class PlaceController extends Controller
                 }
             }
         }
+
+
         $content = $dom->saveHTML();
-        // dd($request->place_code);
-        if ($request->id) {
-            $Place = Place::where('id', $request->id)->first();
-        } else {
-            $Place = Place::where('creator_id', Auth::user()->id)->where('is_deleted', 0)->latest()->first();
-        }
-        // if(Auth::user()->hasRole('superadmin')){
-        // }else{
-        //     $Place = Place::where('creator_id', Auth::user()->id)->first();
-        // }
 
         $Place->title = $request->title;
         $Place->description = $request->description;
-        $Place->content = $request->content;
+        $Place->content = $content;
         $Place->update();
 
-        $GetCurrentImage = Image::where('place_id', $Place->id)->get();
-        if ($GetCurrentImage) {
-            foreach ($GetCurrentImage as $key => $img) {
-                $image = public_path($GetCurrentImage[$key]->src);
-                unlink($image);
-                $GetCurrentImage[$key]->delete();
-            }
-        }
-
+       
         foreach ($imageData as $img) {
             Image::create([
                 'description' => '-',
@@ -243,6 +246,7 @@ class PlaceController extends Controller
     // (8) This function Is used to store data while user/admin create new place data
     function store(Request $request)
     {
+        // Check Authentication
         if (!Auth::user()->is_approved) {
             return back()->withErrors('Your Account Need Approval First !');
         }
@@ -257,6 +261,12 @@ class PlaceController extends Controller
             'content.required' => 'Content is required',
         ]);
 
+
+
+        $getPlaceData = Place::latest()->first() !== null ? Place::select('id')->latest()->first()->id + 1 : 1;
+        $convertedCode = sprintf('%05d', $getPlaceData);
+
+        // Start Setup images
         $dom = new DOMDocument();
         $content = $request->content;
 
@@ -265,19 +275,32 @@ class PlaceController extends Controller
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
-        $getPlaceData = Place::latest()->first() !== null ? Place::select('id')->latest()->first()->id + 1 : 1;
-        $convertedCode = sprintf('%05d', $getPlaceData);
-        
-        foreach ($images as $key => $img) {
-            $data = base64_decode(explode(',', explode(';', $img->getAttribute('src'))[1])[1]);
-            $image_name = "/UploadImage/PlaceImage/" . time() . '-' . $key . Str::random(10) . '.png';
-            file_put_contents(public_path() . $image_name, $data);
+        // Setup Images
+        if ($images) {
+            foreach ($images as $key => $img) {
+                $data = $img->getAttribute('src');
 
-            $img->removeAttribute('src');
-            $img->setAttribute('src', $image_name);
+                if (strpos($data, 'data') !== false) {
+                    list($type, $data) = array_pad(explode(';', $data), 2, null);
+                    list(, $data) = array_pad(explode(',', $data), 2, null);
+                    $dataConvert = base64_decode($data);
 
-            $imageData[] = $image_name;
+                    $str = $img->getAttribute('src');
+                    $trim = Str::after($str, 'image/');
+                    $trim2 = Str::before($trim, ';');
+
+                    $image_name = "/UploadImage/PlaceImage/" . time() . '-' . $key . Str::random(10) . '.' . $trim2;
+
+                    $menu = file_put_contents(public_path() . $image_name, $dataConvert);
+
+                    $img->removeAttribute('src');
+                    $img->setAttribute('src', $image_name);
+
+                    $imageData[] = $image_name;
+                }
+            }
         }
+
 
         $content = $dom->saveHTML();
 
@@ -334,26 +357,26 @@ class PlaceController extends Controller
         $ValidEvent = [];
 
         $event = Event::where('place_id', $place->id)->get();
-        foreach($event as $evnt){
+        foreach ($event as $evnt) {
             $expirydate = \Carbon\Carbon::parse($evnt->date);
             $today = \Carbon\Carbon::now();
             $difference = $today->diffInDays($expirydate, false);
 
-            if($difference >= 0){
+            if ($difference >= 0) {
                 $ValidEvent[] = $evnt;
             }
         }
-        
-        if($ValidEvent){
+
+        if ($ValidEvent) {
             $event = $ValidEvent;
-        }else{
+        } else {
             $event = [];
         }
 
         return view('Pages.DetailPlace', compact('place', 'event'));
     }
-    
-    
+
+
     // (11) This function is used to print qrcode by admin
     function print($placeCode)
     {

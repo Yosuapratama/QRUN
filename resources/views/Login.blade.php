@@ -18,7 +18,6 @@
             document.querySelector('#eyeShowIcon').style.display = 'block';
             document.querySelector('#eyeShowIcon2').style.display = 'none';
         });
-
     </script>
 @endpush
 @section('content')
@@ -50,29 +49,32 @@
                                         @endif
                                         <div class="form-group mt-2">
                                             <label for="exampleInputEmail">Email</label>
-                                            <input type="email" class="form-control form-control-user"
+                                            <input autofocus type="email" class="form-control form-control-user"
                                                 id="exampleInputEmail" name="email" aria-describedby="emailHelp"
-                                                placeholder="Enter Your Email...">
+                                                placeholder="Enter Your Email..." @if(Cookie::has('email')) value="{{Cookie::get('email')}}" @endif>
                                         </div>
 
-                                        <div class="form-group pb-4">
+                                        <div class="form-group">
                                             <label for="pw">Password</label>
                                             <div class="input-group">
-                                                <span class="input-group-text" id="eyeShowIcon"><i class="fas fa-eye"></i></span>
-                                                <span class="input-group-text" id="eyeShowIcon2" style="display: none"><i class="fas fa-eye-slash"></i></span>
-                                                <input id="pw" type="password" class="form-control"
-                                                    placeholder="Password" aria-label="Password" name="password"
-                                                    aria-describedby="eyeShowIcon">
+                                                <span class="input-group-text" id="eyeShowIcon"><i
+                                                        class="fas fa-eye"></i></span>
+                                                <span class="input-group-text" id="eyeShowIcon2" style="display: none"><i
+                                                        class="fas fa-eye-slash"></i></span>
+                                                <input id="pw" type="password"
+                                                    class="form-control" placeholder="Password" aria-label="Password"
+                                                    name="password" aria-describedby="eyeShowIcon"  @if(Cookie::has('password')) value="{{Cookie::get('password')}}" @endif>
                                             </div>
                                         </div>
 
-                                        {{-- <div class="form-group">
+                                        <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
-                                                <input type="checkbox" class="custom-control-input" id="customCheck">
+                                                <input name="remember" type="checkbox" class="custom-control-input"
+                                                    id="customCheck">
                                                 <label class="custom-control-label" for="customCheck">Remember
                                                     Me</label>
                                             </div>
-                                        </div> --}}
+                                        </div>
                                         <button type="submit" class="btn btn-success btn-user btn-block">
                                             Login
                                         </button>
