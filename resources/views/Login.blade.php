@@ -71,6 +71,11 @@
                                         <button type="submit" class="btn btn-success btn-user btn-block">
                                             Login
                                         </button>
+                                        {{-- <hr> --}}
+                                        <p class="mt-3 text-center">OR</p>
+                                        <a style="border: 1px solid black" class="btn btn-user btn-block border-1 rounded-md">
+                                            <i class="fa-brands fa-google text-danger mr-2"></i> Login/Register With Google
+                                        </a>
 
                                         <p class="mt-3">Don't Have An Account ? <a href="{{ route('register') }}">
                                                 Register Here

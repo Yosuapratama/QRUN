@@ -23,7 +23,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ asset('AdminBS2/js/sb-admin-2.min.js') }}"></script> --}}
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="{{ asset('AdminBS2/vendor/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('AdminBS2/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
