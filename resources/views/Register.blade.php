@@ -31,6 +31,15 @@
             document.querySelector('#eyeShowIconconfirm').style.display = 'block';
             document.querySelector('#eyeShowIconconfirm2').style.display = 'none';
         });
+
+        document.querySelector('#registerBtn').disabled = true;
+
+        var checker = document.getElementById('agreed');
+        var sendbtn = document.getElementById('registerBtn');
+
+        checker.onchange = function() {
+            sendbtn.disabled = !this.checked;
+        };
     </script>
 @endpush
 
@@ -45,7 +54,8 @@
                         <!-- Nested Row within Card Body -->
                         <div class="row">
                             <div class="col-lg-12 col-xl-12">
-                                <div class="p-5">
+                              
+                                <div style="padding: 30px">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4 font-weight-bold">Register To QRUN</h1>
                                     </div>
@@ -67,8 +77,7 @@
                                             <div class="input-group">
                                                 <span class="input-group-text">+62</span>
                                                 <input value="{{ old('phone') }}" id="phoneNum" type="number"
-                                                    class="form-control" placeholder="Phone..."
-                                                    name="phone">
+                                                    class="form-control" placeholder="Phone..." name="phone">
                                             </div>
                                             @error('phone')
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -145,7 +154,15 @@
                                                 <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                                             @enderror
                                         </div>
-                                        <button type="submit" class="btn btn-success btn-user btn-block">
+                                        <div class="form-group d-flex justify-content-center align-items-center">
+                                            <input style="height: 25px; width:15%;" type="checkbox" id="agreed" name="agreedTOS">
+                                            <label style="width: 80%; margin-left: 2%" for="agreed">Dengan Ini Saya membaca, memahami, dan menyetujui hal hal yang tercantum pada  <a href="{{route('termsOfService')}}">Terms of Service</a>
+                                            </label>
+                                        </div>
+
+
+                                        <button id="registerBtn" type="submit"
+                                            class="btn btn-success btn-user btn-block">
                                             Register
                                         </button>
                                         <p class="mt-3">Have An Account ? <a href="{{ route('login') }}"

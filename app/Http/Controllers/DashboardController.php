@@ -40,4 +40,8 @@ class DashboardController extends Controller
 
         return view('Pages.Dashboard', compact('data'));
     }
+
+    function termsOfService(){
+        return view('TermsOfService');
+    }
 }

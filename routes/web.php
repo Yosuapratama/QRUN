@@ -6,6 +6,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PlaceController;
 use Illuminate\Support\Facades\Route;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', [AuthController::class, 'redirectToLogin']);
 
@@ -81,3 +82,5 @@ Route::group(['prefix' => 'auth'], function(){
 
 // This is Public Route For Anonym Users
 Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detail');
+
+Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])->name('termsOfService');

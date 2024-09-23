@@ -48,11 +48,6 @@ class AuthController extends Controller
 
 
         if (Auth::attempt($request->only(['email', 'password']))) {
-            if ($request->has('remember')) {
-                Cookie::queue('email', $request->email, 1440);
-                Cookie::queue('password', $request->password, 1440);
-            }
-
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 
@@ -93,7 +88,9 @@ class AuthController extends Controller
             'password2.same' => 'Confirm Password is wrong !'
         ]);
 
-
+        if(!$request->has('agreedTOS')){
+            return back()->withErrors('You Must Agreed Terms of service this application !');
+        }
         $user = User::create([
             'name' => $request->name,
             'address' => $request->address,

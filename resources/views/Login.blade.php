@@ -51,7 +51,7 @@
                                             <label for="exampleInputEmail">Email</label>
                                             <input autofocus type="email" class="form-control form-control-user"
                                                 id="exampleInputEmail" name="email" aria-describedby="emailHelp"
-                                                placeholder="Enter Your Email..." @if(Cookie::has('email')) value="{{Cookie::get('email')}}" @endif>
+                                                placeholder="Enter Your Email...">
                                         </div>
 
                                         <div class="form-group">
@@ -63,18 +63,11 @@
                                                         class="fas fa-eye-slash"></i></span>
                                                 <input id="pw" type="password"
                                                     class="form-control" placeholder="Password" aria-label="Password"
-                                                    name="password" aria-describedby="eyeShowIcon"  @if(Cookie::has('password')) value="{{Cookie::get('password')}}" @endif>
+                                                    name="password" aria-describedby="eyeShowIcon" >
                                             </div>
                                         </div>
 
-                                        <div class="form-group">
-                                            <div class="custom-control custom-checkbox small">
-                                                <input name="remember" type="checkbox" class="custom-control-input"
-                                                    id="customCheck">
-                                                <label class="custom-control-label" for="customCheck">Remember
-                                                    Me</label>
-                                            </div>
-                                        </div>
+                                       
                                         <button type="submit" class="btn btn-success btn-user btn-block">
                                             Login
                                         </button>
