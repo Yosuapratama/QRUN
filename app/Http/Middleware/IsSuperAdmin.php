@@ -17,7 +17,7 @@ class IsSuperAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if(Auth::check()){
-            if(Auth::user()->is_deleted){
+            if(Auth::user()->deleted_at){
                 return redirect()->route('login')->withErrors('Your Account has disabled By Admin');
             }else{
                 if(!Auth::user()->hasRole('superadmin')){

@@ -25,23 +25,23 @@ class DashboardController extends Controller
         if(Auth::user()->hasRole('superadmin')){
             $data = [
                 'user_count' => User::count(),
-                'user_pending' => User::where('is_deleted', 0)->where('is_approved', 0)->count(),
-                'place_total' => Place::where('is_deleted', 0)->count(),
-                'event_count' => Event::where('is_deleted', 0)->count()
+                'user_pending' => User::count(),
+                'place_total' => Place::count(),
+                'event_count' => Event::count()
             ];
         }else{
-            $place = Place::select('id')->where('is_deleted', 0)->where('creator_id', Auth::user()->id)->latest()->first();
-            $event = $place ? Event::where('is_deleted', 0)->where('place_id', $place->id)->count() : 0;
+            $place = Place::select('id')->where('creator_id', Auth::user()->id)->latest()->first();
+            $event = $place ? Event::where('place_id', $place->id)->count() : 0;
            
             $data = [
                 'event_count' => $event
             ];
         }
 
-        return view('Pages.Dashboard', compact('data'));
+        return view('Pages.Management.Master.Dashboard', compact('data'));
     }
 
     function termsOfService(){
-        return view('TermsOfService');
+        return view('Pages.TermsOfService');
     }
 }

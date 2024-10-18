@@ -22,6 +22,7 @@
                             <tr>
                                 <th>Title</th>
                                 <th>Place Code</th>
+                                <th>Views</th>
                                 <th>Description</th>
                                 <th>Created_By</th>
                                 <th>Updated At</th>
@@ -61,6 +62,10 @@
                         {
                             data: 'place_code',
                             name: 'place_code'
+                        },
+                        {
+                            data: 'views',
+                            name: 'views'
                         },
                         {
                             data: 'description',

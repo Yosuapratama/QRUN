@@ -52,7 +52,7 @@ class PlaceController extends Controller
     function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Place::where('is_deleted', 0)->select('id', 'place_code', 'title', 'description', 'creator_id', 'is_deleted', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
+            $data = Place::select('id', 'views','place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
 
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
@@ -78,7 +78,7 @@ class PlaceController extends Controller
                 ->make(true);
         }
 
-        return view('Pages.Place.Place');
+        return view('Pages.Management.Master.place.index');
     }
     // (2) This Func For Superadmin to edit users place
     function editPlace($place_code)
@@ -88,14 +88,14 @@ class PlaceController extends Controller
             return back()->withErrors('Place Code Not Found !');
         }
 
-        return view('Pages.Place.EditPlace', compact('Place'));
+        return view('Pages.Management.Master.place.edit', compact('Place'));
     }
 
     // (3) This Func for admin to get all place deleted by admin or a users has blocked by admin
     function indexDeletedPlace(Request $request)
     {
         if ($request->ajax()) {
-            $data = Place::where('is_deleted', 1)->select('id', 'place_code', 'title', 'description', 'creator_id', 'is_deleted', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
+            $data = Place::select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
 
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
@@ -104,12 +104,33 @@ class PlaceController extends Controller
                 ->make(true);
         }
 
-        return view('Pages.Place.DeletedPlace');
+        return view('Pages.Management.Master.place.deleted');
     }
     // (4) To Show Pages For user to create new posts/place
     function indexCreatePlace()
     {
-        return view('Pages.Place.CreatePlace');
+        if(Auth::user()->hasRole('superadmin')){
+            return view('Pages.Management.Master.place.form');
+        }
+
+        if (Auth::user()->approved_at) {
+            $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
+
+            if ($Place) {
+                $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
+                $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
+
+                return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
+            } else {
+                $Place = null;
+                $url = '#';
+                $printUrl = '#';
+                return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
+            }
+        } else {
+            return back()->withErrors('Your Account Need Approval First !');
+        }
+
     }
     // (5) For admin to delete place user, after do this delete, the user can create a new place, like new account approved
     function deletePlace($place_code)
@@ -123,8 +144,7 @@ class PlaceController extends Controller
                 ]);
             }
         } else {
-            $GetPlace->is_deleted = 1;
-            $GetPlace->update();
+            $GetPlace->delete();
         }
 
         return response()->json([
@@ -135,19 +155,19 @@ class PlaceController extends Controller
     // (6) Return View For User Approved
     function returnMyPlaceView(Request $request)
     {
-        if (Auth::user()->is_approved) {
-            $Place = Place::where('creator_id', Auth::user()->id)->where('is_deleted', 0)->latest()->first();
+        if (Auth::user()->approved_at) {
+            $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
 
             if ($Place) {
                 $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
                 $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
 
-                return view('Pages.Place.CreateUserPlace', compact('Place', 'url', 'printUrl'));
+                return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
             } else {
                 $Place = null;
                 $url = '#';
                 $printUrl = '#';
-                return view('Pages.Place.CreateUserPlace', compact('Place', 'url', 'printUrl'));
+                return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
             }
         } else {
             return back()->withErrors('Your Account Need Approval First !');
@@ -157,7 +177,7 @@ class PlaceController extends Controller
     // (7) Update Place Data With Place Code For user approved
     function updatePlace(Request $request)
     {
-        if (!Auth::user()->is_approved) {
+        if (!Auth::user()->approved_at) {
             return back()->withErrors('Your Account Need Approval First !');
         }
 
@@ -177,7 +197,7 @@ class PlaceController extends Controller
         if ($request->id) {
             $Place = Place::where('id', $request->id)->first();
         } else {
-            $Place = Place::where('creator_id', Auth::user()->id)->where('is_deleted', 0)->latest()->first();
+            $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
         }
 
         $GetCurrentImage = Image::where('place_id', $Place->id)->get();
@@ -247,7 +267,7 @@ class PlaceController extends Controller
     function store(Request $request)
     {
         // Check Authentication
-        if (!Auth::user()->is_approved) {
+        if (!Auth::user()->approved_at) {
             return back()->withErrors('Your Account Need Approval First !');
         }
 
@@ -275,6 +295,8 @@ class PlaceController extends Controller
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
+        $user_id = Auth::user()->id;
+
         // Setup Images
         if ($images) {
             foreach ($images as $key => $img) {
@@ -289,7 +311,14 @@ class PlaceController extends Controller
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
 
-                    $image_name = "/UploadImage/PlaceImage/" . time() . '-' . $key . Str::random(10) . '.' . $trim2;
+                    $image_name = "/UploadImage/PlaceImage/{$user_id}/" . time() . '-' . $key . Str::random(10) . '.' . $trim2;
+
+                    $path = public_path("/UploadImage/PlaceImage/{$user_id}/");
+
+                    // Create the directory if it doesn't exist
+                    if (!file_exists($path)) {
+                        mkdir($path, 0755, true);
+                    }
 
                     $menu = file_put_contents(public_path() . $image_name, $dataConvert);
 
@@ -308,9 +337,9 @@ class PlaceController extends Controller
             'place_code' => time() . $convertedCode,
             'title' => $request->title,
             'description' => $request->description,
-            'creator_id' => Auth::user()->id,
+            'creator_id' => $user_id,
             'content' => $content,
-            'is_deleted' => 0
+            'views' => 0
         ]);
 
         foreach ($imageData as $img) {
@@ -325,7 +354,7 @@ class PlaceController extends Controller
     }
     // (9) This function is to get JsonFileData From Place selected
     function getDetailPlaceData($place_code)
-    {
+    {   
         $Place = Place::with('creator_id')->where('place_code', $place_code)->first();
 
         if (!$Place) {
@@ -351,9 +380,21 @@ class PlaceController extends Controller
             return redirect()->route('dashboard');
         }
 
-        if ($place->is_deleted) {
+        if ($place->deleted_at) {
             return redirect()->route('dashboard')->withErrors('This Place has been deleted !');
         }
+
+        if (!session()->has('views')) {
+            session(['views' => []]);
+        }
+
+        // If the post hasn't been viewed yet, add it to the session
+        if (!in_array($place_code, session('views'))) {
+            session()->push('views', $place_code);
+            $place->increment('views');
+        }
+
+
         $ValidEvent = [];
 
         $event = Event::where('place_id', $place->id)->get();
@@ -373,7 +414,7 @@ class PlaceController extends Controller
             $event = [];
         }
 
-        return view('Pages.DetailPlace', compact('place', 'event'));
+        return view('Pages.detail-place.index', compact('place', 'event'));
     }
 
 
@@ -386,6 +427,14 @@ class PlaceController extends Controller
         if (!$place) {
             return back()->withErrors('Place Code Not Found !');
         }
-        return view('Pages.Print', compact('place', 'printUrl'));
+        return view('Pages.Management.Master.print-barcode.index', compact('place', 'printUrl'));
+    }
+
+    function fetchAll(){
+        $placeData = Place::select('id','place_code', 'title')->get();
+
+        return response()->json([
+            'data' => $placeData
+        ]);
     }
 }

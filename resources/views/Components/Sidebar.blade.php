@@ -94,6 +94,25 @@
              </div>
          </li>
      @endif
+     <hr class="sidebar-divider">
+     <!-- Heading -->
+     <div class="sidebar-heading">
+         SETTINGS
+     </div>
+     <li class="nav-item">
+        <a class="nav-link collapsed" href="#"
+            data-toggle="collapse" data-target="#collapsePages2" aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Settings</span>
+        </a>
+        <div id="collapsePages2" class="collapse"
+            aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item">General</a>
+                <a class="collapse-item">Roles</a>
+            </div>
+        </div>
+    </li>
 
      <!-- Divider -->
      <hr class="sidebar-divider">

@@ -32,7 +32,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard')->withErrors('You Already Logged in !');
         }
-        return view('Login');
+        return view('Pages.Login');
     }
 
     // (2) Store Login & Check The User login is true/false
@@ -60,7 +60,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard')->withErrors('You Already Logged in !');
         }
-        return view('Register');
+        return view('Pages.Register');
     }
 
     // (4) Store Register & Auto attempt/login to dashboard admin
@@ -96,9 +96,7 @@ class AuthController extends Controller
             'address' => $request->address,
             'phone' => '+62' . $request->phone,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_approved' => 0,
-            'is_deleted' => 0
+            'password' => Hash::make($request->password)
         ]);
 
         $user->assignRole('localadmin');

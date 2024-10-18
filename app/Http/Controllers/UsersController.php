@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Place;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -46,12 +47,12 @@ class UsersController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($row) {
-                    return $row->is_approved === 1 ? 'Approved' : 'Pending';
+                    return $row->approved_at ? 'Approved' : 'Pending';
                 })
                 ->rawColumns(['status_acc'])
                 ->addIndexColumn()
                 ->addColumn('status_acc', function ($row) {
-                    return $row->is_deleted === 1 ? 'Blocked' : '-';
+                    return $row->deleted_at ? 'Blocked' : '-';
                 })
                 ->rawColumns(['status_acc'])
 
@@ -59,16 +60,16 @@ class UsersController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex justify-content-center'>";
                     if (Auth::user()->id !== $row->id) {
-                        if ($row->is_deleted === 0) {
-                            if ($row->is_approved === 1) {
-                                $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
-                            } else {
-                                $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
-                            }
+
+                        if ($row->approved_at) {
+                            $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+                        } else {
+                            $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
                         }
+
                         $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                         $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                        if ($row->is_deleted === 0) {
+                        if (!$row->deleted_at) {
                             $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
                         } else {
                             $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
@@ -87,24 +88,24 @@ class UsersController extends Controller
         }
 
 
-        return view('Pages.Users.Users');
+        return view('Pages.Management.Master.manageUsers.users.index');
     }
 
     // (2) This for admin to see blocked users
     function indexBlocked(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::where('is_deleted', 1)->latest()->get();
+            $data = User::latest()->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($row) {
-                    return $row->is_approved === 1 ? 'Approved' : 'Pending';
+                    return $row->approved_at ? 'Approved' : 'Pending';
                 })
                 ->rawColumns(['status_acc'])
                 ->addIndexColumn()
                 ->addColumn('status_acc', function ($row) {
-                    return $row->is_deleted === 1 ? 'Blocked' : '-';
+                    return $row->deleted_at ? 'Blocked' : '-';
                 })
                 ->rawColumns(['status_acc'])
 
@@ -112,17 +113,17 @@ class UsersController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex'>";
 
-                    if ($row->is_deleted === 0) {
-                        if ($row->is_approved === 1) {
-                            $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
-                        } else {
-                            $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
-                        }
+
+                    if ($row->approved_at) {
+                        $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+                    } else {
+                        $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
                     }
+
 
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                    if ($row->is_deleted === 0) {
+                    if (!$row->deleted_at) {
                         $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
                     } else {
                         $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
@@ -135,24 +136,24 @@ class UsersController extends Controller
         }
 
 
-        return view('Pages.Users.BlockedUsers');
+        return view('Pages.Management.Master.manageUsers.blocked.index');
     }
 
     // (3) This is for admin to see the users pending approval
     function pendingApproval(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::where('is_deleted', 0)->where('is_approved', 0)->latest()->get();
+            $data = User::whereNotNull('approved_at')->latest()->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('status', function ($row) {
-                    return $row->is_approved === 1 ? 'Approved' : 'Pending';
+                    return $row->approved_at ? 'Approved' : 'Pending';
                 })
                 ->rawColumns(['status_acc'])
                 ->addIndexColumn()
                 ->addColumn('status_acc', function ($row) {
-                    return $row->is_deleted === 1 ? 'Blocked' : '-';
+                    return $row->deleted_at ? 'Blocked' : '-';
                 })
                 ->rawColumns(['status_acc'])
 
@@ -160,17 +161,17 @@ class UsersController extends Controller
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex'>";
 
-                    if ($row->is_deleted === 0) {
-                        if ($row->is_approved === 1) {
-                            $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
-                        } else {
-                            $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
-                        }
+
+                    if ($row->approved_at) {
+                        $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+                    } else {
+                        $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
                     }
+
 
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                    if ($row->is_deleted === 0) {
+                    if (!$row->deleted_at) {
                         $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
                     } else {
                         $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
@@ -182,7 +183,7 @@ class UsersController extends Controller
                 ->make(true);
         }
 
-        return view('Pages.Users.PendingApproval');
+        return view('Pages.Management.Master.manageUsers.pending-approval.index');
     }
     // (4) This is for admin to store users data
     function store(Request $request)
@@ -217,9 +218,7 @@ class UsersController extends Controller
             'address' => $request->address,
             'phone' => $request->phone,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'is_approved' => 0,
-            'is_deleted' => 0
+            'password' => Hash::make($request->password)
         ]);
 
         $user->assignRole('localadmin');
@@ -267,7 +266,7 @@ class UsersController extends Controller
                 'errors' => 'User Not Found !'
             ], 404);
         }
-        $FindUsers->is_approved = 1;
+        $FindUsers->approved_at = Carbon::now();
         $FindUsers->update();
 
         return response()->json([
@@ -286,7 +285,7 @@ class UsersController extends Controller
                 'errors' => 'User Not Found !'
             ], 404);
         }
-        $FindUsers->is_approved = 0;
+        $FindUsers->approved_at = Carbon::now();
         $FindUsers->update();
 
         return response()->json([
@@ -324,13 +323,10 @@ class UsersController extends Controller
         }
         $FindPlace = Place::where('creator_id', $id)->latest()->first();
         if ($FindPlace) {
-            $FindPlace->is_deleted = 1;
-            $FindPlace->update();
+            $FindPlace->delete();
         }
 
-
-        $FindUsers->is_deleted = 1;
-        $FindUsers->update();
+        $FindUsers->delete();
 
         return response()->json([
             'message' => 'User Blocked Success',
@@ -349,13 +345,11 @@ class UsersController extends Controller
             ], 404);
         }
         $FindPlace = Place::where('creator_id', $id)->latest()->first();
-        if($FindPlace){
-            $FindPlace->is_deleted = 0;
-            $FindPlace->save();
+        if ($FindPlace) {
+            $FindPlace->delete();
         }
 
-        $FindUsers->is_deleted = 0;
-        $FindUsers->update();
+        $FindUsers->delete();
 
         return response()->json([
             'message' => 'User UnBlocked Success',
@@ -368,7 +362,7 @@ class UsersController extends Controller
     {
         $User = User::where('id', Auth::user()->id)->first();
 
-        return view('Pages.profile', compact('User'));
+        return view('Pages.Management.Master.profile.index', compact('User'));
     }
     // (12) This is for users to modify their account profile
     function updateProfile(Request $request)

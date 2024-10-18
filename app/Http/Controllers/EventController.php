@@ -41,16 +41,16 @@ class EventController extends Controller
                     return \Carbon\Carbon::parse($row->date )->format('d-M-Y H:i:s').' Wita';
                 })
               
-                ->editColumn('is_deleted', function ($row) {
-                    return $row->is_deleted ? 'Deleted' : 'Active'  ;
+                ->editColumn('deleted_at', function ($row) {
+                    return $row->deleted_at ? 'Deleted' : 'Active'  ;
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex justify-content-center'>";
-                    if(!$row->is_deleted){
-                        $btn = $btn."<button id='$row->id' class='editEventBtn btn btn-warning mr-1'>Edit</button>";
-                        $btn = $btn."<button id='$row->id' class='deleteEventButtonNew btn btn-danger'>Delete</button>";
-                    }
+                   
+                    $btn = $btn."<button id='$row->id' class='editEventBtn btn btn-warning mr-1'>Edit</button>";
+                    $btn = $btn."<button id='$row->id' class='deleteEventButtonNew btn btn-danger'>Delete</button>";
+                    
                     $btn = $btn."</div>";
                     return $btn;
                 })
@@ -58,7 +58,7 @@ class EventController extends Controller
                 ->make(true);    
         }
 
-        return view('Pages.Event.ManageEvent');
+        return view('Pages.Management.Master.event.index');
     }
 
     // (2) This is for admin to store the data with ajax request
@@ -88,8 +88,7 @@ class EventController extends Controller
             'place_id' => $Place->id,
             'title' => $request->title,
             'description' => $request->description,
-            'date' => $request->datetime,
-            'is_deleted' => 0
+            'date' => $request->datetime
         ]);
 
         return response()->json([
@@ -98,12 +97,12 @@ class EventController extends Controller
     }
     // (3) For Users To See their detail event  
     function index(Request $request){
-        if(Auth::user()->is_approved){
-            $place = Place::where('is_deleted', 0)->where('creator_id', Auth::user()->id)->latest()->first();
+        if(Auth::user()->approved_at){
+            $place = Place::where('creator_id', Auth::user()->id)->latest()->first();
 
             if ($request->ajax()) {
                 if($place){
-                    $data = Event::where('is_deleted', 0)->where('place_id', $place->id)->latest()->get();
+                    $data = Event::where('place_id', $place->id)->latest()->get();
     
                     return Datatables::of($data)
                         ->editColumn('date', function ($row) {
@@ -136,7 +135,7 @@ class EventController extends Controller
                 
             }
     
-            return view('Pages.Event.ManageUserEvent');
+            return view('Pages.Management.Master.my-event.index');
 
         }else{
             return back()->withErrors('You Must Approved By Admin First !');
@@ -169,8 +168,7 @@ class EventController extends Controller
             'place_id' => $Place->id,
             'title' => $request->title,
             'description' => $request->description,
-            'date' => $request->datetime,
-            'is_deleted' => 0
+            'date' => $request->datetime
         ]);
 
         return response()->json([
@@ -218,8 +216,7 @@ class EventController extends Controller
                 'errors' => 'Event Not Found !'
             ]);
         }
-        $Event->is_deleted = 1;
-        $Event->save();
+        $Event->delete();
 
         return response()->json([
             'success' => 'Event Delete Success !'

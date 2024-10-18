@@ -5,8 +5,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\SettingsController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/', [AuthController::class, 'redirectToLogin']);
 
@@ -40,6 +41,8 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/deleted-place', [PlaceController::class, 'indexDeletedPlace'])->name('place.getDeleted');
                 Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
                 Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
+
+                Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
             });
 
             Route::group(['prefix' => 'event'], function(){
@@ -66,6 +69,16 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/store', [EventController::class, 'store'])->name('myevent.store');
                 Route::post('/update', [EventController::class, 'update'])->name('myevent.update');
                 Route::post('/delete/{id}', [EventController::class, 'delete'])->name('myevent.delete');
+            });
+
+            Route::group(['prefix' => 'settings'], function(){
+                Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
+                Route::get('/general/artisan/optimize', function(){
+                    Artisan::call('optimize');
+                    
+                    return back();
+                })->name('artisan.optimize');
+
             });
         });
     });

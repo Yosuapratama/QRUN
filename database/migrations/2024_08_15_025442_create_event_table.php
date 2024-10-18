@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('description');
             $table->datetime('date');
             $table->foreignId('place_id')->nullable()->references('id')->on('place');
-            $table->boolean('is_deleted');
+            $table->softDeletes(); 
             $table->timestamps();
         });
     }

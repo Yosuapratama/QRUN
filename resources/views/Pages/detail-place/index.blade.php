@@ -12,7 +12,9 @@
         <div class="card shadow mb-4" style="overflow-x: scroll">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">Title : {{ $place->title }}</h6>
-                <small class="font-weight-bold text-gray-900">{{ $place->description }} | Created At : {{$place->created_at}}</small>
+                <small class="font-weight-bold text-gray-900">{{ $place->description }} | Created At :
+                    {{ $place->created_at }}</small>
+                <p class="font-weight-bold text-gray-600">Total Views : {{ $place->views}}</p>
             </div>
             <div class="card-body m-2" style="overflow-x: scroll !important;">
                 {!! $place->content !!}

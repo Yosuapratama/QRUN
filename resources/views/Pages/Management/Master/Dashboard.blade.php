@@ -27,7 +27,7 @@
                 @endforeach
             </div>
         @endif
-        @if (Auth::user()->is_approved === 0)
+        @if (!Auth::user()->approved_at)
             <div class="alert alert-warning">
                Welcome ! Please Wait For Admin Approval
             </div>
@@ -144,6 +144,7 @@
                 </div>
             </div>
         @endif
+
     </div>
     <!-- /.container-fluid -->
 

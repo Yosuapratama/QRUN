@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,7 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create([
+        $adminRole = Role::create([
             'name' => 'superadmin',
             'guard_name' => 'web'
         ]);
@@ -24,6 +26,31 @@ class DatabaseSeeder extends Seeder
             'name' => 'localadmin',
             'guard_name' => 'web'
         ]);
+        $permissions = [
+            'dashboard',
+            'users.index',
+            'users.create',
+            'users.approve',
+            'users.unapprove',
+            'users.edit',
+            'users.block',
+            'users.unblock',
+            'place.index',
+            'place.edit',
+            'place.delete',
+            'place.print',
+            'event.index',
+            'event.create',
+            'event.edit',
+            'event.delete',
+            'profile.index'
+        ];
+
+        foreach($permissions as $permission){
+            Permission::create([
+                'name' => $permission
+            ]);
+        }
 
         $admin = User::create([
             'name' => 'superadmin',
@@ -31,11 +58,14 @@ class DatabaseSeeder extends Seeder
             'address' => 'Jl Denpasar',
             'phone' => '08123456789',
             'password' => Hash::make('superadmin'),
-            'is_deleted' => 0,
-            'is_approved' => 1
+            'approved_at' => Carbon::now()
         ]);
 
         $admin->assignRole('superadmin');
+
+        foreach($permissions as $permission){
+            $adminRole->givePermissionTo($permission);
+        }
 
         $local = User::create([
             'name' => 'localadmin',
@@ -43,8 +73,7 @@ class DatabaseSeeder extends Seeder
             'address' => 'Jl Denpasar',
             'phone' => '08123456789',
             'password' => Hash::make('local'),
-            'is_deleted' => 0,
-            'is_approved' => 1
+            'approved_at' => Carbon::now()
         ]);
 
         $local->assignRole('localadmin');

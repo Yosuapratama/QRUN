@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('description');
             $table->foreignId('creator_id')->nullable()->references('id')->on('users');
             $table->longText('content');
-            $table->boolean('is_deleted');
+            $table->integer('views');
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 

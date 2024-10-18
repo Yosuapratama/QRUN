@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('place_id')->nullable()->references('id')->on('place');
             $table->string('src');
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 

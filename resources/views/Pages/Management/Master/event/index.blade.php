@@ -41,6 +41,39 @@
     @push('script')
         <script>
             $(document).ready(function() {
+                // $('#placeSelectCode').select2();
+
+                $("#placeSelectCode").select2({
+                    dropdownParent: $("#addEventModalAdmin")
+                });
+
+                $('#placeSelectCode').empty();
+                $('#placeSelectCode').append('<option value="">Select a place</option>');
+
+                $.ajax({
+                    url: "{{ route('place.getAll') }}",
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        response.data.map((item) => {
+                            $('#placeSelectCode').append(
+                                `<option value="${item.place_code}">${item.title} | ${item.place_code}</option>`
+                                );
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            title: 'Failed to Fetch Place',
+                            text: response.errors,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+
+
                 $('#dataTableEvent').DataTable({
                     'createdRow': function(row, data, dataIndex) {
                         $('td:eq(0)', row).css('min-width', '200px');
@@ -70,8 +103,8 @@
                             "defaultContent": "-"
                         },
                         {
-                            data: 'is_deleted',
-                            name: 'is_deleted'
+                            data: 'deleted_at',
+                            name: 'deleted_at'
                         },
                         {
                             data: 'action',
@@ -105,7 +138,7 @@
                                 $('#addEventModalAdmin').modal('hide');
                                 $("#addEventForm")[0].reset();
                                 $('#dataTableEvent').DataTable().ajax.reload();
-                            }else if(response.errors){
+                            } else if (response.errors) {
                                 Swal.fire({
                                     title: response.errors,
                                     text: response.errors,
@@ -188,7 +221,7 @@
 
                 });
 
-                
+
                 $(document).on('click', '.editEventBtn', function(e) {
                     e.preventDefault();
 
@@ -216,7 +249,7 @@
                             $('#descriptionEventEdit').val(response.data.description);
                             $('#EventId').val(response.data.id);
                             $('#datetimeEventEdit').val(response.date);
-                            
+
 
                         },
                         error: function(err) {

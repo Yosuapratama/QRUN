@@ -217,7 +217,7 @@
 </div>
 
 {{-- Add Event Modal In Admin Page --}}
-<div class="modal fade" id="addEventModalAdmin" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addEventModalAdmin" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="addEventForm">
@@ -234,8 +234,8 @@
                         <input id="detailTitle" name="title" type="text" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="place" class="form-label">Enter Place Code</label>
-                        <input class="form-control" id="place" type="text" name="placeCode" placeholder="Place Code...">
+                        <label for="placeSelectCode" class="form-label">Enter Place Code</label>
+                        <select name="placeCode" id="placeSelectCode" class="form-select" style="width:100%"></select>
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
