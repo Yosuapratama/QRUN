@@ -30,7 +30,9 @@
                 <div class="alert alert-primary">
                     <p>This feature func is to clear cache in this server, if the website lag/not found routing, admin can do this function</p>
                     <a href="{{route('artisan.optimize')}}" class="btn btn-primary">Clear Server Cache (Optimize)</a>
+                    <a href="{{route('artisan.queue')}}" class="btn btn-primary">Restart QUEUE</a>
                 </div>
+                
               
             </div>
         </div>

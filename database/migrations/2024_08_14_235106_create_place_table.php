@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('creator_id')->nullable()->references('id')->on('users');
             $table->longText('content');
             $table->integer('views');
+            $table->boolean('is_comment')->default(1);
             $table->timestamps();
             $table->softDeletes(); 
         });

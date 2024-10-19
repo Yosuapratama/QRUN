@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -48,6 +51,10 @@ class AuthController extends Controller
 
 
         if (Auth::attempt($request->only(['email', 'password']))) {
+            if(!Auth::user()->email_verified_at){
+                $this->logout($request);
+                return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
+            }
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 
@@ -96,17 +103,19 @@ class AuthController extends Controller
             'address' => $request->address,
             'phone' => '+62' . $request->phone,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(40)
         ]);
 
         $user->assignRole('localadmin');
 
-        if (Auth::attempt($request->only(['email', 'password']))) {
-            return redirect()->route('dashboard')->with('success', 'Register Success !');
-        }
+        // Mail::to($user->email)->send(new RegisterMail($user));
+        event(new Registered($user));
+
+        return redirect()->route('login')->with('success', 'Register Success, Check Your Email for verification !');
     }
     // (5) Logout function for all users
-    function logout(Request $request)
+    public function logout(Request $request)
     {
         Auth::logout();
 
@@ -121,5 +130,48 @@ class AuthController extends Controller
     function redirectToLogin()
     {
         return redirect()->route('login');
+    }
+
+    public function resendMailVerification(Request $request){
+        $request->user()->sendEmailVerificationNotification();
+ 
+        return back()->with('success', 'Verification link sent!');
+    }
+
+    public function verifyMail(EmailVerificationRequest $request){
+        $request->fulfill();
+ 
+        return redirect()->route('dashboard')->with('success', 'Your email has been verified');
+    }
+    public function resetPassword(){
+        return view('Pages.ResetPassword');
+    }
+    public function submitResetPassword(Request $request){
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        // $isValidUser = User::where('email', $request->email)->first();
+        // if(!$isValidUser){
+        //     return back()->withErrors('Email not found !');
+        // }
+ 
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        // if ($status == Password::RESET_THROTTLED) {
+        //     return back()->withErrors([
+        //         'throttled' => "Too many attempts. Please try again in a few minutes."
+        //     ]);
+        // }
+
+        // if ($status == Password::RESET_LINK_SENT) {
+        //     return back()->with('status', __('We have emailed your password reset link!'));
+        // }
+     
+        return $status === Password::RESET_LINK_SENT
+                    ? back()->with(['status' => __($status)])
+                    : back()->withErrors(['email' => __($status)]);
     }
 }

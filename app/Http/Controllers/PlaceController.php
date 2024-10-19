@@ -11,6 +11,7 @@ use App\Models\Image;
 use App\Models\Event;
 use DateTime;
 use DOMDocument;
+use Illuminate\Support\Facades\Storage;
 
 class PlaceController extends Controller
 {
@@ -197,17 +198,22 @@ class PlaceController extends Controller
         if ($request->id) {
             $Place = Place::where('id', $request->id)->first();
         } else {
-            $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
+            $Place = Place::where('creator_id', Auth::user()->id)->where('is_deleted', 0)->latest()->first();
         }
 
-        $GetCurrentImage = Image::where('place_id', $Place->id)->get();
-        if ($GetCurrentImage) {
-            foreach ($GetCurrentImage as $key => $img) {
-                $image = public_path($GetCurrentImage[$key]->src);
-                unlink($image);
-                $GetCurrentImage[$key]->delete();
-            }
-        }
+        // $GetCurrentImage = Image::where('place_id', $Place->id)->get();
+        // if ($GetCurrentImage) {
+        //     foreach ($GetCurrentImage as $key => $img) {
+        //         $image = $GetCurrentImage[$key]->src;
+        //         $updatedImages = str_replace('/storage/', '', $image);
+
+        //         if (Storage::disk('public')->exists($updatedImages)) {
+        //             Storage::disk('public')->delete($updatedImages);
+        //         }
+                
+        //         $GetCurrentImage[$key]->delete();
+        //     }
+        // }
 
         $dom = new DOMDocument();
         $content = $request->content;
@@ -217,28 +223,40 @@ class PlaceController extends Controller
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
+        $user_id = Auth::user()->id;
         // Setup Images
         if ($images) {
             foreach ($images as $key => $img) {
                 $data = $img->getAttribute('src');
-
+        
                 if (strpos($data, 'data') !== false) {
                     list($type, $data) = array_pad(explode(';', $data), 2, null);
                     list(, $data) = array_pad(explode(',', $data), 2, null);
                     $dataConvert = base64_decode($data);
-
+        
                     $str = $img->getAttribute('src');
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
-
-                    $image_name = "/UploadImage/PlaceImage/" . time() . '-' . $key . Str::random(10) . '.' . $trim2;
-
-                    $menu = file_put_contents(public_path() . $image_name, $dataConvert);
-
+        
+                    // Generate a unique image name
+                    $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
+        
+                    
+                    // Define the path for storing the image
+                    $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
+        
+                    // Store the file using the Storage facade
+                    Storage::put($path, $dataConvert);
+        
+                    // Generate the public URL for the image
+                    $publicUrl = Storage::url($path);
+        
+                    // Remove the src attribute and set the new src
                     $img->removeAttribute('src');
-                    $img->setAttribute('src', $image_name);
-
-                    $imageData[] = $image_name;
+                    $img->setAttribute('src', $publicUrl);
+        
+                    // Store the public URL in the array
+                    $imageData[] = $publicUrl;
                 }
             }
         }
@@ -311,21 +329,23 @@ class PlaceController extends Controller
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
 
-                    $image_name = "/UploadImage/PlaceImage/{$user_id}/" . time() . '-' . $key . Str::random(10) . '.' . $trim2;
+                    // Generate a unique image name
+                    $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
 
-                    $path = public_path("/UploadImage/PlaceImage/{$user_id}/");
+                    // Store the image in the storage path
+                    $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
 
-                    // Create the directory if it doesn't exist
-                    if (!file_exists($path)) {
-                        mkdir($path, 0755, true);
-                    }
+                    // Store the file
+                    Storage::put($path, $dataConvert);
 
-                    $menu = file_put_contents(public_path() . $image_name, $dataConvert);
+                    // Generate the public URL for the image
+                    $publicUrl = Storage::url($path);
 
+                    // Update the image src
                     $img->removeAttribute('src');
-                    $img->setAttribute('src', $image_name);
+                    $img->setAttribute('src', $publicUrl);
 
-                    $imageData[] = $image_name;
+                    $imageData[] = $publicUrl; // Store the public URL instead of the path
                 }
             }
         }
@@ -339,7 +359,8 @@ class PlaceController extends Controller
             'description' => $request->description,
             'creator_id' => $user_id,
             'content' => $content,
-            'views' => 0
+            'views' => 0,
+            'is_comment' => $request->AllowComment == 'on' ? 1 : 0
         ]);
 
         foreach ($imageData as $img) {

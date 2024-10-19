@@ -63,15 +63,7 @@
             $(document).ready(function() {
                 $("#summernote").summernote({
                     placeholder: 'enter directions here...',
-                    height: 300,
-                    callbacks: {
-                        onImageUpload: function(files, editor, welEditable) {
-
-                            for (var i = files.length - 1; i >= 0; i--) {
-                                sendFile(files[i], this);
-                            }
-                        }
-                    }
+                    height: 300
                 });
             });
         </script>

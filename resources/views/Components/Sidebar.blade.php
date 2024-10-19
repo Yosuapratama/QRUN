@@ -70,10 +70,24 @@
              <div id="collapsePages" class="collapse {{ Route::is('event') ? 'show' : '' }}"
                  aria-labelledby="headingPages" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
-                     <a class="collapse-item" href="{{ route('event') }}">Manage Event</a>
+                     <a class="collapse-item {{ Route::is('event') ? 'active' : '' }}" href="{{ route('event') }}">Manage Event</a>
                  </div>
              </div>
          </li>
+         {{-- Manage Comment --}}
+         <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
+                aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-envelope fa-fw"></i>
+                <span>Manage Comments</span>
+            </a>
+            <div id="collapsePages3" class="collapse"
+                aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="">Manage Comments</a>
+                </div>
+            </div>
+        </li>
      @else
          <li class="nav-item {{ Route::is('place.myplace') ? 'active' : '' }}">
              <a class="nav-link" href="{{ route('place.myplace') }}">
@@ -89,7 +103,7 @@
              <div id="collapsePages" class="collapse {{ Route::is('myevent.users') ? 'show' : '' }}"
                  aria-labelledby="headingPages" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
-                     <a class="collapse-item" href="{{ route('myevent.users') }}">Manage Event</a>
+                     <a class="collapse-item {{ Route::is('myevent.users') ? 'active' : '' }}" href="{{ route('myevent.users') }}">Manage Event</a>
                  </div>
              </div>
          </li>
@@ -105,11 +119,12 @@
             <i class="fas fa-fw fa-cog"></i>
             <span>Settings</span>
         </a>
-        <div id="collapsePages2" class="collapse"
+        <div id="collapsePages2" class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') ? 'show' : '' }}"
             aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item">General</a>
+                <a class="collapse-item  {{ Route::is('settings.general') ? 'active' : '' }}" href="{{route('settings.general')}}">General</a>
                 <a class="collapse-item">Roles</a>
+                <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a>
             </div>
         </div>
     </li>

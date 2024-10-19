@@ -58,7 +58,8 @@ class DatabaseSeeder extends Seeder
             'address' => 'Jl Denpasar',
             'phone' => '08123456789',
             'password' => Hash::make('superadmin'),
-            'approved_at' => Carbon::now()
+            'approved_at' => Carbon::now(),
+            'email_verified_at' => Carbon::now(),
         ]);
 
         $admin->assignRole('superadmin');

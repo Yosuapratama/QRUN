@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\Event;
 use App\Models\Place;
 use App\Models\User;
@@ -27,7 +28,8 @@ class DashboardController extends Controller
                 'user_count' => User::count(),
                 'user_pending' => User::count(),
                 'place_total' => Place::count(),
-                'event_count' => Event::count()
+                'event_count' => Event::count(),
+                'comments_count' => Comment::count()
             ];
         }else{
             $place = Place::select('id')->where('creator_id', Auth::user()->id)->latest()->first();

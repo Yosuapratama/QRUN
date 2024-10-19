@@ -27,6 +27,15 @@
                 <h6 class="m-0 font-weight-bold text-primary">My Profile</h6>
             </div>
             <div class="card-body">
+                @if(!$User->email_verified_at)
+                <div class="alert alert-danger">
+                    <p>Your Account must be verified first, before you creating a new place !</p>
+                    <form action="{{route('verification.send')}}" method="POST">
+                        @csrf
+                        <button class="btn btn-primary" type="submit" name="submit">Resend Email Verification</button>
+                    </form>
+                </div>
+                @endif
                 {{-- Create Place Form --}}
                 <form method="POST" action="{{ route('profile.update') }}">
                     @csrf

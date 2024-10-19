@@ -69,11 +69,9 @@ class UsersController extends Controller
 
                         $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                         $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                        if (!$row->deleted_at) {
-                            $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
-                        } else {
-                            $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
-                        }
+                       
+                        $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
+                       
                     } else {
                         $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                         $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
@@ -123,11 +121,9 @@ class UsersController extends Controller
 
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                    if (!$row->deleted_at) {
-                        $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
-                    } else {
-                        $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
-                    }
+                   
+                    $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
+                    
                     $btn = $btn . "</div>";
                     return $btn;
                 })
@@ -143,7 +139,7 @@ class UsersController extends Controller
     function pendingApproval(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::whereNotNull('approved_at')->latest()->get();
+            $data = User::whereNull('approved_at')->latest()->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -171,11 +167,9 @@ class UsersController extends Controller
 
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                    if (!$row->deleted_at) {
-                        $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Block</button>";
-                    } else {
-                        $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-secondary btn-sm mr-1'>UnBlock</button>";
-                    }
+                  
+                    $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
+                    
                     $btn = $btn . "</div>";
                     return $btn;
                 })
@@ -329,8 +323,8 @@ class UsersController extends Controller
         $FindUsers->delete();
 
         return response()->json([
-            'message' => 'User Blocked Success',
-            'status' => $FindUsers->email . ' has been blocked by admin'
+            'message' => 'User Deleted Success',
+            'status' => $FindUsers->email . ' has been Deleted by admin'
         ], 200);
     }
 

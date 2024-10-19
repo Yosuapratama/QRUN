@@ -1,12 +1,16 @@
 <?php
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PlaceController;
+use App\Http\Controllers\PlaceLimitController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'redirectToLogin']);
@@ -49,6 +53,12 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
+
+            Route::prefix('place-limit')->group(function () {
+                Route::get('/', [PlaceLimitController::class, 'index'])->name('place-limit.index');
+                Route::get('/create', [PlaceLimitController::class, 'create'])->name('place-limit.create');
+                Route::post('/store', [PlaceLimitController::class, 'store'])->name('place-limit.store');
+            });
         });
         
         //Create Middleware For User Has Logged In
@@ -78,6 +88,11 @@ Route::group(['prefix' => 'management'], function(){
                     
                     return back();
                 })->name('artisan.optimize');
+                Route::get('/general/artisan/queue', function(){
+                    Artisan::call('queue:restart');
+                    
+                    return back();
+                })->name('artisan.queue');
 
             });
         });
@@ -95,5 +110,17 @@ Route::group(['prefix' => 'auth'], function(){
 
 // This is Public Route For Anonym Users
 Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detail');
+Route::get('/detail-place/{place_code}/comments', [CommentController::class, 'index'])->name('comments.index');
+Route::post('/detail-place/{place_code}/comments/store', [CommentController::class, 'store'])->name('comments.storeco');
 
 Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])->name('termsOfService');
+
+Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyMail'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/email/verification-notification', [AuthController::class, 'resendMailVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::get('/forgot-password', [AuthController::class, 'resetPassword'])->name('password.request');
+
+Route::post('/forgot-password', [AuthController::class, 'submitResetPassword'])->middleware('guest')->name('password.email');
+
+Route::get('/reset-password/{token}', function (string $token) {
+    return 'berhasil kriim';
+})->middleware('guest')->name('password.reset');
