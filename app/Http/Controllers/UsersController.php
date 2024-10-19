@@ -93,7 +93,7 @@ class UsersController extends Controller
     function indexBlocked(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::latest()->get();
+            $data = User::whereNotNull('deleted_at')->withTrashed()->latest()->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -122,7 +122,7 @@ class UsersController extends Controller
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
                    
-                    $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
+                    $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-danger btn-sm mr-1'>Restore</button>";
                     
                     $btn = $btn . "</div>";
                     return $btn;
@@ -331,19 +331,19 @@ class UsersController extends Controller
     // (10) This is for admin to unblock users account
     function unblock($id)
     {
-        $FindUsers = User::find($id);
+        $FindUsers = User::withTrashed()->find($id);
 
         if (!$FindUsers) {
             return response()->json([
                 'errors' => 'User Not Found !'
             ], 404);
         }
-        $FindPlace = Place::where('creator_id', $id)->latest()->first();
+        $FindPlace = Place::withTrashed()->where('creator_id', $id)->latest()->first();
         if ($FindPlace) {
-            $FindPlace->delete();
+            $FindPlace->restore();
         }
 
-        $FindUsers->delete();
+        $FindUsers->restore();
 
         return response()->json([
             'message' => 'User UnBlocked Success',

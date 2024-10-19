@@ -198,7 +198,7 @@ class PlaceController extends Controller
         if ($request->id) {
             $Place = Place::where('id', $request->id)->first();
         } else {
-            $Place = Place::where('creator_id', Auth::user()->id)->where('is_deleted', 0)->latest()->first();
+            $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
         }
 
         // $GetCurrentImage = Image::where('place_id', $Place->id)->get();
@@ -267,6 +267,7 @@ class PlaceController extends Controller
         $Place->title = $request->title;
         $Place->description = $request->description;
         $Place->content = $content;
+        $Place->is_comment = $request->AllowComment == 'on' ? 1 : 0;
         $Place->update();
 
        
