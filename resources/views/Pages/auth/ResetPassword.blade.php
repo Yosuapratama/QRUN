@@ -38,7 +38,7 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4 font-weight-bold">Welcome To QRUN</h1>
                                     </div>
-                                    <form method="POST" action="{{ route('login.store') }}">
+                                    <form action="{{route('password.update')}}" method="POST">
                                         @csrf
                                         @if ($errors->any())
                                             <div class="bg bg-danger rounded p-2">
@@ -47,49 +47,30 @@
                                                 @endforeach
                                             </div>
                                         @endif
-                                        @if (session()->has('status'))
+                                        @if(session()->has('status'))
                                             <div class="alert alert-success">
-                                                {{ session()->get('status') }}
+                                                {{session()->get('status')}}
                                             </div>
                                         @endif
-                                        <div class="form-group mt-2">
-                                            <label for="exampleInputEmail">Email</label>
-                                            <input autofocus type="email" class="form-control form-control-user"
-                                                id="exampleInputEmail" name="email" aria-describedby="emailHelp"
-                                                placeholder="Enter Your Email...">
-                                        </div>
+                                        <input type="hidden" name="token" value="{{request()->token}}">
+                                        <input type="hidden" name="email" value="{{request()->email}}">
 
-                                        <div class="form-group">
-                                            <label for="pw">Password</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text" id="eyeShowIcon"><i
-                                                        class="fas fa-eye"></i></span>
-                                                <span class="input-group-text" id="eyeShowIcon2" style="display: none"><i
-                                                        class="fas fa-eye-slash"></i></span>
-                                                <input id="pw" type="password" class="form-control"
-                                                    placeholder="Password" aria-label="Password" name="password"
-                                                    aria-describedby="eyeShowIcon">
-                                            </div>
+                                        <div class="form-group mt-2">
+                                            <label for="password">New Password</label>
+                                            <input id="password" type="password" class="form-control form-control-user" name="password"
+                                                placeholder="Enter Your New Password...">
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <label for="password">Confirm Password</label>
+                                            <input id="password" type="password" class="form-control form-control-user" name="password_confirmation"
+                                                placeholder="Enter Your New Password...">
                                         </div>
 
 
                                         <button type="submit" class="btn btn-success btn-user btn-block">
-                                            Login
+                                            Save Password
                                         </button>
-                                        <p class="mt-3">Forgot your password ? <a href="{{ route('password.request') }}">
-                                                Reset Password
-                                            </a></p>
                                         {{-- <hr> --}}
-                                        <p class="mt-3 text-center">OR</p>
-                                        <a style="border: 1px solid black"
-                                            class="btn btn-user btn-block border-1 rounded-md">
-                                            <i class="fa-brands fa-google text-danger mr-2"></i> Login/Register With Google
-                                        </a>
-
-                                        <p class="mt-3">Don't Have An Account ? <a href="{{ route('register') }}">
-                                                Register Here
-                                            </a></p>
-
                                     </form>
                                 </div>
                             </div>

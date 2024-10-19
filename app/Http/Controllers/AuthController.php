@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -143,35 +144,75 @@ class AuthController extends Controller
  
         return redirect()->route('dashboard')->with('success', 'Your email has been verified');
     }
-    public function resetPassword(){
-        return view('Pages.ResetPassword');
+    public function forgotPassword(){
+        return view('Pages.auth.ForgotPassword');
     }
-    public function submitResetPassword(Request $request){
+    public function submitForgotPassword(Request $request){
         $request->validate([
             'email' => 'required|email'
         ]);
 
-        // $isValidUser = User::where('email', $request->email)->first();
-        // if(!$isValidUser){
-        //     return back()->withErrors('Email not found !');
-        // }
+        $isValidUser = User::where('email', $request->email)->first();
+        if(!$isValidUser){
+            return back()->withErrors('Email not found !');
+        }
  
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
-        // if ($status == Password::RESET_THROTTLED) {
-        //     return back()->withErrors([
-        //         'throttled' => "Too many attempts. Please try again in a few minutes."
-        //     ]);
-        // }
+        if ($status == Password::RESET_THROTTLED) {
+            return back()->withErrors([
+                'throttled' => "Too many attempts. Please try again in a few minutes."
+            ]);
+        }
 
-        // if ($status == Password::RESET_LINK_SENT) {
-        //     return back()->with('status', __('We have emailed your password reset link!'));
-        // }
+        if ($status == Password::RESET_LINK_SENT) {
+            return back()->with('status', __('We have emailed your password reset link!'));
+        }
      
         return $status === Password::RESET_LINK_SENT
                     ? back()->with(['status' => __($status)])
                     : back()->withErrors(['email' => __($status)]);
+    }
+
+    public function resetPassView(){
+        return view('Pages.auth.ResetPassword');
+    }
+
+    public function updatePassword(Request $request){
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'token.required' => 'Token is required',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email must be valid address !',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password minimum 8 characters',
+            'password.confirmed' => 'Confirm Password is required'
+        ]);
+     
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+     
+                $user->save();
+     
+                event(new PasswordReset($user));
+            }
+        );
+
+        if($status == Password::INVALID_TOKEN){
+            return back()->withErrors('Token is invalid !');
+        }
+     
+        return $status === Password::PASSWORD_RESET
+                    ? redirect()->route('login')->with('status', 'Your password has been reset!')
+                    : back()->withErrors(['email' => trans($status)]);
     }
 }

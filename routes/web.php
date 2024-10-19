@@ -117,10 +117,8 @@ Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])-
 
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyMail'])->middleware(['auth', 'signed'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'resendMailVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-Route::get('/forgot-password', [AuthController::class, 'resetPassword'])->name('password.request');
+Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name('password.request');
 
-Route::post('/forgot-password', [AuthController::class, 'submitResetPassword'])->middleware('guest')->name('password.email');
-
-Route::get('/reset-password/{token}', function (string $token) {
-    return 'berhasil kriim';
-})->middleware('guest')->name('password.reset');
+Route::post('/forgot-password', [AuthController::class, 'submitForgotPassword'])->middleware('guest')->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'resetPassView'])->middleware('guest')->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'updatePassword'])->middleware('guest')->name('password.update');
