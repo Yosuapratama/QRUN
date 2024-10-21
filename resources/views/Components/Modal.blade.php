@@ -331,6 +331,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="editUserHasPlaceLimit">
+                <input type="hidden" name="id" id="editUserHasLimitiD">
                 <div class="modal-header">
                     <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Edit User has Place Limit
                     </h4>
@@ -341,17 +342,17 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="placeSelectCode" class="form-label">Select User</label>
-                        <select name="user" id="find-user" class="form-select" style="width:100%"></select>
+                        <select name="user" id="find-user-edit" class="form-select" style="width:100%"></select>
                     </div>
                     <div class="mb-3">
                         <label for="placeSelectCode" class="form-label">Select Place Limit</label>
-                        <select name="place_limit" id="find_place_limit" class="form-select" style="width:100%"></select>
+                        <select name="place_limit" id="find_place_limit_edit" class="form-select" style="width:100%"></select>
                     </div>
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" >Create</button>
+                    <button type="submit" class="btn btn-success" >Update</button>
                 </div>
 
             </form>

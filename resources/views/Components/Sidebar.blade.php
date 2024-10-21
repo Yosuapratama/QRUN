@@ -27,6 +27,9 @@
                  <i class="fas fa-fw fa-users"></i>
                  <span>Manage Users</span>
              </a>
+             @php
+                $pendingUser = \App\Helpers\SidebarHelper::getPendingUser();
+            @endphp
              <div id="collapseTwo"
                  class="collapse {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') || Route::is('users-limit.index') ? 'show' : '' }}"
                  aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
@@ -36,9 +39,9 @@
                      <a class="collapse-item {{ Route::is('users.blocked') ? 'active' : '' }}"
                          href="{{ route('users.blocked') }}">Blocked/Deleted Users</a>
                      <a class="collapse-item {{ Route::is('users.pending') ? 'active' : '' }}"
-                         href="{{ route('users.pending') }}">Pending Approved</a>
+                         href="{{ route('users.pending') }}">Pending Approved <b style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{$pendingUser}}</b></a>
                      <a class="collapse-item {{ Route::is('users-limit.index') ? 'active' : '' }}"
-                         href="{{route('users-limit.index')}}">Users Limit</a>
+                         href="{{ route('users-limit.index') }}">Users Limit</a>
                  </div>
              </div>
          </li>
@@ -72,70 +75,138 @@
              <div id="collapsePages" class="collapse {{ Route::is('event') ? 'show' : '' }}"
                  aria-labelledby="headingPages" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
-                     <a class="collapse-item {{ Route::is('event') ? 'active' : '' }}" href="{{ route('event') }}">Manage Event</a>
+                     <a class="collapse-item {{ Route::is('event') ? 'active' : '' }}"
+                         href="{{ route('event') }}">Manage Event</a>
                  </div>
              </div>
          </li>
          {{-- Manage Comment --}}
          <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
-                aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-envelope fa-fw"></i>
-                <span>Manage Comments</span>
-            </a>
-            <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
-                aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item {{ Route::is('comments.admin') ? 'active' : '' }}" href="{{route('comments.admin')}}">Manage Comments</a>
-                </div>
-            </div>
-        </li>
-     @else
-         <li class="nav-item {{ Route::is('place.myplace') ? 'active' : '' }}">
-             <a class="nav-link" href="{{ route('place.myplace') }}">
-                 <i class="fas fa-fw fa-map"></i>
-                 <span>My Place</span></a>
-         </li>
-         <li class="nav-item">
-             <a class="nav-link collapsed {{ Route::is('myevent.users') ? 'active' : '' }}" href="#"
-                 data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-                 <i class="fas fa-fw fa-folder"></i>
-                 <span>Manage Event</span>
+             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
+                 aria-expanded="true" aria-controls="collapsePages">
+                 <i class="fas fa-envelope fa-fw"></i>
+                 <span>Manage Comments</span>
              </a>
-             <div id="collapsePages" class="collapse {{ Route::is('myevent.users') ? 'show' : '' }}"
+             <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
                  aria-labelledby="headingPages" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
-                     <a class="collapse-item {{ Route::is('myevent.users') ? 'active' : '' }}" href="{{ route('myevent.users') }}">Manage Event</a>
+                     <a class="collapse-item {{ Route::is('comments.admin') ? 'active' : '' }}"
+                         href="{{ route('comments.admin') }}">Manage Comments</a>
                  </div>
              </div>
          </li>
+
+         <hr class="sidebar-divider">
+         <!-- Heading -->
+         <div class="sidebar-heading">
+             SETTINGS
+         </div>
+         <li class="nav-item">
+             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages2"
+                 aria-expanded="true" aria-controls="collapsePages">
+                 <i class="fas fa-fw fa-cog"></i>
+                 <span>Settings</span>
+             </a>
+             <div id="collapsePages2"
+                 class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') ? 'show' : '' }}"
+                 aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                 <div class="bg-white py-2 collapse-inner rounded">
+                     <a class="collapse-item  {{ Route::is('settings.general') ? 'active' : '' }}"
+                         href="{{ route('settings.general') }}">General</a>
+                     {{-- <a class="collapse-item">Roles</a> --}}
+                     <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}"
+                         href="{{ route('place-limit.index') }}">Place Limit</a>
+                     {{-- <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a> --}}
+                 </div>
+             </div>
+         </li>
+     @else
+         @php
+             $limitUser = \App\Helpers\SidebarHelper::getAmountOfLimitUser();
+         @endphp
+
+         @if ($limitUser > 1)
+             <li
+                 class="nav-item">
+                 <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                     data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+                     <i class="fas fa-fw fa-map"></i>
+                     <span>Manage Place</span>
+                 </a>
+                 <div id="collapseUtilities"
+                     class="collapse"
+                     aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+                     <div class="bg-white py-2 collapse-inner rounded">
+                         <a class="collapse-item {{ Route::is('place') ? 'active' : '' }}"
+                             href="{{ route('place') }}">Manage
+                             Place</a>
+                         <a class="collapse-item {{ Route::is('place.getDeleted') ? 'active' : '' }}"
+                             href="{{ route('place.getDeleted') }}">Deleted Place</a>
+                         <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
+                             href="{{ route('place.create') }}">Create Place</a>
+                     </div>
+                 </div>
+             </li>
+             <li class="nav-item">
+                <a class="nav-link collapsed {{ Route::is('myevent.users') ? 'active' : '' }}" href="#"
+                    data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
+                    aria-controls="collapsePages">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Manage Event</span>
+                </a>
+                <div id="collapsePages" class="collapse {{ Route::is('myevent.users') ? 'show' : '' }}"
+                    aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item {{ Route::is('myevent.users') ? 'active' : '' }}"
+                            href="{{ route('myevent.users') }}">Manage Event</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-envelope fa-fw"></i>
+                    <span>Manage Comments</span>
+                </a>
+                <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
+                    aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item {{ Route::is('comments.admin') ? 'active' : '' }}"
+                            href="{{ route('comments.admin') }}">Manage Comments</a>
+                    </div>
+                </div>
+            </li>
+   
+         @else
+             <li class="nav-item {{ Route::is('place.myplace') ? 'active' : '' }}">
+                 <a class="nav-link" href="{{ route('place.myplace') }}">
+                     <i class="fas fa-fw fa-map"></i>
+                     <span>My Place</span></a>
+             </li>
+             <li class="nav-item">
+                <a class="nav-link collapsed {{ Route::is('myevent.users') ? 'active' : '' }}" href="#"
+                    data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
+                    aria-controls="collapsePages">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Manage Event</span>
+                </a>
+                <div id="collapsePages" class="collapse {{ Route::is('myevent.users') ? 'show' : '' }}"
+                    aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item {{ Route::is('myevent.users') ? 'active' : '' }}"
+                            href="{{ route('myevent.users') }}">Manage Event</a>
+                    </div>
+                </div>
+            </li>
+         @endif
+        
      @endif
-     <hr class="sidebar-divider">
-     <!-- Heading -->
-     <div class="sidebar-heading">
-         SETTINGS
-     </div>
-     <li class="nav-item">
-        <a class="nav-link collapsed" href="#"
-            data-toggle="collapse" data-target="#collapsePages2" aria-expanded="true" aria-controls="collapsePages">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Settings</span>
-        </a>
-        <div id="collapsePages2" class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') ? 'show' : '' }}"
-            aria-labelledby="headingPages" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item  {{ Route::is('settings.general') ? 'active' : '' }}" href="{{route('settings.general')}}">General</a>
-                {{-- <a class="collapse-item">Roles</a> --}}
-                <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a>
-                {{-- <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a> --}}
-            </div>
-        </div>
-    </li>
+
 
      <!-- Divider -->
      <hr class="sidebar-divider">
-     <li class="nav-item {{Route::is('profile') ? 'active' : ''}}">
-         <a class="nav-link" href="{{route('profile')}}">
+     <li class="nav-item {{ Route::is('profile') ? 'active' : '' }}">
+         <a class="nav-link" href="{{ route('profile') }}">
              {{-- <i class="fas fa-fw fa-door"></i> --}}
              <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
              <span>My Profile</span></a>

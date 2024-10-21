@@ -35,7 +35,7 @@ class UsersHasLimitController extends Controller
                     $editUrl = route('place-limit.edit', $row->id);
 
                     $btn = "<div class='d-flex'>";
-                    $btn = $btn . "<a href='$row->id' class='edit btn btn-secondary btn-sm mr-1'>Edit</a>";
+                    $btn = $btn . "<button id='$row->id' class='edit btn btn-secondary btn-sm mr-1'>Edit</button>";
                     $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
                     $btn = $btn . "</div>";
                     return $btn;
@@ -50,7 +50,10 @@ class UsersHasLimitController extends Controller
     public function getUserHasLimit(Request $request){
         if(Auth::user()->hasRole('superadmin')){
             return response()->json([
-                'users' => User::select('email')->get(),
+                'users' => User::whereNotNull('approved_at')
+                ->whereNotIn('id', UserHasPlaceLimit::pluck('user_id')) // Use pluck to get an array of IDs
+                ->select('email')
+                ->get(),
                 'place_limit' => PlaceLimit::select('id','name')->get()
             ]);
         }
@@ -64,6 +67,18 @@ class UsersHasLimitController extends Controller
     public function create()
     {
         //
+    }
+
+    public function fetchData($id){
+        $data = UserHasPlaceLimit::with('user')->find($id);
+        if(!$data){
+            return abort(404);
+        }
+
+        return response()->json([
+            'data' => $data,
+            'place_limit' => PlaceLimit::select('id','name')->get()
+        ]);
     }
 
     /**
@@ -125,16 +140,57 @@ class UsersHasLimitController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        //
+        $Validator = Validator::make($request->all(), [
+            'id' => 'required|exists:users_has_place_limit,id',
+            'user' => 'required|exists:users,email',
+            'place_limit' => 'required|exists:place_limit,id' // Place limit must be a number between 1 and 100
+        ], [
+            'id.required' => "Id can't be null",
+            'id.exists' => "Id must exist in the users has limit table",
+            'user.required' => "User can't be null",
+            'user.email' => "User must be a valid email address",
+            'user.exists' => "User must exist in the users table",
+            'place_limit.required' => "Place Limit can't be null",
+            'place_limit.exists' => "Place must exist in the users table"
+        ]);
+
+        if($Validator->fails()){
+            return response()->json([
+                'errors' => 'Invalid fields !'
+            ]);
+        }
+
+        UserHasPlaceLimit::find($request->id)->update([
+            'user_id' => User::where('email', $request->user)->first()->id,
+            'place_limit_id' => $request->place_limit
+        ]);
+
+        return response()->json([
+            'success' => 'Data successfully updated !'
+        ]);
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function delete(string $id)
     {
-        //
+        $UserHasLimitPlace = UserHasPlaceLimit::find($id);
+    
+        if(!$UserHasLimitPlace){
+            return response()->json([
+                'errors' => 'Place limit not found !'
+            ]);
+        }
+
+        $UserHasLimitPlace->delete();
+
+        return response()->json([
+            'success' => 'Data successfully deleted !'
+        ]);
+
     }
 }

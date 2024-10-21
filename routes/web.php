@@ -43,6 +43,9 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/', [UsersHasLimitController::class, 'index'])->name('users-limit.index');
                 Route::get('/fetchData', [UsersHasLimitController::class, 'getUserHasLimit'])->name('users-limit.fetch');
                 Route::post('/store', [UsersHasLimitController::class, 'store'])->name('users-limit.store');
+                Route::post('/update', [UsersHasLimitController::class, 'update'])->name('users-limit.update');
+                Route::post('/{id}/delete', [UsersHasLimitController::class, 'delete'])->name('users-limit.delete');
+                Route::get('/{id}/get', [UsersHasLimitController::class, 'fetchData'])->name('users-limit.getData');
             });
 
             // This is administrator Menu to Manage Place of all 
@@ -74,6 +77,21 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/{id}/update', [PlaceLimitController::class, 'update'])->name('place-limit.update');
                 Route::delete('/{id}/delete', [PlaceLimitController::class, 'destroy'])->name('place-limit.destroy');
             });
+
+            Route::group(['prefix' => 'settings'], function(){
+                Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
+                Route::get('/general/artisan/optimize', function(){
+                    Artisan::call('optimize');
+                    
+                    return back();
+                })->name('artisan.optimize');
+                Route::get('/general/artisan/queue', function(){
+                    Artisan::call('queue:restart');
+                    
+                    return back();
+                })->name('artisan.queue');
+
+            });
         });
         
         //Create Middleware For User Has Logged In
@@ -96,20 +114,7 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/delete/{id}', [EventController::class, 'delete'])->name('myevent.delete');
             });
 
-            Route::group(['prefix' => 'settings'], function(){
-                Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
-                Route::get('/general/artisan/optimize', function(){
-                    Artisan::call('optimize');
-                    
-                    return back();
-                })->name('artisan.optimize');
-                Route::get('/general/artisan/queue', function(){
-                    Artisan::call('queue:restart');
-                    
-                    return back();
-                })->name('artisan.queue');
-
-            });
+          
         });
     });
 

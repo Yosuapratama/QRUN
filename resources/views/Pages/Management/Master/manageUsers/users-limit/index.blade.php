@@ -39,47 +39,97 @@
     @push('script')
         <script>
             $(document).ready(function() {
-                $("#find-user").select2({
-                    dropdownParent: $("#addUserhasLimitModal")
-                });
-                $("#find_place_limit").select2({
-                    dropdownParent: $("#addUserhasLimitModal")
-                });
+                function fetchData() {
+                    $("#find-user").select2({
+                        dropdownParent: $("#addUserhasLimitModal")
+                    });
+                    $("#find_place_limit").select2({
+                        dropdownParent: $("#addUserhasLimitModal")
+                    });
 
-                $('#find_place_limit').empty();
-                $('#find-user').empty();
-                $('#find_place_limit').append('<option value="">Select place Limit</option>');
-                $('#find-user').append('<option value="">Select User Email</option>');
+                    $('#find_place_limit').empty();
+                    $('#find-user').empty();
+                    $('#find_place_limit').append('<option value="">Select place Limit</option>');
+                    $('#find-user').append('<option value="">Select User Email</option>');
 
-                $.ajax({
-                    url: "{{ route('users-limit.fetch') }}",
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        response.place_limit.map((item) => {
-                            $('#find_place_limit').append(
-                                `<option value="${item.id}">${item.name}</option>`
+                    $.ajax({
+                        url: "{{ route('users-limit.fetch') }}",
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            response.place_limit.map((item) => {
+                                $('#find_place_limit').append(
+                                    `<option value="${item.id}">${item.name}</option>`
                                 );
-                        });
+                            });
 
-                        response.users.map((item) => {
-                            $('#find-user').append(
-                                `<option value="${item.email}">${item.email}</option>`
+                            response.users.map((item) => {
+                                $('#find-user').append(
+                                    `<option value="${item.email}">${item.email}</option>`
                                 );
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            title: 'Failed to Fetch Place',
-                            text: response.errors,
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                });
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Failed to Fetch Place',
+                                text: response.errors,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
 
+                }
+
+                function fetchEditData(id) {
+                    console.log(id);
+                    $("#find-user-edit").select2({
+                        dropdownParent: $("#editUserhasLimitModal")
+                    });
+                    $("#find_place_limit_edit").select2({
+                        dropdownParent: $("#editUserhasLimitModal")
+                    });
+
+                    $('#find_place_limit_edit').empty();
+                    $('#find-user-edit').empty();
+                    $('#find_place_limit_edit').append('<option value="">Select place Limit</option>');
+                    $('#find-user-edit').append('<option value="">Select User Email</option>');
+                    $('#editUserHasLimitiD').val('');
+
+                    $.ajax({
+                        url: "{{ route('users-limit.getData', ':id') }}".replace(':id', id),
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            let place_limit_id = response.data.place_limit_id;
+                            let user_email = response.data.user.email;
+                            $('#editUserHasLimitiD').val(response.data.id);
+                            response.place_limit.map((item) => {
+                                $('#find_place_limit_edit').append(
+                                    `<option value="${item.id}" ${item.id == place_limit_id ? 'selected' : ''}>${item.name}</option>`
+                                );
+                            });
+
+                            $('#find-user-edit').append(
+                                `<option value="${user_email}" selected>${user_email}</option>`
+                            );
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: 'Failed to Fetch Place',
+                                text: response.errors,
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    });
+                }
+
+                fetchData();
 
                 $('#datatable').DataTable({
                     'createdRow': function(row, data, dataIndex) {
@@ -137,6 +187,7 @@
                                 $('#addUserhasLimitModal').modal('hide');
                                 $("#addUserHasPlaceLimit")[0].reset();
                                 $('#datatable').DataTable().ajax.reload();
+                                fetchData();
                             } else if (response) {
                                 Swal.fire({
                                     title: response.errors,
@@ -161,155 +212,123 @@
                     });
                 })
 
-                // $(document).on('click', '.deleteEventButtonNew', function(e) {
-                //     e.preventDefault();
-                //     var id = $(this).attr('id');
+                $(document).on('click', '.delete', function(e) {
+                    e.preventDefault();
+                    var id = $(this).attr('id');
 
-                //     Swal.fire({
-                //         customClass: {
-                //             confirmButton: "btn btn-success",
-                //             cancelButton: "btn btn-danger"
-                //         },
-                //         title: "Are you sure?",
-                //         text: "Delete this Event",
-                //         icon: "warning",
-                //         showCancelButton: true,
-                //         confirmButtonText: "Yes, delete it!",
-                //         cancelButtonText: "No, cancel!",
-                //         reverseButtons: true
-                //     }).then((result) => {
-                //         if (result.isConfirmed) {
-                //             $.ajax({
-                //                 type: "POST",
-                //                 url: "/management/master/my-event/delete/" + id,
-                //                 dataType: "json",
-                //                 headers: {
-                //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //                 },
-                //                 success: function(response) {
-                //                     console.log(response.message);
-                //                     if (response.success) {
-                //                         Swal.fire({
-                //                             title: response.success,
-                //                             text: response.success,
-                //                             icon: 'success',
-                //                             confirmButtonText: 'OK'
-                //                         });
-                //                         $('#datatable').DataTable().ajax.reload();
-                //                     } else if (response.errors) {
-                //                         Swal.fire({
-                //                             title: response.errors,
-                //                             text: response.errors,
-                //                             icon: 'error',
-                //                             confirmButtonText: 'OK'
-                //                         });
-                //                     }
+                    Swal.fire({
+                        customClass: {
+                            confirmButton: "btn btn-success",
+                            cancelButton: "btn btn-danger"
+                        },
+                        title: "Are you sure?",
+                        text: "Delete this Limit",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel!",
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                type: "POST",
+                                url: "/management/master/users-limit/" + id + "/delete",
+                                dataType: "json",
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
+                                    console.log(response.message);
+                                    if (response.success) {
+                                        Swal.fire({
+                                            title: response.success,
+                                            text: response.success,
+                                            icon: 'success',
+                                            confirmButtonText: 'OK'
+                                        });
+                                        $('#datatable').DataTable().ajax.reload();
+                                    } else if (response.errors) {
+                                        Swal.fire({
+                                            title: response.errors,
+                                            text: response.errors,
+                                            icon: 'error',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+
+                                    fetchData();
+
+                                },
+                                error: function(err) {
+                                    // Swal.fire({
+                                    //     title: 'User Not Found !',
+                                    //     icon: 'error',
+                                    //     confirmButtonText: 'OK'
+                                    // });
+                                    console.log(err);
+                                }
+                            });
+                        }
+                    });
 
 
-                //                 },
-                //                 error: function(err) {
-                //                     // Swal.fire({
-                //                     //     title: 'User Not Found !',
-                //                     //     icon: 'error',
-                //                     //     confirmButtonText: 'OK'
-                //                     // });
-                //                     console.log(err);
-                //                 }
-                //             });
-                //         }
-                //     });
-
-
-                // });
+                });
 
 
                 $(document).on('click', '.edit', function(e) {
                     e.preventDefault();
 
                     var id = $(this).attr('id');
+                    fetchEditData(id);
                     $('#editUserhasLimitModal').modal('show');
-
-                    // $.ajax({
-                    //     type: "GET",
-                    //     url: "/management/master/my-event/get-data/" + id,
-                    //     dataType: "json",
-                    //     headers: {
-                    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    //     },
-                    //     success: function(response) {
-                    //         if (response.errors) {
-                    //             Swal.fire({
-                    //                 title: response.errors,
-                    //                 text: response.errors,
-                    //                 icon: 'error',
-                    //                 confirmButtonText: 'OK'
-                    //             });
-                    //         }
-
-                    //         $('#detailTitleEventEdit').val(response.data.title);
-                    //         $('#descriptionEventEdit').val(response.data.description);
-                    //         $('#EventId').val(response.data.id);
-                    //         $('#datetimeEventEdit').val(response.date);
-
-
-                    //     },
-                    //     error: function(err) {
-                    //         // Swal.fire({
-                    //         //     title: 'User Not Found !',
-                    //         //     icon: 'error',
-                    //         //     confirmButtonText: 'OK'
-                    //         // });
-                    //         console.log(err);
-                    //     }
-                    // });
                 });
 
                 // // Setup Submitted Edit
-                // $(document).on('submit', '#editEventForm', function(e) {
-                //     e.preventDefault();
+                $(document).on('submit', '#editUserHasPlaceLimit', function(e) {
+                    e.preventDefault();
 
-                //     $.ajax({
-                //         type: "POST",
-                //         url: "{{ route('myevent.update') }}",
-                //         data: $(this).serialize(),
-                //         dataType: "json",
-                //         headers: {
-                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                //         },
-                //         success: function(response) {
-                //             console.log(response.message);
-                //             if (response.success) {
-                //                 Swal.fire({
-                //                     title: response.success,
-                //                     text: response.success,
-                //                     icon: 'success',
-                //                     confirmButtonText: 'OK'
-                //                 });
-                //                 $('#editEventModalAdmin').modal('hide');
-                //                 $("#editEventForm")[0].reset();
-                //                 $('#datatable').DataTable().ajax.reload();
-                //             } else if (response.errors) {
-                //                 Swal.fire({
-                //                     title: response.errors,
-                //                     text: response.errors,
-                //                     icon: 'error',
-                //                     confirmButtonText: 'OK'
-                //                 });
-                //             }
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('users-limit.update') }}",
+                        data: $(this).serialize(),
+                        dataType: "json",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            console.log(response.message);
+                            if (response.success) {
+                                Swal.fire({
+                                    title: response.success,
+                                    text: response.success,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                                $('#editUserhasLimitModal').modal('hide');
+                                $("#editUserHasPlaceLimit")[0].reset();
+                                $('#datatable').DataTable().ajax.reload();
+                            } else if (response.errors) {
+                                Swal.fire({
+                                    title: response.errors,
+                                    text: response.errors,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
 
 
-                //         },
-                //         error: function(err) {
-                //             // Swal.fire({
-                //             //     title: 'User Not Found !',
-                //             //     icon: 'error',
-                //             //     confirmButtonText: 'OK'
-                //             // });
-                //             console.log(err);
-                //         }
-                //     });
+                        },
+                        error: function(err) {
+                            // Swal.fire({
+                            //     title: 'User Not Found !',
+                            //     icon: 'error',
+                            //     confirmButtonText: 'OK'
+                            // });
+                            console.log(err);
+                        }
+                    });
 
-                // });
+                });
             });
         </script>
     @endpush

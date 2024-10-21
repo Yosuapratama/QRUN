@@ -58,7 +58,7 @@
                 </div>
                 <div class="slider-container mb-3">
                     <label for="yesno-slider" class="slider-label">Turn on comment ? No / Yes</label>
-                    <input name="AllowComment" {{$Place->is_comment ? 'checked' : ''}} type="checkbox" id="yesno-slider" class="slider">
+                    <input name="AllowComment" @if(isset($Place->is_comment)) checked @endif type="checkbox" id="yesno-slider" class="slider">
                 </div>
                 @if ($Place)
                     <button type="submit" class="btn btn-primary btn-md">Update Place</button>
