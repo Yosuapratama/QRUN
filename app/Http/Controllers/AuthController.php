@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -56,6 +57,7 @@ class AuthController extends Controller
                 $this->logout($request);
                 return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
             }
+            // Log::info('User login attempt', ['user_id' => Auth::user()->id, 'ip_address' => request()->ip()]);
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 

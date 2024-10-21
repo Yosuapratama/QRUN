@@ -28,7 +28,7 @@
                  <span>Manage Users</span>
              </a>
              <div id="collapseTwo"
-                 class="collapse {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') ? 'show' : '' }}"
+                 class="collapse {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') || Route::is('users-limit.index') ? 'show' : '' }}"
                  aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
                  <div class="bg-white py-2 collapse-inner rounded">
                      <a class="collapse-item {{ Route::is('users') ? 'active' : '' }}" href="{{ route('users') }}">All
@@ -37,6 +37,8 @@
                          href="{{ route('users.blocked') }}">Blocked/Deleted Users</a>
                      <a class="collapse-item {{ Route::is('users.pending') ? 'active' : '' }}"
                          href="{{ route('users.pending') }}">Pending Approved</a>
+                     <a class="collapse-item {{ Route::is('users-limit.index') ? 'active' : '' }}"
+                         href="{{route('users-limit.index')}}">Users Limit</a>
                  </div>
              </div>
          </li>
@@ -75,16 +77,16 @@
              </div>
          </li>
          {{-- Manage Comment --}}
-         <li class="nav-item">
+         <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
                 aria-expanded="true" aria-controls="collapsePages">
                 <i class="fas fa-envelope fa-fw"></i>
                 <span>Manage Comments</span>
             </a>
-            <div id="collapsePages3" class="collapse"
+            <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
                 aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="">Manage Comments</a>
+                    <a class="collapse-item {{ Route::is('comments.admin') ? 'active' : '' }}" href="{{route('comments.admin')}}">Manage Comments</a>
                 </div>
             </div>
         </li>
@@ -123,8 +125,9 @@
             aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item  {{ Route::is('settings.general') ? 'active' : '' }}" href="{{route('settings.general')}}">General</a>
-                <a class="collapse-item">Roles</a>
+                {{-- <a class="collapse-item">Roles</a> --}}
                 <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a>
+                {{-- <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a> --}}
             </div>
         </div>
     </li>

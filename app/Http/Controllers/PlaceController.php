@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -96,7 +97,7 @@ class PlaceController extends Controller
     function indexDeletedPlace(Request $request)
     {
         if ($request->ajax()) {
-            $data = Place::select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
+            $data = Place::whereNotNull('deleted_at')->withTrashed()->select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
 
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
@@ -146,6 +147,11 @@ class PlaceController extends Controller
             }
         } else {
             $GetPlace->delete();
+            $commentData = Comment::where('place_id', $GetPlace->id)->get();
+
+            foreach($commentData as $key => $comment){
+                $commentData[$key]->delete();
+            }
         }
 
         return response()->json([

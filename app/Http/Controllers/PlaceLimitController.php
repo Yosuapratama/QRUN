@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PlaceLimit;
+use App\Models\UserHasPlaceLimit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -23,19 +24,13 @@ class PlaceLimitController extends Controller
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    // $url = $this->applicationURLLocal . '/detail-place/' . $row->place_code;
-                    // $editUrl = $this->applicationURLLocal . '/management/master/place/edit/' . $row->place_code;
-                    // $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $row->place_code;
+                    $editUrl = route('place-limit.edit', $row->id);
 
-                    // $btn = "<div class='d-flex'>";
-                    // $btn = $btn . "<button id='$row->place_code' class='detailPlaceButton btn btn-primary btn-sm mr-1'>Detail</button>";
-                    // $btn = $btn . "<a target='_blank' href='$url' class='btn btn-warning btn-sm mr-1'>Visit</a>";
-                    // $btn = $btn . "<a target='_blank' href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
-                    // $btn = $btn . "<a target='_blank' href='$printUrl' class='btn btn-success btn-sm mr-1'>Print</a>";
-                    // $btn = $btn . "<button id='$row->place_code' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
-
-                    // $btn = $btn . "</div>";
-                    // return $btn;
+                    $btn = "<div class='d-flex'>";
+                    $btn = $btn . "<a href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
+                    $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
+                    $btn = $btn . "</div>";
+                    return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -95,7 +90,8 @@ class PlaceLimitController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = PlaceLimit::find($id);
+        return view('Pages.Management.Master.place-limit.form', compact('data'));
     }
 
     /**
@@ -103,7 +99,30 @@ class PlaceLimitController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $Validate = $request->validate([
+            'name' => 'required',
+            'total_limit' => 'required|numeric|min:1'
+        ], [
+            'name.required' => 'Name Fields is required',
+            'total_limit.required' => 'Total of limit is required',
+            'total_limit.numeric' => 'Total of limit type must be of number',
+            'total_limit.min' => 'Total of limit need minimum 1 total',
+            
+        ]);
+
+        $placeLimit = PlaceLimit::find($id);
+        if(!$placeLimit){
+            return back()->withErrors('Place Limit not found !');
+        }
+
+        $placeLimit->update([
+            'name' => $request->name,
+            'total_limit' => $request->total_limit,
+        ]);
+
+        return redirect()->route('place-limit.index')->with('success', 'Place Limit updated successfully !');
+
+
     }
 
     /**
@@ -111,6 +130,19 @@ class PlaceLimitController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $placeLimit = PlaceLimit::find($id);
+        if(!$placeLimit){
+            return abort(404);
+        }
+
+        $placeLimit->delete();
+        $userHasPlaceLimit = UserHasPlaceLimit::where('place_limit_id', $id)->get();
+        foreach($userHasPlaceLimit as $key => $item){
+            $userHasPlaceLimit[$key]->delete();
+        }
+
+        return response()->json([
+            'success' => 'Data deleted successfully !'
+        ]);
     }
 }

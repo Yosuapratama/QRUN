@@ -9,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UsersHasLimitController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,12 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/detail/{id}', [UsersController::class, 'getUserDetail'])->name('users.detail');
             });
 
+            Route::group(['prefix' => 'users-limit'], function(){
+                Route::get('/', [UsersHasLimitController::class, 'index'])->name('users-limit.index');
+                Route::get('/fetchData', [UsersHasLimitController::class, 'getUserHasLimit'])->name('users-limit.fetch');
+                Route::post('/store', [UsersHasLimitController::class, 'store'])->name('users-limit.store');
+            });
+
             // This is administrator Menu to Manage Place of all 
             Route::group(['prefix' => 'place'], function(){
                 Route::get('/', [PlaceController::class, 'index'])->name('place');
@@ -54,10 +61,18 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
 
+            Route::group(['prefix' => 'comments'], function(){
+                Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
+                Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
+            });
+
             Route::prefix('place-limit')->group(function () {
                 Route::get('/', [PlaceLimitController::class, 'index'])->name('place-limit.index');
                 Route::get('/create', [PlaceLimitController::class, 'create'])->name('place-limit.create');
                 Route::post('/store', [PlaceLimitController::class, 'store'])->name('place-limit.store');
+                Route::get('/{id}/edit', [PlaceLimitController::class, 'edit'])->name('place-limit.edit');
+                Route::post('/{id}/update', [PlaceLimitController::class, 'update'])->name('place-limit.update');
+                Route::delete('/{id}/delete', [PlaceLimitController::class, 'destroy'])->name('place-limit.destroy');
             });
         });
         

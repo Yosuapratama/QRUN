@@ -7,9 +7,46 @@ use App\Models\Place;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 class CommentController extends Controller
 {
+    public function datatable(Request $request){
+        if(Auth::user()->hasRole('superadmin')){
+            if ($request->ajax()) {
+                $data = Comment::with('user', 'place')->get();
+                
+                return DataTables::of($data)
+                    ->editColumn('updated_at', function ($row) {
+                        return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
+                    })
+                    ->addIndexColumn()
+                    ->addColumn('email', function ($row) {
+                        return $row->user->email;
+                    })
+                    ->addIndexColumn()
+                    ->addColumn('place_code', function ($row) {
+                        $place_code = $row->place->place_code ?? '-';
+                        return "<a target='_blank' href='/detail-place/$place_code'>$place_code</a>";
+                    })
+                    ->addIndexColumn()
+                    ->addColumn('action', function ($row) {
+                        $btn = "<div class='d-flex justify-content-center align-items-center'>";
+                        $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
+                        $btn = $btn . "</div>";
+                        return $btn;
+                    })
+                    ->rawColumns(['action', 'place_code'])
+                    ->make(true);
+            }
+    
+
+            return view('Pages.Management.Master.comments.index');
+
+        }
+
+        return abort(403);
+    }
     // Get all comments (including replies)
     public function index(Request $request, $place_code)
     {
@@ -61,5 +98,20 @@ class CommentController extends Controller
         ]);
 
         return response()->json($comment, 201);
+    }
+
+    public function delete($id){
+        if(!Auth::user()->hasRole('superadmin')){
+            return abort(403);
+        }
+
+        $comment = Comment::find($id);
+
+        $comment->delete();
+
+        return response()->json([
+            'success' => 'Comment deleted successfully !'
+        ]);
+
     }
 }

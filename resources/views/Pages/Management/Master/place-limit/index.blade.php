@@ -10,6 +10,11 @@
         <!-- Page Heading -->
         <h1 class="h3 text-gray-800 font-weight-bold m-2">Management Place Limit</h1>
         <a class="btn btn-success m-2" href="{{route('place-limit.create')}}">Add Place Limit</a>
+        @if (session()->has('success'))
+        <div class="alert alert-success">
+            {{ session()->get('success') }}
+        </div>
+         @endif
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -73,32 +78,65 @@
                     ],
                 });
 
-                $(document).on('click', '.detailPlaceButton', function(e) {
+                $(document).on('click', '.delete', function(e) {
                     e.preventDefault();
-                    $('#detailPlaceModal').modal('show');
                     var id = $(this).attr('id');
-                    $.ajax({
-                        type: "GET",
-                        url: "/management/master/get-detail-data/" + id,
-                        dataType: "json",
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            console.log(response);
-                            $('#detailTitle').val(response.data.title);
-                            $('#description').val(response.data.description);
-                            $('#created_by').val(response.data.creator_id.email);
-                            $('#updated_at').val(response.data.updated_at);
-                            $('#created_at').val(response.data.created_at);
-                            $('#total_event').val(response.total_event);
 
+                    Swal.fire({
+                        customClass: {
+                            confirmButton: "btn btn-success",
+                            cancelButton: "btn btn-danger"
                         },
-                        error: function(err) {
-                           console.log(err);
+                        title: "Are you sure?",
+                        text: "Delete this limit will removed all user connected with this",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel!",
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                type: "DELETE",
+                                url: "/management/master/place-limit/" + id + "/delete",
+                                dataType: "json",
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                success: function(response) {
+                                    console.log(response.message);
+                                    if (response.success) {
+                                        Swal.fire({
+                                            title: response.success,
+                                            text: response.success,
+                                            icon: 'success',
+                                            confirmButtonText: 'OK'
+                                        });
+                                        $('#dataTablePlace').DataTable().ajax.reload();
+                                    } else if (response.errors) {
+                                        Swal.fire({
+                                            title: response.errors,
+                                            text: response.errors,
+                                            icon: 'error',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+
+
+                                },
+                                error: function(err) {
+                                    // Swal.fire({
+                                    //     title: 'User Not Found !',
+                                    //     icon: 'error',
+                                    //     confirmButtonText: 'OK'
+                                    // });
+                                    console.log(err);
+                                }
+                            });
                         }
-
                     });
+
+
                 });
 
             });

@@ -22,11 +22,15 @@
             </div>
             <div class="card-body">
                 {{-- Create Place Form --}}
-                <form action="{{ route('place-limit.store') }}" method="POST">
+                @if(isset($data))
+                    <form action="{{ route('place-limit.update', $data->id) }}" method="POST">
+                @else
+                    <form action="{{ route('place-limit.store') }}" method="POST">
+                @endif
                     @csrf
                     <div class="mb-3">
                         <label class="form-label" for="title">Title/Name</label>
-                        <input class="form-control" name="name" type="text" id="title"
+                        <input class="form-control" value="{{$data->name ?? ''}}" name="name" type="text" id="title"
                             placeholder="Place Title...">
                         @error('name')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -36,14 +40,18 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="total_limit">Total Limit</label>
-                        <input class="form-control" name="total_limit" type="number" id="total_limit"
+                        <input class="form-control" value="{{$data->total_limit ?? ''}}" name="total_limit" type="number" id="total_limit"
                             placeholder="Place Description...">
                         @error('total_limit')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
                     </div>
                   
-                    <button type="submit" class="btn btn-success btn-md">Create Place Limit</button>
+                    @if(isset($data))
+                        <button type="submit" class="btn btn-success btn-md">Update data</button>
+                    @else
+                        <button type="submit" class="btn btn-success btn-md">Create Place Limit</button>
+                    @endif
                 </form>
             </div>
         </div>

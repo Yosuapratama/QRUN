@@ -11,6 +11,7 @@ class PlaceLimit extends Model
     use HasFactory, SoftDeletes;
 
     public $table = 'place_limit';
+    
 
     public $guarded = ['id'];
 

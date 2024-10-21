@@ -21,7 +21,7 @@ class Comment extends Model
     // Relationship with the Post model
     public function place()
     {
-        return $this->belongsTo(Place::class);
+        return $this->belongsTo(Place::class, 'place_id', 'id')->select(['id', 'place_code']);
     }
 
     // Recursive relationship for replies

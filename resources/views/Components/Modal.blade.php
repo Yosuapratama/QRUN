@@ -293,3 +293,68 @@
         </div>
     </div>
 </div>
+{{-- Add User has limit modal --}}
+<div class="modal fade" id="addUserhasLimitModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="addUserHasPlaceLimit">
+                <div class="modal-header">
+                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Create User has Place Limit
+                    </h4>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        aria-label="Close">X</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="placeSelectCode" class="form-label">Select User</label>
+                        <select name="user" id="find-user" class="form-select" style="width:100%"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="placeSelectCode" class="form-label">Select Place Limit</label>
+                        <select name="place_limit" id="find_place_limit" class="form-select" style="width:100%"></select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success" >Create</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Edit User has limit modal --}}
+<div class="modal fade" id="editUserhasLimitModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="editUserHasPlaceLimit">
+                <div class="modal-header">
+                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Edit User has Place Limit
+                    </h4>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        aria-label="Close">X</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="placeSelectCode" class="form-label">Select User</label>
+                        <select name="user" id="find-user" class="form-select" style="width:100%"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="placeSelectCode" class="form-label">Select Place Limit</label>
+                        <select name="place_limit" id="find_place_limit" class="form-select" style="width:100%"></select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success" >Create</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
