@@ -50,12 +50,6 @@ Route::group(['prefix' => 'management'], function(){
             });
 
             // This is administrator Menu to Manage Place of all 
-
-            Route::group(['prefix' => 'comments'], function(){
-                Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
-                Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
-            });
-
             Route::prefix('place-limit')->group(function () {
                 Route::get('/', [PlaceLimitController::class, 'index'])->name('place-limit.index');
                 Route::get('/create', [PlaceLimitController::class, 'create'])->name('place-limit.create');
@@ -95,6 +89,11 @@ Route::group(['prefix' => 'management'], function(){
             Route::group(['prefix' => 'event'], function(){
                 Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
+            });
+
+            Route::group(['prefix' => 'comments'], function(){
+                Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
+                Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
             });
         });
         //Create Middleware For User Has Logged In

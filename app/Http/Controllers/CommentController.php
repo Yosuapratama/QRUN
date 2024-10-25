@@ -41,11 +41,40 @@ class CommentController extends Controller
             }
     
 
-            return view('Pages.Management.Master.comments.index');
+            
+        }else{
+            if ($request->ajax()) {
+                $place = Place::select('id')->where('creator_id', Auth::user()->id)->get();
 
+                $data = Comment::whereIn('place_id', $place)->with('user', 'place')->get();
+                
+                return DataTables::of($data)
+                    ->editColumn('updated_at', function ($row) {
+                        return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
+                    })
+                    ->addIndexColumn()
+                    ->addColumn('email', function ($row) {
+                        return $row->user->email;
+                    })
+                    ->addIndexColumn()
+                    ->addColumn('place_code', function ($row) {
+                        $place_code = $row->place->place_code ?? '-';
+                        return "<a target='_blank' href='/detail-place/$place_code'>$place_code</a>";
+                    })
+                    ->addIndexColumn()
+                    ->addColumn('action', function ($row) {
+                        $btn = "<div class='d-flex justify-content-center align-items-center'>";
+                        $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
+                        $btn = $btn . "</div>";
+                        return $btn;
+                    })
+                    ->rawColumns(['action', 'place_code'])
+                    ->make(true);
+            }
         }
 
-        return abort(403);
+        // return abort(403);
+        return view('Pages.Management.Master.comments.index');
     }
     // Get all comments (including replies)
     public function index(Request $request, $place_code)
@@ -101,11 +130,21 @@ class CommentController extends Controller
     }
 
     public function delete($id){
-        if(!Auth::user()->hasRole('superadmin')){
-            return abort(403);
+        $comment = Comment::find($id);
+        if(!$comment){
+            return response()->json([
+                'errors' => 'Data Not Found !'
+            ]);
         }
 
-        $comment = Comment::find($id);
+        if(!Auth::user()->hasRole('superadmin')){
+            $Place = Place::select('id', 'creator_id')->where('id', $comment->place_id)->first();
+            if(!$Place){
+                return response()->json([
+                    'errors' => 'Unauthorized !'
+                ]);
+            }
+        }
 
         $comment->delete();
 
