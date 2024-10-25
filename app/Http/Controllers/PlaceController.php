@@ -238,7 +238,7 @@ class PlaceController extends Controller
         );
 
         if ($request->id) {
-            if(Auth::user()->hasRole('admin')){
+            if(Auth::user()->hasRole('superadmin')){
                 $Place = Place::where('id', $request->id)->first();
             }else{
                 $Place = Place::where('id', $request->id)->where('creator_id', Auth::user()->id)->first();

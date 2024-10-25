@@ -31,7 +31,7 @@
                 $pendingUser = \App\Helpers\SidebarHelper::getPendingUser();
             @endphp
              <div id="collapseTwo"
-                 class="collapse {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') || Route::is('users-limit.index') ? 'show' : '' }}"
+                 class="collapse {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') || Route::is('users-limit.index') || Route::is('pending-verify.index') ? 'show' : '' }}"
                  aria-labelledby="headingTwo" data-parent="#accordionSidebar" style="">
                  <div class="bg-white py-2 collapse-inner rounded">
                      <a class="collapse-item {{ Route::is('users') ? 'active' : '' }}" href="{{ route('users') }}">All
@@ -42,6 +42,8 @@
                          href="{{ route('users.pending') }}">Pending Approved <b style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{$pendingUser}}</b></a>
                      <a class="collapse-item {{ Route::is('users-limit.index') ? 'active' : '' }}"
                          href="{{ route('users-limit.index') }}">Users Limit</a>
+                     <a class="collapse-item {{ Route::is('pending-verify.index') ? 'active' : '' }}"
+                         href="{{ route('pending-verify.index') }}">Pending Verify</a>
                  </div>
              </div>
          </li>

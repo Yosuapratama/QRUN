@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Place extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public $table = 'place';
 
     public $guarded = ['id'];
 
-    public function creator_id(){
+    public function creator_id()
+    {
         return $this->belongsTo(User::class, 'creator_id', 'id')->select('id', 'email');
     }
 

@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminRole = Role::create([
+        Role::create([
             'name' => 'superadmin',
             'guard_name' => 'web'
         ]);
@@ -26,32 +26,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'localadmin',
             'guard_name' => 'web'
         ]);
-        $permissions = [
-            'dashboard',
-            'users.index',
-            'users.create',
-            'users.approve',
-            'users.unapprove',
-            'users.edit',
-            'users.block',
-            'users.unblock',
-            'place.index',
-            'place.edit',
-            'place.delete',
-            'place.print',
-            'event.index',
-            'event.create',
-            'event.edit',
-            'event.delete',
-            'profile.index'
-        ];
-
-        foreach($permissions as $permission){
-            Permission::create([
-                'name' => $permission
-            ]);
-        }
-
+    
         $admin = User::create([
             'name' => 'superadmin',
             'email' => 'superadmin@gmail.com',
@@ -64,17 +39,14 @@ class DatabaseSeeder extends Seeder
 
         $admin->assignRole('superadmin');
 
-        foreach($permissions as $permission){
-            $adminRole->givePermissionTo($permission);
-        }
-
         $local = User::create([
             'name' => 'localadmin',
             'email' => 'local@gmail.com',
             'address' => 'Jl Denpasar',
             'phone' => '08123456789',
             'password' => Hash::make('local'),
-            'approved_at' => Carbon::now()
+            'approved_at' => Carbon::now(),
+            'email_verified_at' => Carbon::now(),
         ]);
 
         $local->assignRole('localadmin');

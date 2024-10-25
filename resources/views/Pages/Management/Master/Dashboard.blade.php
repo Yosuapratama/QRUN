@@ -70,6 +70,24 @@
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Users (Not Verified)</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $data['user_not_verified'] }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card border-left-warning shadow h-100 py-2">
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
@@ -154,6 +172,7 @@
                 <!-- Pending Requests Card Example -->
                 <!-- Earnings (Monthly) Card Example -->
             </div>
+            <canvas id="myChart" width="800" height="400"></canvas>
         @else
             @php
                 $limitUser = \App\Helpers\SidebarHelper::getAmountOfLimitUser();
@@ -167,7 +186,8 @@
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                         Place Total</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $data['place_total'] }}/{{ $data['account_limit'] }}</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{ $data['place_total'] }}/{{ $data['account_limit'] }}</div>
                                 </div>
                                 <div class="col-auto">
                                     <i class="fas fa-map fa-2x text-gray-300"></i>
@@ -227,6 +247,48 @@
 
     </div>
     <!-- /.container-fluid -->
+    @push('script')
+        <script>
+            fetch('/management/master/dashboard/data/chart')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.data);
 
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'line', // jenis chart
+                        data: {
+                            labels: data.data.place_code[0],
+                            datasets: [{
+                                label: 'Highest Views Data (By Place Code)',
+                                data: data.data.no[0],
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true, // Memastikan y-axis mulai dari 0
+                                    min: 0, // Mengatur nilai minimum
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value; // Menampilkan nilai di y-axis
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        autoSkip: false // Menghindari penghilangan label
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+        </script>
+    @endpush
     <!-- End of Main Content -->
 @endsection

@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
 
@@ -57,7 +58,14 @@ class AuthController extends Controller
                 $this->logout($request);
                 return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
             }
-            // Log::info('User login attempt', ['user_id' => Auth::user()->id, 'ip_address' => request()->ip()]);
+            Log::info([
+                'status' => 'User Logged in',
+                'time' => Date::now(),
+                'user_id' => Auth::user()->id,
+                'email' => Auth::user()->email,
+                'ip_address' => request()->ip()
+            ]);
+
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 
@@ -108,6 +116,14 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'remember_token' => Str::random(40)
+        ]);
+
+        Log::info([
+            'status' => 'User Register',
+            'time' => Date::now(),
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'ip_address' => request()->ip()
         ]);
 
         $user->assignRole('localadmin');

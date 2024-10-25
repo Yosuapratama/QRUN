@@ -26,6 +26,8 @@ Route::group(['prefix' => 'management'], function(){
         // This is middleware/restricted access & checking is the user has role superadmin or not 
         Route::middleware(['IsSuperAdmin'])->group(function(){
             // This is administrator Menu to Manage Users of all 
+            Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
+            
             Route::group(['prefix' => 'users'], function(){
                 Route::get('/', [UsersController::class, 'index'])->name('users');
                 Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
@@ -57,6 +59,11 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/{id}/edit', [PlaceLimitController::class, 'edit'])->name('place-limit.edit');
                 Route::post('/{id}/update', [PlaceLimitController::class, 'update'])->name('place-limit.update');
                 Route::delete('/{id}/delete', [PlaceLimitController::class, 'destroy'])->name('place-limit.destroy');
+            });
+            
+            Route::prefix('pending-verify')->group(function(){
+                Route::get('/', [UsersController::class, 'pendingVerify'])->name('pending-verify.index');
+                Route::post('/{id}/verify', [UsersController::class, 'verifyAccountManual'])->name('pending-verify.verify');
             });
 
             Route::group(['prefix' => 'settings'], function(){

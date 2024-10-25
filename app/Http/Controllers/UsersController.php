@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Date;
 
 class UsersController extends Controller
 {
@@ -42,7 +43,7 @@ class UsersController extends Controller
     function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::latest()->get();
+            $data = User::whereNotNull('email_verified_at')->latest()->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -69,9 +70,8 @@ class UsersController extends Controller
 
                         $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                         $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                       
+
                         $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
-                       
                     } else {
                         $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                         $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
@@ -121,9 +121,9 @@ class UsersController extends Controller
 
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                   
+
                     $btn = $btn . "<button id='$row->id' class='unBlockUser btn btn-danger btn-sm mr-1'>Restore</button>";
-                    
+
                     $btn = $btn . "</div>";
                     return $btn;
                 })
@@ -139,7 +139,7 @@ class UsersController extends Controller
     function pendingApproval(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::whereNull('approved_at')->latest()->get();
+            $data = User::whereNull('approved_at')->whereNotNull('email_verified_at')->latest()->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -167,9 +167,9 @@ class UsersController extends Controller
 
                     $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
                     $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
-                  
+
                     $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
-                    
+
                     $btn = $btn . "</div>";
                     return $btn;
                 })
@@ -265,7 +265,7 @@ class UsersController extends Controller
 
         return response()->json([
             'message' => 'Approve Success',
-            'status' => $FindUsers->email . ' has been upgraded to local admin'
+            'status' => $FindUsers->email . ' has approved to use this system'
         ], 200);
     }
 
@@ -404,5 +404,61 @@ class UsersController extends Controller
         $User->update();
 
         return back()->with('success', 'Profile Updated Successfully !');
+    }
+
+    function pendingVerify(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = User::whereNull('email_verified_at')->latest()->get();
+
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('status', function ($row) {
+                    return $row->approved_at ? 'Approved' : 'Pending';
+                })
+                ->rawColumns(['status_acc'])
+                ->addIndexColumn()
+                ->addColumn('status_acc', function ($row) {
+                    return $row->deleted_at ? 'Blocked' : '-';
+                })
+                ->rawColumns(['status_acc'])
+
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = "<div class='d-flex justify-content-center'>";
+                    $btn = $btn . "<button id='$row->id' class='verifyUser btn btn-success btn-sm mr-1'>Verify</button>";
+                    $btn = $btn . "</div>";
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('Pages.Management.Master.manageUsers.pending-verify.index');
+    }
+
+    function verifyAccountManual($id){
+        $User = User::find($id);
+        if(!$User){
+            return response()->json([
+                'errors' => 'Data not found'
+            ]);
+        }
+
+        if($User->email_verified_at){
+            return response()->json([
+                'errors' => 'This account has been verified !'
+            ]);
+        }
+
+        $User->email_verified_at = Date::now();
+        $User->save();
+
+
+        return response()->json([
+            'status' => 'Verify Account Success !',
+            'message' => 'Successfully verified !'
+        ]);
+
     }
 }
