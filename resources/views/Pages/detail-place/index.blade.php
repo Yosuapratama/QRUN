@@ -49,11 +49,13 @@
                     <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
                     <small class="font-weight-bold text-gray-900">Before posting, make sure your comment is clear and does
                         not contain inappropriate language.</small>
+                    <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to terms of service</small></p>
                 </div>
                 <div class="card-body">
                     @if ($place->is_comment)
                         @if (Auth::check())
-                            <form @submit.prevent="addComment">
+                            {{-- <form v-if="!editUserId" @submit.prevent="addComment"> --}}
+                            <form v-if="editUserId" @submit.prevent="updateComment">
                                 <div>
                                     <span v-for="n in 5" :key="n"
                                         :class="['star', { 'fas': n <= selectedRating, 'far': n > selectedRating }]"
@@ -69,10 +71,52 @@
                                     <p>You are replying @{{ userReplying.name }} <button class="btn btn-primary mt-1"
                                             @click="cancelReply">Cancel Reply</button></p>
                                 </div>
+                                <div v-if="editUserId" class="alert alert-primary mt-2">
+                                    <p>You are in editing mode <button class="btn btn-primary mt-1"
+                                            @click="cancelEdit">Cancel Edit</button></p>
+                                </div>
+
+                                {{-- <div class="alert alert-primary" v-if="editUserId">Editing Your Comment</div> --}}
                                 <div
                                     style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
-                                    <input v-model="currentComment" type="text" class="form-control">
-                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px">Post</button>
+                                    <input ref="inputField" v-model="currentComment" type="text" class="form-control">
+                                    <input type="hidden" v-model="currEditId" name="id">
+                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
+                                        v-if="!editUserId">Post</button>
+                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
+                                        v-if="editUserId">Update</button>
+                                </div>
+                            </form>
+                            <form v-if="!editUserId" @submit.prevent="addComment">
+                                <div>
+                                    <span v-for="n in 5" :key="n"
+                                        :class="['star', { 'fas': n <= selectedRating, 'far': n > selectedRating }]"
+                                        @click="setRating(n)" @mouseover="hoverRating(n)" @mouseleave="resetHover">
+                                        <i class="fa fa-star"></i>
+                                    </span>
+                                </div>
+                                <div v-if="selectedRating > 0">
+                                    <p class="mt-2">You have selected @{{ selectedRating }} out of 5 stars!</p>
+                                </div>
+
+                                <div v-if="isReplying" class="alert alert-primary mt-2">
+                                    <p>You are replying @{{ userReplying.name }} <button class="btn btn-primary mt-1"
+                                            @click="cancelReply">Cancel Reply</button></p>
+                                </div>
+                                <div v-if="editUserId" class="alert alert-primary mt-2">
+                                    <p>You are in editing mode <button class="btn btn-primary mt-1"
+                                            @click="cancelEdit">Cancel Edit</button></p>
+                                </div>
+
+                                {{-- <div class="alert alert-primary" v-if="editUserId">Editing Your Comment</div> --}}
+                                <div
+                                    style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
+                                    <input ref="inputField" v-model="currentComment" type="text" class="form-control">
+                                    <input type="hidden" v-model="currEditId" name="id">
+                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
+                                        v-if="!editUserId">Post</button>
+                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
+                                        v-if="editUserId">Update</button>
                                 </div>
                             </form>
                         @else
@@ -96,7 +140,9 @@
 
                                 <button v-if="userId == item.user.id" class="btn btn-danger mt-0"
                                     @click="deleteComments(item.id)">Delete</button>
-                                <button v-if="userId == item.user.id" class="btn btn-primary mt-0"><i class="fa-solid fa-pen"></i></button>
+                                <button v-if="userId == item.user.id" class="btn btn-primary mt-0"
+                                    @click="editComments(item.id, item.comment, item.user)"><i
+                                        class="fa-solid fa-pen"></i></button>
                             @endif
                             <div>
                                 <span style="font-size: 13px;">@@{{ item.user?.name }}</span>
@@ -113,6 +159,9 @@
 
                                     <button v-if="userId == reply.user.id" class="btn btn-danger mt-2"
                                         @click="deleteComments(reply.id)">Delete</button>
+                                    <button v-if="userId == reply.user.id" class="btn btn-primary mt-2"
+                                        @click="editComments(reply.id, reply.comment, reply.user)"><i
+                                            class="fa-solid fa-pen"></i></button>
                                 @endif
 
                                 <div class="card-body alert alert-primary rounded mt-2" v-for="reply2 in reply.replies">
@@ -127,6 +176,9 @@
 
                                         <button v-if="userId == reply2.user.id" class="btn btn-danger mt-2"
                                             @click="deleteComments(reply2.id)">Delete</button>
+                                        <button v-if="userId == reply2.user.id" class="btn btn-primary mt-2"
+                                            @click="editComments(reply2.id, reply2.comment, reply2.user)"><i
+                                                class="fa-solid fa-pen"></i></button>
                                     @endif
 
                                     <div class="card-body bg bg-white rounded mt-2" v-for="reply3 in reply2.replies">
@@ -134,29 +186,36 @@
                                         <div>
                                             <span style="font-size: 13px;">@@{{ reply3?.user?.name }}</span>
                                         </div>
-    
+
                                         @if (Auth::check())
                                             <button class="btn btn-success mt-2"
                                                 @click="setReplyComment(reply3.id, reply3.user)">Reply</button>
-    
+
                                             <button v-if="userId == reply3.user.id" class="btn btn-danger mt-2"
                                                 @click="deleteComments(reply3.id)">Delete</button>
+                                            <button v-if="userId == reply3.user.id" class="btn btn-primary mt-2"
+                                                @click="editComments(reply3.id, reply3.comment, reply3.user)"><i
+                                                    class="fa-solid fa-pen"></i></button>
                                         @endif
-                                        
-                                        <div class="card-body alert alert-primary rounded mt-2" v-for="reply4 in reply3.replies">
+
+                                        <div class="card-body alert alert-primary rounded mt-2"
+                                            v-for="reply4 in reply3.replies">
                                             <p>@{{ reply4.comment }}</p>
                                             <div>
                                                 <span style="font-size: 13px;">@@{{ reply4?.user?.name }}</span>
                                             </div>
-        
+
                                             @if (Auth::check())
                                                 <button class="btn btn-success mt-2"
                                                     @click="setReplyComment(reply4.id, reply4.user)">Reply</button>
-        
+
                                                 <button v-if="userId == reply4.user.id" class="btn btn-danger mt-2"
                                                     @click="deleteComments(reply4.id)">Delete</button>
+                                                <button v-if="userId == reply4.user.id" class="btn btn-primary mt-2"
+                                                    @click="editComments(reply4.id, reply4.comment, reply4.user)"><i
+                                                        class="fa-solid fa-pen"></i></button>
                                             @endif
-        
+
                                         </div>
                                     </div>
                                 </div>
@@ -230,7 +289,9 @@
                     last_page: 0,
                     isReplying: null,
                     userReplying: null,
-                    userId: null
+                    userId: null,
+                    editUserId: null,
+                    currEditId: null
                     // Rating on hover
                 }
             },
@@ -253,6 +314,57 @@
                 fetchNewData() {
                     this.currentPage++;
                     this.getCommentData();
+                },
+                updateComment() {
+                    const data = {
+                        comment_id: this.currEditId,
+                        comment: this.currentComment,
+                        userId: this.userId
+                    }
+
+                    console.log(data);
+
+                    const baseUrl = window.location.href;
+
+                    const res = fetch(`${baseUrl}/comments/update`, {
+                            method: 'POST', // Set the HTTP method to POST
+                            headers: {
+                                'Content-Type': 'application/json', // Tell the server the body is JSON
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content')
+                            },
+                            body: JSON.stringify(data)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.errors) {
+                                swal("Error!", "Invalid Fields !",
+                                    "error")
+                            } else {
+                                swal("Edited!", "Your comment has been edited.", "success");
+                            }
+                            this.isLoadingComment = false;
+                            this.getCommentData();
+                            this.cancelEdit();
+                            this.currentComment = null;
+                            this.isReplying = null;
+                            this.userReplying = null;
+                        })
+                        .catch(error => swal("Error!", "Server Failed to Edit comment !",
+                            "error"));
+
+                },
+                editComments(idComment, comment, userId) {
+                    this.cancelReply();
+                    this.currEditId = idComment;
+                    // console.log(comment);
+                    this.currentComment = comment;
+                    this.editUserId = userId;
+                    this.$refs.inputField.focus();
+                },
+                cancelEdit() {
+                    this.currentComment = '';
+                    this.editUserId = false;
                 },
                 async getCommentData() {
                     this.isLoadingComment = true;
@@ -309,10 +421,13 @@
                 },
                 setReplyComment(id, user) {
                     console.log(id, user);
+                    this.cancelEdit();
+                    this.$refs.inputField.focus();
                     this.isReplying = id;
                     this.userReplying = user;
                 },
                 cancelReply() {
+                    this.currEditId = null;
                     this.isReplying = null;
                     this.userReplying = null;
                 },

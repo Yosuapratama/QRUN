@@ -146,6 +146,7 @@ Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlac
 Route::get('/detail-place/{place_code}/comments', [CommentController::class, 'index'])->name('comments.index');
 Route::post('/detail-place/{place_code}/comments/store', [CommentController::class, 'store'])->name('comments.storeco');
 Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentController::class, 'deleteCommentsByUser'])->middleware('checkLogin');
+Route::post('/detail-place/{place_code}/comments/update', [CommentController::class, 'updateComment'])->middleware('checkLogin');
 
 Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])->name('termsOfService');
 

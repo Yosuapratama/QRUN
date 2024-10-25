@@ -196,4 +196,50 @@ class CommentController extends Controller
         ]);
 
     }
+
+    function updateComment(Request $request, $place_code){
+        $Validator = Validator::make($request->all(), [
+            'comment_id' => 'required',
+            'comment' => 'required',
+            'userId' => 'required'
+        ]);
+        if($Validator->fails()){
+            return response()->json([
+                'errors' => 'Invalid Fields !'
+            ]);
+        }
+
+        $comment = Comment::find($request->comment_id);
+        if(!$comment){
+            return response()->json([
+                'errors' => 'Data Not Found !'
+            ]);
+        }
+
+        $checkIsPlaceValid = Place::where('place_code', $place_code)->first();
+        if(!$checkIsPlaceValid){
+            return response()->json([
+                'errors' => 'Data Not Found !'
+            ]);
+        }
+
+        if(!Auth::user()->hasRole('superadmin')){
+            $Place = Place::select('id', 'creator_id')->where('id', $comment->place_id)->first();
+            if(!$Place){
+                return response()->json([
+                    'errors' => 'Unauthorized !'
+                ]);
+            }
+        }
+
+        $comment->update([
+            'comment' => $request->comment
+        ]);
+
+        return response()->json([
+            'message' => 'Data updated successfully !'
+        ]);
+
+
+    }
 }
