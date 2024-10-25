@@ -94,7 +94,8 @@
                         },
                         {
                             name: 'places.place_code',
-                            data: 'places.place_code'
+                            data: 'places.place_code',
+                            defaultContent: "-"
                         },
 
                         {

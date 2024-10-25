@@ -7,8 +7,10 @@ use App\Models\Event;
 use App\Models\Place;
 use App\Models\User;
 use App\Models\UserHasPlaceLimit;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Comments;
+use stdClass;
 
 class DashboardController extends Controller
 {
@@ -22,6 +24,48 @@ class DashboardController extends Controller
     |  1. /dashboard, Func Name : index, Route Name : dashboard
     |
     */
+
+    function sync(){
+        $data = Place::all();
+        $arrData = [];
+
+        foreach($data as $dt){
+            $datass = new stdClass();
+
+            $datass->place_code = $dt->place_code;
+            $datass->title = $dt->title;
+            $datass->description = $dt->description;
+            $datass->content = $dt->content;
+            $datass->views = 1;
+            $datass->is_comment = 0;
+            $datass->created_at = $dt->created_at;
+            $datass->updated_at = $dt->updated_at;
+            $datass->deleted_at = $dt->is_deleted ? Carbon::now() : null;
+
+            $arrData[] = $datass;
+        }
+
+        $sqlQueries = [];
+
+        foreach ($arrData as $data) {
+            $sqlQueries[] = sprintf(
+                "INSERT INTO place (place_code, title, description, content, views, is_comment, created_at, updated_at, deleted_at) VALUES ('%s', '%s', '%s', '%s', %d, %d, '%s', '%s', %s);",
+                addslashes($data->place_code),
+                addslashes($data->title),
+                addslashes($data->description),
+                addslashes($data->content),
+                $data->views,
+                $data->is_comment,
+                $data->created_at,
+                $data->updated_at,
+                $data->deleted_at ? "'" . $data->deleted_at . "'" : "NULL"
+            );
+        }
+
+        foreach ($sqlQueries as $query) {
+            echo $query . "\n";
+        }
+    }
 
     // (1) This function to show detail of all data in qrun website
     function index()

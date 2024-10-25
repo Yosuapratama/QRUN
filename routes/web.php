@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'redirectToLogin']);
 
+Route::get('/sync', [DashboardController::class, 'sync']);
+
 Route::group(['prefix' => 'management'], function(){
     Route::group(['prefix' => 'master'], function(){
         // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
@@ -27,7 +29,7 @@ Route::group(['prefix' => 'management'], function(){
         Route::middleware(['IsSuperAdmin'])->group(function(){
             // This is administrator Menu to Manage Users of all 
             Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
-            
+
             Route::group(['prefix' => 'users'], function(){
                 Route::get('/', [UsersController::class, 'index'])->name('users');
                 Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
