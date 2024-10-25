@@ -25,4 +25,7 @@ class Event extends Model
     public function place_id(){
         return $this->belongsTo(Place::class, 'place_id', 'id');
     }
+    public function places(){
+        return $this->belongsTo(Place::class, 'place_id', 'id')->select('id', 'title', 'place_code','creator_id');
+    }
 }

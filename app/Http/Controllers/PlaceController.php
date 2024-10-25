@@ -516,7 +516,11 @@ class PlaceController extends Controller
 
     function fetchAll()
     {
-        $placeData = Place::select('id', 'place_code', 'title')->get();
+        if(Auth::user()->hasRole('superadmin')){
+            $placeData = Place::select('id', 'place_code', 'title')->get();
+        }else{
+            $placeData = Place::where('creator_id', Auth::user()->id)->select('id', 'place_code', 'title')->get();
+        }
 
         return response()->json([
             'data' => $placeData

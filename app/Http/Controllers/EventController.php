@@ -32,11 +32,22 @@ class EventController extends Controller
 
     // (1) This detail of index event of admin
     function indexAdmin(Request $request){
-        if ($request->ajax()) {
-        
-            $data = Event::with('place_id')->orderBy('updated_at', 'DESC')->get();
 
-            return Datatables::of($data)
+        if (Auth::user()->hasRole('superadmin')) {
+            $arrData = Event::with('places')->orderBy('updated_at', 'DESC')->get();
+        }else{
+            $arrData = [];
+
+            $data = Event::with('places')->orderBy('updated_at', 'DESC')->get();
+            foreach($data as $dt){
+                if($dt->places->creator_id === Auth::user()->id){
+                    $arrData[] = $dt;
+                }
+            }
+        }
+
+        if ($request->ajax()) {
+            return Datatables::of($arrData)
                 ->editColumn('date', function ($row) {
                     return \Carbon\Carbon::parse($row->date )->format('d-M-Y H:i:s').' Wita';
                 })
@@ -76,14 +87,22 @@ class EventController extends Controller
             ]);
         }
 
-        $Place = Place::select('id')->where('place_code', $request->placeCode)->first();
+        $Place = Place::select('id', 'creator_id')->where('place_code', $request->placeCode)->first();
 
         if(!$Place){
             return response()->json([
                 'errors' => 'Place Code Not Found !'
             ]);
         }
-
+      
+        if(!Auth::user()->hasRole('superadmin')){
+            if($Place->creator_id != Auth::user()->id){
+                return response()->json([
+                    'errors' => 'Unauthorized !'
+                ]);
+            }
+        }
+        
         Event::create([
             'place_id' => $Place->id,
             'title' => $request->title,
@@ -190,8 +209,17 @@ class EventController extends Controller
                 'errors' => 'Invalid Fields !'
             ]);
         }
-
+   
         $Event = Event::find($request->EventId);
+
+        if(!Auth::user()->hasRole('superadmin')){
+            if($Event->places->creator_id != Auth::user()->id){
+                return response()->json([
+                    'errors' => 'Unauthorized !'
+                ]);
+            }
+        }
+
         if(!$Event){
             return response()->json([
                 'errors' => 'Event Not Found !'
@@ -210,13 +238,24 @@ class EventController extends Controller
 
     // (6) This function is used to delete an event by users
     function delete($id){
-        $Event = Event::find($id);
+        $Event = Event::with('places')->find($id);
         if(!$Event){
             return response()->json([
                 'errors' => 'Event Not Found !'
             ]);
         }
-        $Event->delete();
+        if(Auth::user()->hasRole('superadmin')){
+            $Event->delete();
+        }else{
+
+            if($Event->places->creator_id === Auth::user()->id){
+                $Event->delete();
+            }else{
+                return response()->json([
+                    'errors' => 'Unauthorized !'
+                ]);
+            }
+        }
 
         return response()->json([
             'success' => 'Event Delete Success !'

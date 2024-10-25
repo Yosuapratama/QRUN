@@ -93,8 +93,8 @@
                             data: 'description'
                         },
                         {
-                            name: 'place_id.place_code',
-                            data: 'place_id.place_code'
+                            name: 'places.place_code',
+                            data: 'places.place_code'
                         },
 
                         {

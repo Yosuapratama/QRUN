@@ -50,12 +50,6 @@ Route::group(['prefix' => 'management'], function(){
             });
 
             // This is administrator Menu to Manage Place of all 
-           
-
-            Route::group(['prefix' => 'event'], function(){
-                Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
-                Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
-            });
 
             Route::group(['prefix' => 'comments'], function(){
                 Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
@@ -96,6 +90,11 @@ Route::group(['prefix' => 'management'], function(){
                 Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
     
                 Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
+            });
+
+            Route::group(['prefix' => 'event'], function(){
+                Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
+                Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
         });
         //Create Middleware For User Has Logged In
