@@ -222,7 +222,7 @@
                             cancelButton: "btn btn-danger"
                         },
                         title: "Are you sure?",
-                        text: "Delete this Limit",
+                        text: "Delete this Limit will affect to user place !",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: "Yes, delete it!",

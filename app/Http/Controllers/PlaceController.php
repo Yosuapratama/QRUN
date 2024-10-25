@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use App\Models\Place;
 use App\Models\Image;
 use App\Models\Event;
-use DateTime;
+use App\Models\UserHasPlaceLimit;
 use DOMDocument;
 use Illuminate\Support\Facades\Storage;
 
@@ -53,9 +53,13 @@ class PlaceController extends Controller
     // (1) Place Index Menu, on sidenav this menu call ManagePlace
     function index(Request $request)
     {
-        if ($request->ajax()) {
-            $data = Place::select('id', 'views','place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
+        if (Auth::user()->hasRole('superadmin')) {
+            $data = Place::select('id', 'views', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
+        } else {
+            $data = Place::select('id', 'views', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->where('creator_id', Auth::user()->id)->latest()->get();
+        }
 
+        if ($request->ajax()) {
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
                     return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
@@ -80,12 +84,20 @@ class PlaceController extends Controller
                 ->make(true);
         }
 
+
         return view('Pages.Management.Master.place.index');
     }
     // (2) This Func For Superadmin to edit users place
     function editPlace($place_code)
     {
-        $Place = Place::where('place_code', $place_code)->first();
+        if(!Auth::user()->hasRole('superadmin')){
+            $Place = Place::where('place_code', $place_code)->where('creator_id', Auth::user()->id)->first();
+            if(!$Place){
+                return abort(404);
+            }
+        }else{
+            $Place = Place::where('place_code', $place_code)->first();
+        }
         if (!$Place) {
             return back()->withErrors('Place Code Not Found !');
         }
@@ -96,9 +108,13 @@ class PlaceController extends Controller
     // (3) This Func for admin to get all place deleted by admin or a users has blocked by admin
     function indexDeletedPlace(Request $request)
     {
-        if ($request->ajax()) {
+        if (Auth::user()->hasRole('superadmin')) {
             $data = Place::whereNotNull('deleted_at')->withTrashed()->select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
+        } else {
+            $data = Place::whereNotNull('deleted_at')->withTrashed()->select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->where('creator_id', Auth::user()->id)->latest()->get();
+        }
 
+        if ($request->ajax()) {
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {
                     return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s') . ' Wita';
@@ -111,33 +127,44 @@ class PlaceController extends Controller
     // (4) To Show Pages For user to create new posts/place
     function indexCreatePlace()
     {
-        if(Auth::user()->hasRole('superadmin')){
+        if (!Auth::user()->hasRole('superadmin')) {
+            if (Auth::user()->approved_at) {
+                $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
+                if($checkTheLimitOfUserPlace){
+                    if(Place::where('creator_id', Auth::user()->id)->count() <= $checkTheLimitOfUserPlace->placeLimit->total_limit){
+                        return view('Pages.Management.Master.place.form');
+                    }else{
+                        return redirect()->route('dashboard')->withErrors('Your account place has entered the limit !');
+                    }
+                }else{
+                    $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
+    
+                    if ($Place) {
+                        $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
+                        $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
+        
+                        return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
+                    } else {
+                        $Place = null;
+                        $url = '#';
+                        $printUrl = '#';
+                        return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
+                    }
+                }
+            }else {
+                return back()->withErrors('Your Account Need Approval First !');
+            }   
+
+        }else{
             return view('Pages.Management.Master.place.form');
         }
 
-        if (Auth::user()->approved_at) {
-            $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
-
-            if ($Place) {
-                $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
-                $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
-
-                return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
-            } else {
-                $Place = null;
-                $url = '#';
-                $printUrl = '#';
-                return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
-            }
-        } else {
-            return back()->withErrors('Your Account Need Approval First !');
-        }
-
+        
     }
     // (5) For admin to delete place user, after do this delete, the user can create a new place, like new account approved
     function deletePlace($place_code)
     {
-        $GetPlace = Place::where('place_code', $place_code)->first();
+        $GetPlace = Place::where('place_code', $place_code)->with('creator_id')->first();
 
         if (!Auth::user()->hasRole('superadmin')) {
             if ($GetPlace->creator_id !== Auth::user()->id) {
@@ -145,11 +172,20 @@ class PlaceController extends Controller
                     'errors' => 'You dont have access to this !'
                 ]);
             }
+
+            $GetPlace->delete();
+            
+            $commentData = Comment::where('place_id', $GetPlace->id)->get();
+
+            foreach ($commentData as $key => $comment) {
+                $commentData[$key]->delete();
+            }
+
         } else {
             $GetPlace->delete();
             $commentData = Comment::where('place_id', $GetPlace->id)->get();
 
-            foreach($commentData as $key => $comment){
+            foreach ($commentData as $key => $comment) {
                 $commentData[$key]->delete();
             }
         }
@@ -202,7 +238,14 @@ class PlaceController extends Controller
         );
 
         if ($request->id) {
-            $Place = Place::where('id', $request->id)->first();
+            if(Auth::user()->hasRole('admin')){
+                $Place = Place::where('id', $request->id)->first();
+            }else{
+                $Place = Place::where('id', $request->id)->where('creator_id', Auth::user()->id)->first();
+                if(!$Place){
+                    return abort(404);
+                }
+            }
         } else {
             $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
         }
@@ -216,7 +259,7 @@ class PlaceController extends Controller
         //         if (Storage::disk('public')->exists($updatedImages)) {
         //             Storage::disk('public')->delete($updatedImages);
         //         }
-                
+
         //         $GetCurrentImage[$key]->delete();
         //     }
         // }
@@ -234,33 +277,33 @@ class PlaceController extends Controller
         if ($images) {
             foreach ($images as $key => $img) {
                 $data = $img->getAttribute('src');
-        
+
                 if (strpos($data, 'data') !== false) {
                     list($type, $data) = array_pad(explode(';', $data), 2, null);
                     list(, $data) = array_pad(explode(',', $data), 2, null);
                     $dataConvert = base64_decode($data);
-        
+
                     $str = $img->getAttribute('src');
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
-        
+
                     // Generate a unique image name
                     $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
-        
-                    
+
+
                     // Define the path for storing the image
                     $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
-        
+
                     // Store the file using the Storage facade
                     Storage::put($path, $dataConvert);
-        
+
                     // Generate the public URL for the image
                     $publicUrl = Storage::url($path);
-        
+
                     // Remove the src attribute and set the new src
                     $img->removeAttribute('src');
                     $img->setAttribute('src', $publicUrl);
-        
+
                     // Store the public URL in the array
                     $imageData[] = $publicUrl;
                 }
@@ -276,7 +319,7 @@ class PlaceController extends Controller
         $Place->is_comment = $request->AllowComment == 'on' ? 1 : 0;
         $Place->update();
 
-       
+
         foreach ($imageData as $img) {
             Image::create([
                 'description' => '-',
@@ -294,6 +337,19 @@ class PlaceController extends Controller
         // Check Authentication
         if (!Auth::user()->approved_at) {
             return back()->withErrors('Your Account Need Approval First !');
+        }
+        if(!Auth::user()->hasRole('superadmin')){
+            $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
+            if($checkTheLimitOfUserPlace){
+                if(Place::where('creator_id', Auth::user()->id)->count() >= $checkTheLimitOfUserPlace->placeLimit->total_limit){
+                    return back()->withErrors('Your account place has entered the limit !');
+                }
+            }else{
+                $Place = Place::where('creator_id', Auth::user()->id)->first();
+                if($Place){
+                    return back()->withErrors('You have created place !');
+                }
+            }
         }
 
         $Validate = $request->validate([
@@ -382,7 +438,7 @@ class PlaceController extends Controller
     }
     // (9) This function is to get JsonFileData From Place selected
     function getDetailPlaceData($place_code)
-    {   
+    {
         $Place = Place::with('creator_id')->where('place_code', $place_code)->first();
 
         if (!$Place) {
@@ -458,8 +514,9 @@ class PlaceController extends Controller
         return view('Pages.Management.Master.print-barcode.index', compact('place', 'printUrl'));
     }
 
-    function fetchAll(){
-        $placeData = Place::select('id','place_code', 'title')->get();
+    function fetchAll()
+    {
+        $placeData = Place::select('id', 'place_code', 'title')->get();
 
         return response()->json([
             'data' => $placeData

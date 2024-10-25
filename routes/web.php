@@ -22,6 +22,7 @@ Route::group(['prefix' => 'management'], function(){
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
 
+    
         // This is middleware/restricted access & checking is the user has role superadmin or not 
         Route::middleware(['IsSuperAdmin'])->group(function(){
             // This is administrator Menu to Manage Users of all 
@@ -49,15 +50,7 @@ Route::group(['prefix' => 'management'], function(){
             });
 
             // This is administrator Menu to Manage Place of all 
-            Route::group(['prefix' => 'place'], function(){
-                Route::get('/', [PlaceController::class, 'index'])->name('place');
-                Route::get('/edit/{place_code}', [PlaceController::class, 'editPlace'])->name('place.edit');
-                Route::get('/deleted-place', [PlaceController::class, 'indexDeletedPlace'])->name('place.getDeleted');
-                Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
-                Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
-
-                Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
-            });
+           
 
             Route::group(['prefix' => 'event'], function(){
                 Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
@@ -94,6 +87,17 @@ Route::group(['prefix' => 'management'], function(){
             });
         });
         
+        Route::middleware(['checkUserLimitPermissions'])->group(function(){
+            Route::group(['prefix' => 'place'], function(){
+                Route::get('/', [PlaceController::class, 'index'])->name('place');
+                Route::get('/edit/{place_code}', [PlaceController::class, 'editPlace'])->name('place.edit');
+                Route::get('/deleted-place', [PlaceController::class, 'indexDeletedPlace'])->name('place.getDeleted');
+                Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
+                Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
+    
+                Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
+            });
+        });
         //Create Middleware For User Has Logged In
         Route::middleware(['checkLogin'])->group(function(){
             Route::get('/print-barcode/{placeCode}', [PlaceController::class, 'print'])->name('place.print');
@@ -116,6 +120,7 @@ Route::group(['prefix' => 'management'], function(){
 
           
         });
+
     });
 
 });

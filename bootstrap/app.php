@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'checkLogin' => \App\Http\Middleware\checkLogin::class,
+            'checkUserLimitPermissions' => \App\Http\Middleware\checkUserLimitPermissions::class,
             'IsSuperAdmin' => \App\Http\Middleware\IsSuperAdmin::class,
         ]);
     })

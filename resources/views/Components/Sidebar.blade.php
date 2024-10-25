@@ -127,16 +127,16 @@
 
          @if ($limitUser > 1)
              <li
-                 class="nav-item">
+                 class="nav-item {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') ? 'active' : '' }}">
                  <a class="nav-link collapsed" href="#" data-toggle="collapse"
                      data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
                      <i class="fas fa-fw fa-map"></i>
                      <span>Manage Place</span>
                  </a>
                  <div id="collapseUtilities"
-                     class="collapse"
+                     class="collapse {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') ? 'show' : '' }}"
                      aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-                     <div class="bg-white py-2 collapse-inner rounded">
+                     <div class="bg-white py-2 collapse-inner rounded ">
                          <a class="collapse-item {{ Route::is('place') ? 'active' : '' }}"
                              href="{{ route('place') }}">Manage
                              Place</a>
@@ -147,18 +147,17 @@
                      </div>
                  </div>
              </li>
-             <li class="nav-item">
-                <a class="nav-link collapsed {{ Route::is('myevent.users') ? 'active' : '' }}" href="#"
-                    data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
-                    aria-controls="collapsePages">
+             <li class="nav-item {{ Route::is('event') ? 'active' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
                     <span>Manage Event</span>
                 </a>
-                <div id="collapsePages" class="collapse {{ Route::is('myevent.users') ? 'show' : '' }}"
+                <div id="collapsePages" class="collapse {{ Route::is('event') ? 'show' : '' }}"
                     aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item {{ Route::is('myevent.users') ? 'active' : '' }}"
-                            href="{{ route('myevent.users') }}">Manage Event</a>
+                        <a class="collapse-item {{ Route::is('event') ? 'active' : '' }}"
+                            href="{{ route('event') }}">Manage Event</a>
                     </div>
                 </div>
             </li>
