@@ -91,10 +91,7 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
 
-            Route::group(['prefix' => 'comments'], function(){
-                Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
-                Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
-            });
+           
         });
         //Create Middleware For User Has Logged In
         Route::middleware(['checkLogin'])->group(function(){
@@ -116,6 +113,10 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/delete/{id}', [EventController::class, 'delete'])->name('myevent.delete');
             });
 
+            Route::group(['prefix' => 'comments'], function(){
+                Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
+                Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
+            });
           
         });
 

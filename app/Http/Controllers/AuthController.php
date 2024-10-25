@@ -143,7 +143,6 @@ class AuthController extends Controller
 
     public function verifyMail(EmailVerificationRequest $request){
         $request->fulfill();
- 
         return redirect()->route('dashboard')->with('success', 'Your email has been verified');
     }
     public function forgotPassword(){

@@ -36,12 +36,22 @@ class DashboardController extends Controller
                 'account_limit' =>  'Unlimited'
             ];
         }else{
-            $place = Place::select('id')->where('creator_id', Auth::user()->id)->latest()->first();
-            $event = $place ? Event::where('place_id', $place->id)->count() : 0;
+            // $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
+            // if($checkTheLimitOfUserPlace){
+            //     if($checkTheLimitOfUserPlace->placeLimit->total_limit > 1){
+                   
+            //     }else{
+                    
+            //     }
+            // }
+
+            $place = Place::select('id')->where('creator_id', Auth::user()->id)->get();
+            $event = $place ? Event::whereIn('place_id', $place)->count() : 0;
            
             // Get All place created by user
             $placeData = Place::where('creator_id', Auth::user()->id)->get()->pluck('id');
             $comments = Comment::whereIn('place_id', $placeData)->count();
+            
             $data = [
                 'event_count' => $event,
                 'place_total' => Place::where('creator_id', Auth::user()->id)->count(),

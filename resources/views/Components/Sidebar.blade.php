@@ -197,6 +197,20 @@
                     </div>
                 </div>
             </li>
+            <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-envelope fa-fw"></i>
+                    <span>Manage Comments</span>
+                </a>
+                <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
+                    aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <a class="collapse-item {{ Route::is('comments.admin') ? 'active' : '' }}"
+                            href="{{ route('comments.admin') }}">Manage Comments</a>
+                    </div>
+                </div>
+            </li>
          @endif
         
      @endif

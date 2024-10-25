@@ -42,7 +42,7 @@ class CommentController extends Controller
     
 
             
-        }else{
+        }else {
             if ($request->ajax()) {
                 $place = Place::select('id')->where('creator_id', Auth::user()->id)->get();
 
@@ -123,7 +123,7 @@ class CommentController extends Controller
             'rating' => $request->rating,
             'comment' => $request->comment,
             'place_id' => $request->place_id,
-            'parent_id' => $request->parent_id ? $request->parent_id : null, // Link to the parent comment
+            'parent_id' => $request->parent_id ? $request->parent_id : null, 
         ]);
 
         return response()->json($comment, 201);
