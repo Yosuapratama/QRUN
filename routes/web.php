@@ -126,11 +126,11 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
                 Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
             });
-          
+            
         });
-
+        
     });
-
+    
 });
 
 // This is for public user when the user wan't to Login/Register
@@ -145,6 +145,7 @@ Route::group(['prefix' => 'auth'], function(){
 Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detail');
 Route::get('/detail-place/{place_code}/comments', [CommentController::class, 'index'])->name('comments.index');
 Route::post('/detail-place/{place_code}/comments/store', [CommentController::class, 'store'])->name('comments.storeco');
+Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentController::class, 'deleteCommentsByUser'])->middleware('checkLogin');
 
 Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])->name('termsOfService');
 

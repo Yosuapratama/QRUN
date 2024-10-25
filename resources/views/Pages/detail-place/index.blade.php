@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid overflow-x-hidden">
         <div id="app">
-           
+
             <!-- Page Heading -->
             <h1 class="h3 text-gray-900 font-weight-bold m-2">DETAIL PLACE</h1>
             <!-- DataTales Example -->
@@ -43,7 +43,7 @@
                     </div>
                 @endif
             </div>
-            
+
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
@@ -66,7 +66,8 @@
                                 </div>
 
                                 <div v-if="isReplying" class="alert alert-primary mt-2">
-                                    <p>You are replying @{{userReplying.name}} <button class="btn btn-primary mt-1" @click="cancelReply">Cancel Reply</button></p>
+                                    <p>You are replying @{{ userReplying.name }} <button class="btn btn-primary mt-1"
+                                            @click="cancelReply">Cancel Reply</button></p>
                                 </div>
                                 <div
                                     style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
@@ -90,9 +91,12 @@
                             </span>
                             <p style="font-size: 16px;">@{{ item.comment }}</p>
                             @if (Auth::check())
-                                <button class="btn btn-success mt-0" @click="setReplyComment(item.id, item.user)">Reply</button>
+                                <button class="btn btn-success mt-0"
+                                    @click="setReplyComment(item.id, item.user)">Reply</button>
 
-                                <button v-if="userId == item.user.id" class="btn btn-danger mt-0" @click="deleteComments(item.id)">Delete</button>
+                                <button v-if="userId == item.user.id" class="btn btn-danger mt-0"
+                                    @click="deleteComments(item.id)">Delete</button>
+                                <button v-if="userId == item.user.id" class="btn btn-primary mt-0"><i class="fa-solid fa-pen"></i></button>
                             @endif
                             <div>
                                 <span style="font-size: 13px;">@@{{ item.user?.name }}</span>
@@ -102,6 +106,59 @@
                                 <p style="font-size: 16px;">@{{ reply.comment }}</p>
                                 <div>
                                     <span style="font-size: 13px;">@@{{ reply.user?.name }}</span>
+                                </div>
+                                @if (Auth::check())
+                                    <button class="btn btn-success mt-2"
+                                        @click="setReplyComment(reply.id, reply.user)">Reply</button>
+
+                                    <button v-if="userId == reply.user.id" class="btn btn-danger mt-2"
+                                        @click="deleteComments(reply.id)">Delete</button>
+                                @endif
+
+                                <div class="card-body alert alert-primary rounded mt-2" v-for="reply2 in reply.replies">
+                                    <p>@{{ reply2.comment }}</p>
+                                    <div>
+                                        <span style="font-size: 13px;">@@{{ reply2?.user?.name }}</span>
+                                    </div>
+
+                                    @if (Auth::check())
+                                        <button class="btn btn-success mt-2"
+                                            @click="setReplyComment(reply2.id, reply2.user)">Reply</button>
+
+                                        <button v-if="userId == reply2.user.id" class="btn btn-danger mt-2"
+                                            @click="deleteComments(reply2.id)">Delete</button>
+                                    @endif
+
+                                    <div class="card-body bg bg-white rounded mt-2" v-for="reply3 in reply2.replies">
+                                        <p>@{{ reply3.comment }}</p>
+                                        <div>
+                                            <span style="font-size: 13px;">@@{{ reply3?.user?.name }}</span>
+                                        </div>
+    
+                                        @if (Auth::check())
+                                            <button class="btn btn-success mt-2"
+                                                @click="setReplyComment(reply3.id, reply3.user)">Reply</button>
+    
+                                            <button v-if="userId == reply3.user.id" class="btn btn-danger mt-2"
+                                                @click="deleteComments(reply3.id)">Delete</button>
+                                        @endif
+                                        
+                                        <div class="card-body alert alert-primary rounded mt-2" v-for="reply4 in reply3.replies">
+                                            <p>@{{ reply4.comment }}</p>
+                                            <div>
+                                                <span style="font-size: 13px;">@@{{ reply4?.user?.name }}</span>
+                                            </div>
+        
+                                            @if (Auth::check())
+                                                <button class="btn btn-success mt-2"
+                                                    @click="setReplyComment(reply4.id, reply4.user)">Reply</button>
+        
+                                                <button v-if="userId == reply4.user.id" class="btn btn-danger mt-2"
+                                                    @click="deleteComments(reply4.id)">Delete</button>
+                                            @endif
+        
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -156,6 +213,7 @@
 
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
     <script type="text/javascript">
         // Initialize Vue without jQuery
@@ -171,7 +229,7 @@
                     currentComment: null,
                     last_page: 0,
                     isReplying: null,
-                    userReplying:null,
+                    userReplying: null,
                     userId: null
                     // Rating on hover
                 }
@@ -213,6 +271,7 @@
                         .catch(error => console.error('Error fetching comments:', error));
                 },
                 addComment() {
+                    this.isLoadingComment = true;
                     const baseUrl = window.location.href;
 
                     const data = {
@@ -233,23 +292,79 @@
                         })
                         .then(response => response.json())
                         .then(data => {
+                            if (data.errors) {
+                                swal("Error!", "Invalid Fields !",
+                                    "error")
+                            } else {
+                                swal("Added!", "Your comment has been added.", "success");
+                            }
+                            this.isLoadingComment = false;
                             this.getCommentData();
                             this.currentComment = null;
                             this.isReplying = null;
                             this.userReplying = null;
                         })
-                        .catch(error => console.error('Error fetching comments:', error));
+                        .catch(error => swal("Error!", "Server Failed to add comment !",
+                            "error"));
                 },
-                setReplyComment(id, user){
+                setReplyComment(id, user) {
+                    console.log(id, user);
                     this.isReplying = id;
                     this.userReplying = user;
                 },
-                cancelReply(){
+                cancelReply() {
                     this.isReplying = null;
                     this.userReplying = null;
                 },
-                deleteComments(commentId){
-                    alert('deleted !');
+                deleteComments(commentId) {
+                    console.log(commentId);
+                    swal({
+                            title: "Are you sure?",
+                            text: "Once deleted, you will not be able to recover this comment!",
+                            icon: "warning",
+                            buttons: true,
+                            dangerMode: true,
+                        })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                this.isLoadingComment = true;
+                                const baseUrl = window.location.href;
+
+                                const res = fetch(`${baseUrl}/comments/${commentId}/delete`, {
+                                        method: 'POST', // Set the HTTP method to POST
+                                        headers: {
+                                            'Content-Type': 'application/json', // Tell the server the body is JSON
+                                            'X-CSRF-TOKEN': document.querySelector(
+                                                'meta[name="csrf-token"]').getAttribute('content')
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        this.isLoadingComment = false;
+                                        this.getCommentData();
+                                        this.currentComment = null;
+                                        this.isReplying = null;
+                                        this.userReplying = null;
+
+                                        // Show success message
+                                        swal("Deleted!", "Your comment has been deleted.", "success");
+                                    })
+                                    .catch(error => {
+                                        this.isLoadingComment = false;
+                                        console.error('Error fetching comments:', error);
+                                        swal("Error!", "There was a problem deleting your comment.",
+                                            "error");
+                                    });
+                            } else {
+                                // If the user canceled, show a message
+                                swal("Your comment is safe!");
+                            }
+                        });
                 }
             },
             mounted() {

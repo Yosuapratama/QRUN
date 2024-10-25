@@ -12,6 +12,8 @@ class Comment extends Model
 
     protected $fillable = ['user_id', 'rating','comment', 'place_id', 'parent_id'];
 
+    public $with = ['replies', 'user'];
+
     // Relationship with the User model
     public function user()
     {

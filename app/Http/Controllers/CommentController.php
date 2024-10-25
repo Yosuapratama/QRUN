@@ -20,6 +20,9 @@ class CommentController extends Controller
                     ->editColumn('updated_at', function ($row) {
                         return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
                     })
+                    ->editColumn('rating', function ($row) {
+                        return $row->rating > 0 ? $row->rating : '-'; 
+                    })
                     ->addIndexColumn()
                     ->addColumn('email', function ($row) {
                         return $row->user->email;
@@ -52,6 +55,9 @@ class CommentController extends Controller
                     ->editColumn('updated_at', function ($row) {
                         return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
                     })
+                    ->editColumn('rating', function ($row) {
+                        return $row->rating > 0 ? $row->rating : '-'; 
+                    })
                     ->addIndexColumn()
                     ->addColumn('email', function ($row) {
                         return $row->user->email;
@@ -81,9 +87,14 @@ class CommentController extends Controller
     {
         if($request->type == 'api'){
             return response()->json([
-                'data' => Comment::where('place_id', Place::where('place_code', $place_code)->first()->id)->with('user', 'replies.user')->whereNull('parent_id')->latest()->paginate(5),
+                'data' => Comment::with(['user', 'replies.user'])
+                ->where('place_id', Place::where('place_code', $place_code)->first()->id)
+                ->whereNull('parent_id')
+                ->latest()
+                ->paginate(5),
                 'uid' => Auth::check() ? Auth::user()->id : null
             ]);
+
         }
     }
 
@@ -132,6 +143,38 @@ class CommentController extends Controller
     public function delete($id){
         $comment = Comment::find($id);
         if(!$comment){
+            return response()->json([
+                'errors' => 'Data Not Found !'
+            ]);
+        }
+
+        if(!Auth::user()->hasRole('superadmin')){
+            $Place = Place::select('id', 'creator_id')->where('id', $comment->place_id)->first();
+            if(!$Place){
+                return response()->json([
+                    'errors' => 'Unauthorized !'
+                ]);
+            }
+        }
+
+        $comment->delete();
+
+        return response()->json([
+            'success' => 'Comment deleted successfully !'
+        ]);
+
+    }
+
+    function deleteCommentsByUser($place_code, $comment_id){
+        $comment = Comment::find($comment_id);
+        if(!$comment){
+            return response()->json([
+                'errors' => 'Data Not Found !'
+            ]);
+        }
+
+        $checkIsPlaceValid = Place::where('place_code', $place_code)->first();
+        if(!$checkIsPlaceValid){
             return response()->json([
                 'errors' => 'Data Not Found !'
             ]);
