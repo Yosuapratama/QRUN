@@ -194,6 +194,9 @@ class AuthController extends Controller
     }
 
     public function resetPassView(){
+        if(Auth::check()){
+            Auth::logout();
+        }
         return view('Pages.auth.ResetPassword');
     }
 

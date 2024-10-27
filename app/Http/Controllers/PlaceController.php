@@ -292,7 +292,7 @@ class PlaceController extends Controller
 
 
                     // Define the path for storing the image
-                    $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
+                    $path = "public/UploadImage/PlaceImage/{$Place->id}/" . $image_name;
 
                     // Store the file using the Storage facade
                     Storage::put($path, $dataConvert);

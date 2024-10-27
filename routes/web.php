@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthGoogleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
@@ -132,7 +133,10 @@ Route::group(['prefix' => 'management'], function(){
     });
     
 });
-
+                
+// This Auth google
+Route::get('/auth/google', [AuthGoogleController::class, 'authGoogle'])->name('authGoogle');
+Route::get('/auth/google/callback', [AuthGoogleController::class, 'googleCallback'])->name('callbackUrl');
 // This is for public user when the user wan't to Login/Register
 Route::group(['prefix' => 'auth'], function(){
     Route::get('/login', [AuthController::class, 'viewLogin'])->name('login');

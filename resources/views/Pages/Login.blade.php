@@ -82,7 +82,7 @@
                                         {{-- <hr> --}}
                                         <p class="mt-3 text-center">OR</p>
                                         <a style="border: 1px solid black"
-                                            class="btn btn-user btn-block border-1 rounded-md">
+                                            class="btn btn-user btn-block border-1 rounded-md" href="{{route('authGoogle')}}">
                                             <i class="fa-brands fa-google text-danger mr-2"></i> Login/Register With Google
                                         </a>
 

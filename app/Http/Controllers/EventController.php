@@ -40,8 +40,10 @@ class EventController extends Controller
 
             $data = Event::with('places')->orderBy('updated_at', 'DESC')->get();
             foreach($data as $dt){
-                if($dt->places->creator_id === Auth::user()->id){
-                    $arrData[] = $dt;
+                if($dt->places){
+                    if($dt->places->creator_id === Auth::user()->id){
+                        $arrData[] = $dt;
+                    }
                 }
             }
         }
