@@ -156,7 +156,7 @@
                                         </div>
                                         <div class="form-group d-flex justify-content-center align-items-center">
                                             <input style="height: 25px; width:15%;" type="checkbox" id="agreed" name="agreedTOS">
-                                            <label style="width: 80%; margin-left: 2%" for="agreed">Dengan Ini Saya membaca, memahami, dan menyetujui hal hal yang tercantum pada  <a href="{{route('termsOfService')}}">Terms of Service</a>
+                                            <label style="width: 80%; margin-left: 2%" for="agreed">By registering and using our system, you agree to our <a href="{{route('privacyPolicy')}}">Privacy Policy</a> and <a href="{{route('termsOfService')}}">Terms of Service</a>.        
                                             </label>
                                         </div>
 

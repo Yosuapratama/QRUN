@@ -153,6 +153,7 @@ Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentCo
 Route::post('/detail-place/{place_code}/comments/update', [CommentController::class, 'updateComment'])->middleware('checkLogin');
 
 Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])->name('termsOfService');
+Route::get('/privacy-policy', [DashboardController::class, 'privacyPolicy'])->name('privacyPolicy');
 
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyMail'])->middleware(['auth', 'signed'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'resendMailVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');
