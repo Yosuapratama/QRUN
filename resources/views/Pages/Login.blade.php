@@ -41,7 +41,7 @@
                                     <form method="POST" action="{{ route('login.store') }}">
                                         @csrf
                                         @if ($errors->any())
-                                            <div class="bg bg-danger rounded p-2">
+                                            <div class="alert alert-danger rounded p-2">
                                                 @foreach ($errors->all() as $error)
                                                     <p class="text-white m-2">{{ $error }}</p>
                                                 @endforeach

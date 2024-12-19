@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Place;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -146,9 +147,21 @@ class AuthController extends Controller
     }
 
     // (6) Redirect Login Function
-    function redirectToLogin()
+    function redirectToLogin(Request $request)
     {
-        return redirect()->route('login');
+        $query = $request->input('search');
+        if($query){
+            $data = Place::when($query, function($queryBuilder) use ($query) {
+                return $queryBuilder->where('title', 'LIKE', "%{$query}%")
+                                    ->orWhere('description', 'LIKE', "%{$query}%");
+            })->paginate(10);
+        }else{
+            $data = Place::orderBy('views', 'DESC')->paginate(5);
+        }
+
+        return view('Pages.Index', [
+            'data' => $data
+        ]);
     }
 
     public function resendMailVerification(Request $request){

@@ -125,12 +125,17 @@
     @push('script')
         <script>
             //Setup SummerNote (Content Textarea Box)
+            // $(document).ready(function() {
+            //     $('#summernote').summernote({
+            //         tabsize: 2,
+            //         height: 300
+            //     });
+            // });
+
             $(document).ready(function() {
-                $('#summernote').summernote({
-                    tabsize: 2,
-                    height: 300
-                });
+                $('#summernote').summernote();
             });
+ 
         </script>
     @endpush
     <!-- End of Main Content -->

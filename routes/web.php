@@ -15,9 +15,14 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthController::class, 'redirectToLogin']);
+// Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
 
-Route::get('/sync', [DashboardController::class, 'sync']);
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+
+// Route::get('/sync', [DashboardController::class, 'sync']);
 
 Route::group(['prefix' => 'management'], function(){
     Route::group(['prefix' => 'master'], function(){

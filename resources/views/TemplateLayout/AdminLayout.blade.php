@@ -129,8 +129,19 @@
     <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
 
     {{-- SummerNote Import --}}
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    {{-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet"> --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script> --}}
+
+    {{-- <link src="{{asset('summernote-0.9.0-dist/summernote.min.css')}}"> --}}
+      {{-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet"> --}}
+      
+      {{-- <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+      <script src="{{asset('summernote-0.9.0-dist/summernote.js')}}"></script> --}}
+
+    {{-- <link href="{{asset('summernote-0.9.0-dist/summernote-bs5.css')}}" rel="stylesheet"> --}}
+    <script src="{{asset('summernote-0.9.0-dist/summernote-bs5.js')}}"></script>
+
+      {{-- <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script> --}}
 
     {{-- Import SweetAlert Notification --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
