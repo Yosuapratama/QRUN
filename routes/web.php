@@ -87,6 +87,8 @@ Route::group(['prefix' => 'management'], function(){
                 })->name('artisan.queue');
 
             });
+
+            Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds' ])->name('upload.ads');
         });
         
         Route::middleware(['checkUserLimitPermissions'])->group(function(){

@@ -35,6 +35,6 @@ class SettingsController extends Controller
             'time' => $request->time_ads
         ]);
 
-        return back()->with('success', 'Data SuccesFully Saved !');
+        return redirect()->back()->with('success', 'Data SuccesFully Saved !');
     }
 }

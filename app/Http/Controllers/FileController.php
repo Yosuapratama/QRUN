@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomAdsSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -55,5 +56,39 @@ class FileController extends Controller
                 
         return response()->json(['error' => 'No file uploaded'], 200);
 
+    }
+
+    function uploadImageAds(Request $request){
+        
+        $rules = [
+            'pdf' => 'mimes:png,jpg,jpeg,gif|max:10240', // Limit to 10MB
+        ];
+    
+        // Create a validator instance
+        $validator = Validator::make($request->all(), $rules);
+
+        // create db entry
+        $customAds = CustomAdsSettings::first();
+        
+
+        // get dropzone image
+        if ($request->file('file')) {
+            $file = $request->file('file');
+            $filename = time().'_'.$file->getClientOriginalName();
+
+            $path = "image_ads/" . time() . '_' . $file->getClientOriginalName();
+        
+            // Define the directory where you want to store the PDF (in the public folder)
+            $publicPath = public_path($path);
+
+            $file->move(dirname($publicPath), basename($publicPath));
+
+            $customAds->update([
+                'image_url' => $path
+            ]);
+        }
+
+        // return the result
+        return response()->json($customAds);
     }
 }
