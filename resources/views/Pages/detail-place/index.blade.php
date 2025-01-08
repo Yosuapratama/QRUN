@@ -12,8 +12,8 @@
     <div class="container-fluid overflow-x-hidden">
         <div id="app">
             @if ($customSettingRunningText->is_active === 1)
-                <marquee direction="left" scrollamount="5"
-                    style="position: fixed; top: 0; left:0; z-index: 10000; color: {{ $customSettingRunningText->text_color }}; background-color: {{ $customSettingRunningText->background_color }}">
+                <marquee direction="left" scrollamount="5" v-if="disabledAfter > 0 || disabledAfter === '0'"
+                    style="position: fixed; top: 0; left:0; z-index: 10000; color: {{ $customSettingRunningText->text_color }}; background-color: {{ $customSettingRunningText->background_color }}; font-size: {{ $customSettingRunningText->font_size }}px !important;">
                     {{ $customSettingRunningText->title }}
                 </marquee>
             @endif
@@ -395,7 +395,8 @@
                     currEditId: null,
                     isLoadingAds: true,
                     timeAds: "{!! $customSettingAds->time !!}",
-                    isAdsActive: "{!! $customSettingAds->is_active !!}"
+                    isAdsActive: "{!! $customSettingAds->is_active !!}",
+                    disabledAfter: "{!! $customSettingRunningText->disabled_after !!}"
                     // Rating on hover
                 }
             },
@@ -409,6 +410,19 @@
                         // If the countdown reaches 0 or below, hide the modal and clear the interval
                         if (this.timeAds <= 0) {
                             this.isLoadingAds = false;
+                            clearInterval(intervalId); // Clear the interval to stop it from running
+                        }
+                    }, 1000); // Run every second
+                },
+                setCountdownRunningText() {
+                    // Set the interval to decrease the time every second
+                    const intervalId = setInterval(() => {
+                        // Decrement the countdown time
+                        this.disabledAfter--;
+
+                        // If the countdown reaches 0 or below, hide the modal and clear the interval
+                        if (this.disabledAfter <= 0) {
+                            // this.isLoadingAds = false;
                             clearInterval(intervalId); // Clear the interval to stop it from running
                         }
                     }, 1000); // Run every second
@@ -626,6 +640,11 @@
                 if (this.isAdsActive === "1") {
                     this.showModal();
                     this.setCountDownModal();
+                }
+
+                // console.log(this.disabledAfter);
+                if(this.disabledAfter > 0){
+                    this.setCountdownRunningText();
                 }
             }
         });

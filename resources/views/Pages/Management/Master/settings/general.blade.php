@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Disabled After</label>
+                        <label class="form-label">Disabled After<span class="text-danger">*</span></label>
                         <input min="0" value="{{ $runningText->disabled_after ?? 11 }}" required type="number"
                             value="" placeholder="Enter in Second..." name="disabled_after" class="form-control">
                     </div>
