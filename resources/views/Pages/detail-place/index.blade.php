@@ -1,25 +1,91 @@
 @extends('TemplateLayout.NormalLayout')
 
 @push('title')
-    <title>{{ $place->title }} | Qrun Website</title>
+    <title>
+        {{ $place->title }} | Qrun Website</title>
     <meta name="description" content="{{ $place->title }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
-
 @endpush
 
 @section('content')
     <div class="container-fluid overflow-x-hidden">
         <div id="app">
+            @if ($customSettingRunningText->is_active === 1)
+                <marquee direction="left" scrollamount="5"
+                    style="position: fixed; top: 0; left:0; z-index: 10000; color: {{ $customSettingRunningText->text_color }}; background-color: {{ $customSettingRunningText->background_color }}">
+                    {{ $customSettingRunningText->title }}
+                </marquee>
+            @endif
+
+            <div class="modal fade" id="addEventModalAdmin" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form id="createUserForm">
+                            <div class="modal-header">
+                                <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">
+                                    {{ $customSettingAds->title }}
+                                </h4>
+                                {{-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">X</button> --}}
+                            </div>
+                            <div class="modal-body">
+                                <div class="centered-main"
+                                    style="width: 100%; display:flex; justify-content:center; align-items:center">
+                                    <img src="{{ asset($customSettingAds->image_url) }}" style="max-width: 90%" alt="">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                                    :disabled="isLoadingAds">
+                                    <div v-if="isLoadingAds" style="font-weight:bold">
+                                        <div v-if="isLoadingAds" class="spinner-border text-primary" role="status"
+                                            style="width: 1.5rem; height: 1.5rem; margin-right:10px;"></div>
+                                        @{{ timeAds }}
+                                    </div>
+                                    <div v-else>
+                                        Close
+                                    </div>
+
+                                </button>
+                                {{-- <button id="submitCreateUser" type="submit" class="btn btn-primary">Save changes</button> --}}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             <!-- Page Heading -->
-            <h1 class="h3 text-gray-900 font-weight-bold m-2">DETAIL PLACE</h1>
+            <h1 class="h3 text-gray-900 font-weight-bold m-2" id="main-site-title-detail">DETAIL PLACE</h1>
+            <div class="d-flex flex-col">
+                <div class="ml-2 d-flex justify-content-center align-items-center" style="margin-top:10px"
+                    id="google_translate_element"></div>
+                <button @click="closeTranslate" class="btn bg-primary ml-2 mb-2"><i
+                        class="fa-solid fa-arrows-rotate text-white"></i></button>
+            </div>
+            <small class="ml-2 mb-2">Translate By Google Translate</small>
             <!-- DataTales Example -->
             <div class="card shadow mb-4" style="overflow-x: scroll">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Title : {{ $place->title }}</h6>
                     <small class="font-weight-bold text-gray-900">{{ $place->description }} | Created At :
-                        {{ $place->created_at }} | <i class="fa-regular fa-eye"></i> {{ $place->views }}</small>
+                        {{ $place->created_at }} | <i class="fa-regular fa-eye"></i> {{ $place->views }}
+
+                        @if (isset($place->phone_num))
+                            |
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                                class="bi bi-telephone" viewBox="0 0 16 16">
+                                <path
+                                    d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"
+                                    style="font-weight: bold;" />
+                            </svg>
+
+                            <a href="tel:{{ $place->phone_num }}">{{ $place->phone_num }}</a>
+                        @endif
+                    </small>
+                    <br>
+                    <small class="font-weight-bold text-gray-900">
+                    </small>
                 </div>
                 <div class="card-body m-2" style="overflow-x: scroll !important;">
                     {!! $place->content !!}
@@ -53,7 +119,8 @@
                     <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
                     <small class="font-weight-bold text-gray-900">Before posting, make sure your comment is clear and does
                         not contain inappropriate language.</small>
-                    <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to terms of service</small></p>
+                    <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to terms
+                            of service</small></p>
                 </div>
                 <div class="card-body">
                     @if ($place->is_comment)
@@ -83,7 +150,8 @@
                                 {{-- <div class="alert alert-primary" v-if="editUserId">Editing Your Comment</div> --}}
                                 <div
                                     style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
-                                    <input ref="inputField" v-model="currentComment" type="text" class="form-control">
+                                    <input ref="inputField" v-model="currentComment" type="text"
+                                        class="form-control">
                                     <input type="hidden" v-model="currEditId" name="id">
                                     <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
                                         v-if="!editUserId">Post</button>
@@ -115,7 +183,8 @@
                                 {{-- <div class="alert alert-primary" v-if="editUserId">Editing Your Comment</div> --}}
                                 <div
                                     style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
-                                    <input ref="inputField" v-model="currentComment" type="text" class="form-control">
+                                    <input ref="inputField" v-model="currentComment" type="text"
+                                        class="form-control">
                                     <input type="hidden" v-model="currEditId" name="id">
                                     <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
                                         v-if="!editUserId">Post</button>
@@ -270,7 +339,35 @@
             background-color: gray;
             cursor: not-allowed;
         }
+
+
+        iframe.note-video-clip {
+            width: 100%;
+        }
+
+        /* #\:2\.container {
+                                display: none !important;
+                            } */
+
+        /* .skiptranslate > #\:2\.container {
+                        display: none !important;
+                    }
+
+                    body {
+                        top: 0px !important;
+                    } */
+
+        /* .skiptranslate > iframe{
+                                       display: none !important;
+                                    } */
     </style>
+    @if ($customSettingRunningText->is_active === 1)
+        <style scoped>
+            #main-site-title-detail {
+                margin-top: 40px !important;
+            }
+        </style>
+    @endif
 @endsection
 
 
@@ -295,11 +392,33 @@
                     userReplying: null,
                     userId: null,
                     editUserId: null,
-                    currEditId: null
+                    currEditId: null,
+                    isLoadingAds: true,
+                    timeAds: "{!! $customSettingAds->time !!}",
+                    isAdsActive: "{!! $customSettingAds->is_active !!}"
                     // Rating on hover
                 }
             },
             methods: {
+                setCountDownModal() {
+                    // Set the interval to decrease the time every second
+                    const intervalId = setInterval(() => {
+                        // Decrement the countdown time
+                        this.timeAds--;
+
+                        // If the countdown reaches 0 or below, hide the modal and clear the interval
+                        if (this.timeAds <= 0) {
+                            this.isLoadingAds = false;
+                            clearInterval(intervalId); // Clear the interval to stop it from running
+                        }
+                    }, 1000); // Run every second
+                },
+                closeTranslate() {
+                    // alert("hei");
+                    document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+                    window.location.reload();
+
+                },
                 setRating(rating) {
                     this.selectedRating = rating;
                 },
@@ -375,8 +494,10 @@
                     // Simulate an async operation, like an API call
                     // Here we're just directly setting the comments
                     const baseUrl = window.location.href;
+                    const cleanUrl = baseUrl.split('#')[0];
 
-                    const res = await fetch(`${baseUrl}/comments?type=api&page=${this.currentPage}`)
+                    // console.log(baseUrl);
+                    const res = await fetch(`${cleanUrl}/comments?type=api&page=${this.currentPage}`)
                         .then(response => response.json())
                         .then(data => {
                             this.comments = data.data.data;
@@ -484,6 +605,15 @@
                                 swal("Your comment is safe!");
                             }
                         });
+                },
+                showModal() {
+                    // Optional: You can also trigger the modal manually with this method
+                    const myModal = new bootstrap.Modal(document.getElementById('addEventModalAdmin'));
+                    myModal.show();
+                },
+                hideModal() {
+                    const myModal = new bootstrap.Modal(document.getElementById('addEventModalAdmin'));
+                    myModal.hide();
                 }
             },
             mounted() {
@@ -491,7 +621,25 @@
                 this.getCommentData().then(() => {
                     // console.log(this.userId); // Logs updated comments
                 });
+
+
+                if (this.isAdsActive === "1") {
+                    this.showModal();
+                    this.setCountDownModal();
+                }
             }
         });
+    </script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en', // Your page language (change 'en' if needed)
+                includedLanguages: 'id,en,es,fr,de,it,ja,zh-CN', // List of languages you want to support
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
     </script>
 @endpush

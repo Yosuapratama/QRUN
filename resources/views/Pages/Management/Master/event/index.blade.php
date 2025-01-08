@@ -79,6 +79,8 @@
                         $('td:eq(0)', row).css('min-width', '200px');
                         $('td:eq(1)', row).css('min-width', '150px');
                         $('td:eq(2)', row).css('min-width', '200px');
+                        $('td:eq(3)', row).css('min-width', '250px');
+                        $('td:eq(4)', row).css('min-width', '100px');
                     },
                     filter: true,
                     processing: true,
@@ -93,8 +95,8 @@
                             data: 'description'
                         },
                         {
-                            name: 'places.place_code',
-                            data: 'places.place_code',
+                            name: 'place_code',
+                            data: 'place_code',
                             defaultContent: "-"
                         },
 

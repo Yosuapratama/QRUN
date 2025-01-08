@@ -56,13 +56,16 @@
                             orderable: true
                         }, {
                             data: 'phone',
-                            name: 'phone'
+                            name: 'phone',
+                            "defaultContent": "-"
                         }, {
                             data: 'email',
-                            name: 'email'
+                            name: 'email',
+                            "defaultContent": "-"
                         }, {
                             data: 'address',
-                            name: 'address'
+                            name: 'address',
+                            "defaultContent": "-"
                         },
                         {
                             data: 'status',

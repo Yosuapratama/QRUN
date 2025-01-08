@@ -21,7 +21,7 @@
      <!-- Nav Item - Charts -->
      @if (Auth::user()->hasRole('superadmin'))
          <li
-             class="nav-item {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') ? 'active' : '' }}">
+             class="nav-item {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') || Route::is('users-limit.index') || Route::is('pending-verify.index') ? 'active' : '' }}">
              <a class="nav-link" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true"
                  aria-controls="collapseTwo">
                  <i class="fas fa-fw fa-users"></i>
@@ -83,7 +83,7 @@
              </div>
          </li>
          {{-- Manage Comment --}}
-         <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
+         <li class="nav-item {{ Route::is('comments.admin') ? 'active' : '' }} ">
              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
                  aria-expanded="true" aria-controls="collapsePages">
                  <i class="fas fa-envelope fa-fw"></i>

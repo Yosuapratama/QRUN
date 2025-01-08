@@ -32,8 +32,8 @@
                 <form action="{{ route('place.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label" for="title">Title</label>
-                        <input class="form-control" name="title" type="text" id="title"
+                        <label class="form-label" for="title">Title<span class="text-danger">*</span></label>
+                        <input required class="form-control" name="title" type="text" id="title"
                             placeholder="Place Title...">
                         @error('title')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -42,15 +42,26 @@
 
 
                     <div class="mb-3">
-                        <label class="form-label" for="description">Description</label>
-                        <input class="form-control" name="description" type="text" id="description"
+                        <label class="form-label" for="description">Description<span class="text-danger">*</span></label>
+                        <input required class="form-control" name="description" type="text" id="description"
                             placeholder="Place Description...">
                         @error('description')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
                     </div>
+
                     <div class="mb-3">
-                        <textarea class="form-control" name="content" id="summernote"></textarea>
+                        <label class="form-label" for="phoneNum">Phone Number</label>
+                        <input class="form-control" name="phone_num" type="number" id="phoneNum"
+                            placeholder="Phone Number References...">
+                        @error('phone_num')
+                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
+                    <div class="mb-3">
+                        <textarea required class="form-control" name="content" id="summernote"></textarea>
                         @error('content')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
@@ -122,7 +133,7 @@
         </style>
     @endpush
 
-    @push('script')
+    {{-- @push('script')
         <script>
             //Setup SummerNote (Content Textarea Box)
             $(document).ready(function() {
@@ -130,6 +141,197 @@
                     tabsize: 2,
                     height: 300
                 });
+            });
+        </script>
+    @endpush --}}
+    @push('script')
+        <script>
+            // $(document).ready(function() {
+            //     $('#summernote').summernote();
+            // });
+
+            $(document).ready(function() {
+                $(document).on('click', '.note-modal .close', function() {
+                    // This will close the Summernote modal (if it's part of the Summernote plugin)
+                    $('.note-modal').modal('hide');
+                });
+
+
+                console.log("Initializing Summernote...");
+
+                // Initialize Summernote
+                $('#summernote').summernote({
+                    height: 300, // Set height of the editor
+                    popover: {
+                        image: [
+                            ['resize', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+                            ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                            ['remove', ['removeMedia']]
+                        ]
+                    },
+                    toolbar: [
+                        ['style'],
+                        ['insert', ['bold', 'underline', 'eraser']],
+                        // ['eraser'], 
+                        ['recentColor'],
+                        ['fontname'],
+                        ['color'],
+                        ['para', ['ul', 'ol', 'paragraph', 'height']],
+                        ['pdfButton'],
+                        ['table'],
+                        ['insert', ['link', 'picture', 'video']],
+                        ['insert', ['fullscreen', 'codeview', 'help']],
+                    ],
+                    buttons: {
+                        eraser: function(context) {
+                            return $('<button />')
+                                .addClass('note-btn btn btn-light btn-sm note-btn-bold')
+                                .html('<i class="note-icon-eraser"/>')
+                                .click(function(event) {
+                                    // Prevent default form submission or page reload
+                                    event.preventDefault();
+
+                                    // Clear formatting (remove bold, underline, etc.)
+                                    context.invoke('removeFormat');
+                                });
+                        },
+                        pdfButton: function(context) {
+                            var ui = $.summernote.ui;
+                            var button = ui.button({
+                                contents: '<i class="fas fa-file-alt text-black" style="font-weight:bold"></i> <span style="font-weight: bold;">PDF</span>',
+                                tooltip: 'Insert PDF',
+                                click: function() {
+                                    console.log("PDF button clicked...");
+                                    // Open file input dialog when button is clicked
+                                    var input = $(
+                                        '<input type="file" accept="application/pdf">');
+                                    input.on('change', function(e) {
+                                        var file = e.target.files[0];
+                                        if (file && file.type === 'application/pdf') {
+                                            var formData = new FormData();
+                                            formData.append('pdf', file);
+                                            Swal.fire({
+                                                title: 'Uploading...',
+                                                text: 'Please wait while the file is being uploaded.',
+                                                showConfirmButton: false,
+                                                allowOutsideClick: false, // Disable closing the alert by clicking outside
+                                                didOpen: () => {
+                                                    Swal
+                                                        .showLoading(); // Display the loading spinner
+                                                }
+                                            });
+
+                                            // Make the file upload request
+                                            $.ajax({
+                                                url: "{{ route('file.upload') }}", // Change this to your server-side upload URL
+                                                type: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': $(
+                                                        'meta[name="csrf-token"]'
+                                                    ).attr('content')
+                                                },
+                                                data: formData,
+                                                contentType: false, // Don't set contentType for FormData
+                                                processData: false, // Don't process data (it's already in FormData format)
+                                                success: function(response) {
+                                                    var data = response;
+                                                    if (data.url) {
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Upload Complete!',
+                                                            text: 'The PDF was successfully uploaded.',
+                                                            showConfirmButton: true
+                                                        });
+
+                                                        // Create the iframe element with the URL of the uploaded PDF
+                                                        var iframe =
+                                                            document
+                                                            .createElement(
+                                                                'iframe');
+                                                        iframe.src = data
+                                                            .url; // URL returned by the server
+                                                        iframe.width =
+                                                            '95%';
+                                                        iframe.height =
+                                                            '400px';
+                                                        iframe.style
+                                                            .border =
+                                                            'none';
+
+                                                        console.log(iframe);
+                                                        // Insert the iframe into Summernote using insertNode
+                                                        $('#summernote')
+                                                            .summernote(
+                                                                'editor.insertNode',
+                                                                iframe);
+
+                                                        // Force Summernote to refresh and re-render the content
+                                                        setTimeout(
+                                                            function() {
+                                                                $('#summernote')
+                                                                    .summernote(
+                                                                        'code',
+                                                                        $(
+                                                                            '#summernote'
+                                                                        )
+                                                                        .summernote(
+                                                                            'code'
+                                                                        )
+                                                                    );
+                                                                $('#summernote')
+                                                                    .focus(); // Focus the editor after insertion
+                                                            }, 100);
+
+                                                        console.log(
+                                                            "Inserted iframe: ",
+                                                            iframe);
+                                                    } else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Upload Failed',
+                                                            text: 'File upload failed: ' +
+                                                                (response
+                                                                    .error ||
+                                                                    'Unknown error'
+                                                                ),
+                                                            showConfirmButton: true
+                                                        });
+                                                        // Swal.close();
+                                                    }
+                                                },
+                                                error: function() {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Upload Failed',
+                                                        text: 'File upload failed: Server is during maintenance',
+                                                        showConfirmButton: true
+                                                    });
+                                                    // Swal.close();
+                                                }
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Upload Failed',
+                                                text: 'File upload failed: Please Upload A Valid PDF',
+                                                showConfirmButton: true
+                                            });
+                                            // Swal.close();
+                                        }
+                                    });
+                                    input.trigger('click');
+                                }
+                            });
+                            return button.render();
+                        }
+
+                    }
+
+                });
+
+
+
+
             });
         </script>
     @endpush

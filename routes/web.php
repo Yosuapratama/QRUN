@@ -7,6 +7,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
 use App\Http\Controllers\SettingsController;
@@ -31,6 +32,7 @@ Route::group(['prefix' => 'management'], function(){
         Route::middleware(['IsSuperAdmin'])->group(function(){
             // This is administrator Menu to Manage Users of all 
             Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
+            Route::get('/dashboard/data/user-growth/chart', [DashboardController::class, 'userGrowth'])->name('chart.userGrowth');
 
             Route::group(['prefix' => 'users'], function(){
                 Route::get('/', [UsersController::class, 'index'])->name('users');
@@ -72,6 +74,7 @@ Route::group(['prefix' => 'management'], function(){
 
             Route::group(['prefix' => 'settings'], function(){
                 Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
+                Route::post('/general/store', [SettingsController::class, 'store'])->name('settings.store');
                 Route::get('/general/artisan/optimize', function(){
                     Artisan::call('optimize');
                     
@@ -129,6 +132,7 @@ Route::group(['prefix' => 'management'], function(){
                 Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
             });
             
+            Route::post('/file/upload', [FileController::class, 'uploadFile'])->name('file.upload');
         });
         
     });

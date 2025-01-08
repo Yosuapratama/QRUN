@@ -57,6 +57,10 @@ class EventController extends Controller
                 ->editColumn('deleted_at', function ($row) {
                     return $row->deleted_at ? 'Deleted' : 'Active'  ;
                 })
+                ->editColumn('place_code', function ($row) {
+                    $place_code = $row->places->place_code ?? '-';
+                    return "<a target='_blank' href='/detail-place/$place_code'>$place_code</a>";
+                })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex justify-content-center'>";
@@ -67,7 +71,7 @@ class EventController extends Controller
                     $btn = $btn."</div>";
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'place_code'])
                 ->make(true);    
         }
 

@@ -173,6 +173,7 @@
                 <!-- Earnings (Monthly) Card Example -->
             </div>
             <canvas id="myChart" width="800" height="400"></canvas>
+            <canvas id="myChart2" style="margin-top: 50px; margin-bottom: 30px" width="800" height="300"></canvas>
         @else
             @php
                 $limitUser = \App\Helpers\SidebarHelper::getAmountOfLimitUser();
@@ -288,6 +289,58 @@
                         }
                     });
                 });
+
+                fetch('/management/master/dashboard/data/user-growth/chart')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+
+        // Prepare labels and data arrays
+        const labels = data.map(item => item.month); // Extract dates for x-axis
+        const userCounts = data.map(item => item.user_count); // Extract user counts for y-axis
+
+        // Find the highest value in the userCounts array
+        const maxUserCount = Math.max(...userCounts);
+
+        // Set the Y-axis max value to the highest user count + 10
+        const yAxisMax = maxUserCount + 10;
+
+        const ctx = document.getElementById('myChart2').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'line', // Chart type
+            data: {
+                labels: labels, // Use the labels array here
+                datasets: [{
+                    label: 'User Growth',
+                    data: userCounts, // Use the userCounts array here
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true, // Ensure the y-axis starts from 0
+                        min: 0, // Set the minimum value for y-axis
+                        max: yAxisMax, // Set the maximum value to the highest value + 10
+                        ticks: {
+                            callback: function(value) {
+                                return value; // Display the value on y-axis
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false // Prevent skipping labels on the x-axis
+                        }
+                    }
+                }
+            }
+        });
+    });
+
         </script>
     @endpush
     <!-- End of Main Content -->

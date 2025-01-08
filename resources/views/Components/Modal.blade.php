@@ -155,6 +155,10 @@
                         <textarea disabled id="description" name="name" type="text" class="form-control"></textarea>
                     </div>
                     <div class="mb-3">
+                        <label for="detailPhoneNumber" class="form-label">Phone Number</label>
+                        <input id="detailPhoneNumber" disabled name="phonenum" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
                         <label for="created_by" class="form-label">Created_By</label>
                         <input id="created_by" disabled name="created_by" type="text" class="form-control">
                     </div>

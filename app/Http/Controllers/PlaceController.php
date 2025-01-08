@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\CustomAdsSettings;
+use App\Models\CustomRunningTextSettings;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -325,6 +327,8 @@ class PlaceController extends Controller
         $Place->description = $request->description;
         $Place->content = $content;
         $Place->is_comment = $request->AllowComment == 'on' ? 1 : 0;
+        $Place->phone_num = $request->phone_num;
+        
         $Place->update();
 
 
@@ -451,7 +455,8 @@ class PlaceController extends Controller
             'creator_id' => $user_id,
             'content' => $content,
             'views' => 0,
-            'is_comment' => $request->AllowComment == 'on' ? 1 : 0
+            'is_comment' => $request->AllowComment == 'on' ? 1 : 0,
+            'phone_num' => $request->phone_num
         ]);
 
         foreach ($imageData as $img) {
@@ -526,7 +531,10 @@ class PlaceController extends Controller
             $event = [];
         }
 
-        return view('Pages.detail-place.index', compact('place', 'event'));
+        $customSettingRunningText = CustomRunningTextSettings::first();
+        $customSettingAds = CustomAdsSettings::first();
+
+        return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds'));
     }
 
 

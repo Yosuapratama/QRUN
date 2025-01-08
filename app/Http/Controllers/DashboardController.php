@@ -25,11 +25,12 @@ class DashboardController extends Controller
     |
     */
 
-    function sync(){
+    function sync()
+    {
         $data = Place::all();
         $arrData = [];
 
-        foreach($data as $dt){
+        foreach ($data as $dt) {
             $datass = new stdClass();
 
             $datass->place_code = $dt->place_code;
@@ -109,11 +110,11 @@ class DashboardController extends Controller
 
     function getChartData()
     {
-        $placeData = Place::select('id','views', 'place_code')->orderBy('views', 'DESC')->limit(5)->get();
+        $placeData = Place::select('id', 'views', 'place_code')->orderBy('views', 'DESC')->limit(5)->get();
         $placeCodeArr = [];
         $arrViews = [];
 
-        foreach($placeData as $place){
+        foreach ($placeData as $place) {
             $placeCodeArr[] = $place->place_code;
             $arrViews[] = $place->views;
         }
@@ -123,13 +124,25 @@ class DashboardController extends Controller
                     $placeCodeArr
                 ],
                 'no' => [
-                   $arrViews
+                    $arrViews
                 ]
             ]
         ]);
     }
-    
-     function privacyPolicy(){
+
+    function privacyPolicy()
+    {
         return view('Pages.PrivacyPolicy');
+    }
+
+    function userGrowth()
+    {
+        $userGrowthData = User::selectRaw('DATE_FORMAT(created_at, "%Y-%m-01") as month, count(*) as user_count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Return the data as a JSON response or as part of a view
+        return response()->json($userGrowthData);
     }
 }
