@@ -6,8 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homepage | Qrun Website</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="description" content="QRUN aims to display detailed information when QR codes placed in various locations are scanned.">
+    <meta name="keywords" content="qrun,qrun online, login qrun, login qrun online, sign in qrun, sign in qrun online, register qrun online,register qrun">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+            integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+            crossorigin="anonymous" referrerpolicy="no-referrer" />
+            
     <style>
         .hero {
             background-image:url('{{ asset('background.png') }}');
@@ -69,55 +75,63 @@
     <section class="hero text-center">
         <div class="container">
             <h1>Explore the Place</h1>
-            <p>Find A Place Now</p>
-            <form method="GET" class="input-group mb-3" style="max-width: 600px; margin: auto;">
-                <input type="text" class="form-control" placeholder="Search Destinations"
-                    aria-label="Search Destinations">
-                <button class="btn btn-primary" type="button">Search</button>
-            </form>
-            <a href="#" class="btn btn-primary btn-lg">Get Started</a>
+            <p>Create Your Place Now</p>
+            <!--<form method="GET" class="input-group mb-3" style="max-width: 600px; margin: auto;">-->
+                <!--<input type="text" class="form-control" placeholder="Search Destinations"-->
+                <!--    aria-label="Search Destinations">-->
+            <!--    <button class="btn btn-primary" type="button">Search</button>-->
+            <!--</form>-->
+            <a href="{{route('login')}}" class="btn btn-primary btn-lg">Get Started</a>
         </div>
     </section>
 
     <!-- Card Section -->
-    <section class="container my-5">
-        <h2 class="text-center" id="place">Search Place</h2>
-        <p class="text-center">QRUN aims to display detailed information when QR codes placed in various locations are scanned.</p>
-        {{-- <div > --}}
-            <form class="input-group mb-3" style="max-width: 600px; margin: auto;" method="GET">
-                <input name="search" autofocus type="text" class="form-control" placeholder="Search Destinations"
-                    aria-label="Search Destinations">
-                <button class="btn btn-primary" type="submit">Search</button>
-                <a href="{{route('homes')}}" class="btn btn-secondary" type="button">Reset</a>
+    <!--<section class="container my-5">-->
+    <!--    @if ($errors->any())-->
+    <!--        <script>-->
+    <!--            swal("Place Not Found !", "Place Not Found.", "error");-->
+    <!--        </script> --}}-->
+    <!--    @endif-->
+    <!--    <h2 class="text-center" id="place">Search Place</h2>-->
+    <!--    <p class="text-center">QRUN aims to display detailed information when QR codes placed in various locations are scanned.</p>-->
+    <!--    {{-- <div > --}}-->
+    <!--        <form class="input-group mb-3" style="max-width: 600px; margin: auto;" method="GET">-->
+    <!--            <input name="search" autofocus type="text" class="form-control" placeholder="Search Destinations"-->
+    <!--                aria-label="Search Destinations">-->
+    <!--            <button class="btn btn-primary" type="submit">Search</button>-->
+    <!--            <a href="{{route('homes')}}" class="btn btn-secondary" type="button">Reset</a>-->
 
-            </form>
-        {{-- </div> --}}
-        <div class="row">
-            @foreach ($data as $dt)
-                <div class="col-md-4">
-                    <div class="card">
-                        {{-- <img src="https://source.unsplash.com/400x300/?mountains" class="card-img-top" alt="Mountains"> --}}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $dt->title }} |  <i class="fa-regular fa-eye"></i> {{ $dt->views }}</h5>
-                            <p class="card-text">{{ $dt->description }}
-                            </p>
-                            <a href="/detail-place/{{$dt->place_code}}" class="btn btn-primary">Explore</a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-            @if($data->count() == 0)
-            <div class="d-flex justify-content-center">
-                <p>0 Data Found !</p>
-            </div>
-            @endif
-            {{-- {{ $data->links() }} --}}
-            <div class="d-flex justify-content-center">
-                {{ $data->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
-            </div>
-            
-        </div>
-    </section>
+    <!--        </form>-->
+    <!--    {{-- </div> --}}-->
+    <!--    <div class="row">-->
+    <!--        @foreach ($data as $dt)-->
+    <!--            <div class="col-md-4">-->
+    <!--                <div class="card">-->
+    <!--                    {{-- <img src="https://source.unsplash.com/400x300/?mountains" class="card-img-top" alt="Mountains"> --}}-->
+    <!--                    <div class="card-body">-->
+    <!--                        <h5 class="card-title">{{ $dt->title }} </h5>-->
+    <!--                        <small><i class="fa-regular fa-2xs fa-eye"></i>  {{ $dt->views }}</small>-->
+    <!--                        <p class="card-text">{{ $dt->description }}-->
+    <!--                        </p>-->
+    <!--                        <a href="/detail-place/{{$dt->place_code}}" class="btn btn-primary">Explore</a>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        @endforeach-->
+    <!--        @if($data->count() == 0)-->
+    <!--        <div class="d-flex justify-content-center">-->
+    <!--            <p>0 Data Found !</p>-->
+    <!--        </div>-->
+    <!--        @endif-->
+    <!--        {{-- {{ $data->links() }} --}}-->
+    <!--        <div class="d-flex justify-content-center">-->
+    <!--            {{ $data->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}-->
+    <!--        </div>-->
+    <!--        {{-- <script>-->
+    <!--            swal("Welcome!", "QRUN aims to display detailed information when QR codes placed in various locations are scanned.", "success");-->
+    <!--        </script> --}}-->
+    <!--    </div>-->
+    <!--</section>-->
 
     <!-- Footer -->
     <footer class="footer text-center">

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Place;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +13,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
+use App\Models\Place;
+use Illuminate\Support\Facades\Artisan;
 
 class AuthController extends Controller
 {
@@ -147,22 +148,24 @@ class AuthController extends Controller
     }
 
     // (6) Redirect Login Function
-    function redirectToLogin(Request $request)
-    {
-        $query = $request->input('search');
-        if($query){
-            $data = Place::when($query, function($queryBuilder) use ($query) {
-                return $queryBuilder->where('title', 'LIKE', "%{$query}%")
-                                    ->orWhere('description', 'LIKE', "%{$query}%");
-            })->paginate(10);
-        }else{
-            $data = Place::orderBy('views', 'DESC')->paginate(5);
-        }
 
-        return view('Pages.Index', [
-            'data' => $data
-        ]);
-    }
+        function redirectToLogin(Request $request)
+        {
+            $query = $request->input('search');
+            if($query){
+                $data = Place::when($query, function($queryBuilder) use ($query) {
+                    return $queryBuilder->where('title', 'LIKE', "%{$query}%")
+                                        ->orWhere('description', 'LIKE', "%{$query}%");
+                })->paginate(10);
+            }else{
+                $data = Place::orderBy('views', 'DESC')->paginate(5);
+            }
+    
+            return view('Pages.Index', [
+                'data' => $data
+            ]);
+        }
+    
 
     public function resendMailVerification(Request $request){
         $request->user()->sendEmailVerificationNotification();
@@ -207,7 +210,7 @@ class AuthController extends Controller
     }
 
     public function resetPassView(){
-        if(Auth::check()){
+         if(Auth::check()){
             Auth::logout();
         }
         return view('Pages.auth.ResetPassword');

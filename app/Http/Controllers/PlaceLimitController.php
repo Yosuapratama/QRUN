@@ -16,7 +16,7 @@ class PlaceLimitController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = PlaceLimit::select('id', 'name', 'total_limit')->latest()->get();
+            $data = PlaceLimit::select('id', 'name', 'total_limit', 'updated_at')->latest()->get();
 
             return DataTables::of($data)
                 ->editColumn('updated_at', function ($row) {

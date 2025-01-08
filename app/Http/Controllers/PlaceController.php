@@ -279,33 +279,41 @@ class PlaceController extends Controller
                 $data = $img->getAttribute('src');
 
                 if (strpos($data, 'data') !== false) {
-                    list($type, $data) = array_pad(explode(';', $data), 2, null);
+                   list($type, $data) = array_pad(explode(';', $data), 2, null);
                     list(, $data) = array_pad(explode(',', $data), 2, null);
                     $dataConvert = base64_decode($data);
 
                     $str = $img->getAttribute('src');
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
-
+                    
                     // Generate a unique image name
                     $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
-
-
-                    // Define the path for storing the image
-                    $path = "public/UploadImage/PlaceImage/{$Place->id}/" . $image_name;
-
-                    // Store the file using the Storage facade
-                    Storage::put($path, $dataConvert);
-
+                    
+                    // Define the directory and path for storing the image
+                    $directory = public_path() . "/UploadImage/PlaceImage/{$Place->id}/";
+                    if (!file_exists($directory)) {
+                        mkdir($directory, 0755, true);
+                    }
+                    
+                    $path = $directory . $image_name; // Full path to the file
+                    
+                    // Store the file using file_put_contents
+                    $menu = file_put_contents($path, $dataConvert);
+                    if ($menu === false) {
+                        throw new Exception('Failed to save the image.');
+                    }
+                    
                     // Generate the public URL for the image
-                    $publicUrl = Storage::url($path);
-
+                    $publicUrl = asset("UploadImage/PlaceImage/{$Place->id}/" . $image_name);
+                    
                     // Remove the src attribute and set the new src
                     $img->removeAttribute('src');
                     $img->setAttribute('src', $publicUrl);
-
+                    
                     // Store the public URL in the array
                     $imageData[] = $publicUrl;
+
                 }
             }
         }
@@ -378,6 +386,8 @@ class PlaceController extends Controller
 
         $user_id = Auth::user()->id;
 
+        $Place_id = Place::latest()->first()->id + 1;
+        
         // Setup Images
         if ($images) {
             foreach ($images as $key => $img) {
@@ -396,13 +406,31 @@ class PlaceController extends Controller
                     $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
 
                     // Store the image in the storage path
-                    $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
+                    // $path = "public/UploadImage/PlaceImage/{$Place_id}/" . $image_name;
 
                     // Store the file
-                    Storage::put($path, $dataConvert);
+                    // Storage::put($path, $dataConvert);
 
+                    // // Generate the public URL for the image
+                    // $publicUrl = Storage::url($path);
+                    
+                    $directory = public_path() . "/storage/UploadImage/PlaceImage/{$Place_id}/";
+                    if (!file_exists($directory)) {
+                        mkdir($directory, 0755, true);
+                    }
+                    
+                    $path = $directory . $image_name; // Full path to the file
+                    
+                    // Store the file using file_put_contents
+                    $menu = file_put_contents($path, $dataConvert);
+                    if ($menu === false) {
+                        throw new Exception('Failed to save the image.');
+                    }
+                    
                     // Generate the public URL for the image
-                    $publicUrl = Storage::url($path);
+                    $publicUrl = asset("/storage/UploadImage/PlaceImage/{$Place_id}/" . $image_name);
+                    
+                    
 
                     // Update the image src
                     $img->removeAttribute('src');
@@ -461,11 +489,11 @@ class PlaceController extends Controller
     {
         $place = Place::where('place_code', $place_code)->first();
         if (!$place) {
-            return redirect()->route('dashboard');
+            return redirect()->route('homes')->withErrors('Place Not Found !');
         }
 
         if ($place->deleted_at) {
-            return redirect()->route('dashboard')->withErrors('This Place has been deleted !');
+            return redirect()->route('homes')->withErrors('This Place has been deleted !');
         }
 
         if (!session()->has('views')) {

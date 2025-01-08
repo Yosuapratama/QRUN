@@ -18,3 +18,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/#app
+/#public
+/#resources
+/#routes
+/public/UploadImage

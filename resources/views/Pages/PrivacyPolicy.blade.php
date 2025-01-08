@@ -1,7 +1,7 @@
 @extends('TemplateLayout.UserLayout')
 
 @push('title')
-    <title>QRUN Website - Privacy Policy</title>
+    <title>Privacy Policy | Qrun Online</title>
 @endpush
 
 @section('content')

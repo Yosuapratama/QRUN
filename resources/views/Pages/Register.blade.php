@@ -1,7 +1,16 @@
 @extends('TemplateLayout.UserLayout')
 
 @push('title')
-    <title>QRUN Website - Register</title>
+    <title>Register | Qrun Online</title>
+    <meta name="description" content="Create your account on Qrun Online. Sign up to access exclusive features and services.">
+    <meta name="keywords" content="login qrun, login qrun online, sign in qrun, sign in qrun online, register qrun online,register qrun, qrun online">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Register for Your Qrun Online Account">
+    <meta property="og:description" content="Join Qrun Online today by creating your account.">
+    <meta property="og:url" content="https://qrun.online/auth/register">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Register for Your Qrun Online Account">
+    <meta name="twitter:description" content="Sign up for exclusive features on Qrun Online.">
 @endpush
 
 @push('script')

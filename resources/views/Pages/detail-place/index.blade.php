@@ -1,7 +1,11 @@
 @extends('TemplateLayout.NormalLayout')
 
 @push('title')
-    <title>QRUN - {{ $place->title }}</title>
+    <title>{{ $place->title }} | Qrun Website</title>
+    <meta name="description" content="{{ $place->title }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+
 @endpush
 
 @section('content')

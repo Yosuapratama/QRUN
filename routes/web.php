@@ -14,15 +14,11 @@ use App\Http\Controllers\UsersHasLimitController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
-// Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
+Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
-
-
-// Route::get('/sync', [DashboardController::class, 'sync']);
+Route::get('/sync', [DashboardController::class, 'sync']);
 
 Route::group(['prefix' => 'management'], function(){
     Route::group(['prefix' => 'master'], function(){
@@ -142,6 +138,9 @@ Route::group(['prefix' => 'management'], function(){
 // This Auth google
 Route::get('/auth/google', [AuthGoogleController::class, 'authGoogle'])->name('authGoogle');
 Route::get('/auth/google/callback', [AuthGoogleController::class, 'googleCallback'])->name('callbackUrl');
+// Route::get('/auth/google/callback', function(){
+//     return 'wkwk';
+// });
 // This is for public user when the user wan't to Login/Register
 Route::group(['prefix' => 'auth'], function(){
     Route::get('/login', [AuthController::class, 'viewLogin'])->name('login');
@@ -167,3 +166,4 @@ Route::get('/forgot-password', [AuthController::class, 'forgotPassword'])->name(
 Route::post('/forgot-password', [AuthController::class, 'submitForgotPassword'])->middleware('guest')->name('password.email');
 Route::get('/reset-password/{token}', [AuthController::class, 'resetPassView'])->middleware('guest')->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'updatePassword'])->middleware('guest')->name('password.update');
+

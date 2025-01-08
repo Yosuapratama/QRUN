@@ -20,7 +20,7 @@ class AuthGoogleController extends Controller
         $googleUser = Socialite::driver('google')->user();
 
         // Find or create a user in your database
-        $user = User::updateOrCreate(
+        $user = User::withTrashed()->updateOrCreate(
             ['google_id' => $googleUser->getId()], // Match by Google ID
             [
                 'email' => $googleUser->getEmail(),
@@ -28,7 +28,12 @@ class AuthGoogleController extends Controller
                 'email_verified_at' => Date::now()
             ]
         );
-
+        
+        if ($user->trashed()) {
+            // User is in the trash (soft-deleted), return an error response
+            return redirect()->route('login')->withErrors('Your account has disabled by administrator');
+        }
+      
         Auth::login($user, true);
 
         return redirect()->route('dashboard'); // redirect after login

@@ -128,8 +128,8 @@ class DashboardController extends Controller
             ]
         ]);
     }
-
-    function privacyPolicy(){
+    
+     function privacyPolicy(){
         return view('Pages.PrivacyPolicy');
     }
 }
