@@ -51,7 +51,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="phoneNum">Phone Number</label>
+                        <label class="form-label" for="phoneNum">Contact Person</label>
                         <input class="form-control" name="phone_num" type="number" id="phoneNum"
                             placeholder="Phone Number References...">
                         @error('phone_num')
@@ -251,7 +251,7 @@
                                                         iframe.src = data
                                                             .url; // URL returned by the server
                                                         iframe.width =
-                                                            '95%';
+                                                            '100%';
                                                         iframe.height =
                                                             '400px';
                                                         iframe.style

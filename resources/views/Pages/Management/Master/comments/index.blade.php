@@ -8,7 +8,7 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Management Comments</h1>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">@lang('messages.navigation_admin.manage_comments.manage_comments')</h1>
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">

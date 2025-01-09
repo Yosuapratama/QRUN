@@ -189,7 +189,7 @@
         <div class="modal-content">
             <form id="addEventForm">
                 <div class="modal-header">
-                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Create Event
+                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">@lang('messages.my-event.add_event')
                     </h4>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
                         aria-label="Close">X</button>
@@ -197,22 +197,22 @@
 
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="detailTitle" class="form-label">Title</label>
-                        <input id="detailTitle" name="title" type="text" class="form-control">
+                        <label for="detailTitle" class="form-label">@lang('messages.my-event.title')<span class="text-danger">*</span></label>
+                        <input id="detailTitle" name="title" type="text" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <input id="description" name="description" type="text" class="form-control">
+                        <label for="description" class="form-label">@lang('messages.my-event.description')<span class="text-danger">*</span></label>
+                        <input id="description" name="description" type="text" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label for="datetime" class="form-label">Event DateTime (WITA)</label>
-                        <input id="datetime" name="datetime" type="datetime-local" class="form-control">
+                        <label for="datetime" class="form-label">@lang('messages.my-event.datetime')<span class="text-danger">*</span></label>
+                        <input id="datetime" name="datetime" type="datetime-local" class="form-control" required>
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" >Create</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('messages.global_close_button')</button>
+                    <button type="submit" class="btn btn-success" >@lang('messages.global_create_button')</button>
                 </div>
 
             </form>
@@ -266,7 +266,7 @@
         <div class="modal-content">
             <form id="editEventForm">
                 <div class="modal-header">
-                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Edit Event
+                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">@lang('messages.my-event.edit_event')
                     </h4>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
                         aria-label="Close">X</button>
@@ -275,22 +275,22 @@
                 <div class="modal-body">
                     <input type="hidden" name="EventId" id="EventId">
                     <div class="mb-3">
-                        <label for="detailTitleEventEdit" class="form-label">Title</label>
+                        <label for="detailTitleEventEdit" class="form-label">@lang('messages.my-event.title')<span class="text-danger">*</span></label>
                         <input id="detailTitleEventEdit" name="title" type="text" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="descriptionEventEdit" class="form-label">Description</label>
+                        <label for="descriptionEventEdit" class="form-label">@lang('messages.my-event.description')<span class="text-danger">*</span></label>
                         <input id="descriptionEventEdit" name="description" type="text" class="form-control">
                     </div>
                     <div class="mb-3">
-                        <label for="datetimeEventEdit" class="form-label">Event DateTime (WITA)</label>
+                        <label for="datetimeEventEdit" class="form-label">@lang('messages.my-event.datetime')<span class="text-danger">*</span></label>
                         <input id="datetimeEventEdit" name="datetime" type="datetime-local" class="form-control">
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success" >Update Event</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('messages.global_close_button')</button>
+                    <button type="submit" class="btn btn-success" >@lang('messages.global_edit_button')</button>
                 </div>
 
             </form>

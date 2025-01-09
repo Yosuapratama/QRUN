@@ -5,7 +5,9 @@ namespace App\Http\Middleware;
 use App\Models\UserHasPlaceLimit;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
 class checkUserLimitPermissions
@@ -17,6 +19,13 @@ class checkUserLimitPermissions
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (Session::has('locale')) {
+            // Set the application locale from session
+            App::setLocale(Session::get('locale'));
+        }else{
+            App::setLocale('en');
+        }
+
         if(Auth::check()){
             if(!Auth::user()->hasRole('superadmin')){
                 if(!Auth::user()->approved_at) {

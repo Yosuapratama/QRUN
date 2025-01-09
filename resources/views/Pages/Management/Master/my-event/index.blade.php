@@ -8,13 +8,13 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Management Event</h1>
-        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addEventModal">Add Event</button>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">@lang('messages.my-event.title_heading')</h1>
+        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addEventModal">@lang('messages.my-event.add_event')</button>
         {{-- <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Place</button> --}}
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Event Table</h6>
+                <h6 class="m-0 font-weight-bold text-primary">@lang('messages.my-event.table_title')</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">

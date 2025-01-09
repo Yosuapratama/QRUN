@@ -12,7 +12,7 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
             <div class="alert alert-primary">
-                Place Limit : {{ $data['account_limit'] }}
+                @lang('messages.dashboard.place_limit') {{ $data['account_limit'] }}
             </div>
         </div>
 
@@ -46,9 +46,7 @@
             </div>
         @endif
         <div class="alert alert-warning">
-            QRUN aims to display detailed information when QR codes placed in various locations are scanned. Each QR code
-            will be associated with a specific location or venue, and when scanned, will display information such as venue
-            description, upcoming events, and other relevant details.
+            @lang('messages.dashboard.information_text')
         </div>
         <!-- Content Row -->
         @if (Auth::user()->hasRole('superadmin'))
@@ -59,7 +57,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Total Users (Active)</div>
+                                        @lang('messages.dashboard.total_users_active')</div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $data['user_count'] }}</div>
                                 </div>
                                 <div class="col-auto">
@@ -75,7 +73,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Total Users (Not Verified)</div>
+                                        @lang('messages.dashboard.total_users_not_verified')</div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $data['user_not_verified'] }}
                                     </div>
                                 </div>
@@ -93,7 +91,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                        Pending Approved</div>
+                                        @lang('messages.dashboard.total_users_pending_approved')</div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $data['user_pending'] }}</div>
                                 </div>
                                 <div class="col-auto">
@@ -110,7 +108,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Place Total</div>
+                                        @lang('messages.dashboard.total_place')</div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $data['place_total'] }}</div>
                                 </div>
                                 <div class="col-auto">
@@ -127,7 +125,7 @@
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Event Active
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1"> @lang('messages.dashboard.total_event_active')
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
@@ -150,7 +148,7 @@
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Comments
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">@lang('messages.dashboard.total_comments')
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
@@ -186,7 +184,7 @@
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                        Place Total</div>
+                                        @lang('messages.dashboard.total_place')</div>
                                     <div class="h5 mb-0 font-weight-bold text-gray-800">
                                         {{ $data['place_total'] }}/{{ $data['account_limit'] }}</div>
                                 </div>
@@ -202,7 +200,7 @@
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Comments
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">@lang('messages.dashboard.total_comments')
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
@@ -226,7 +224,7 @@
                         <div class="card-body">
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">My Event Total
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">@lang('messages.navigation_admin.my_event_total')
                                     </div>
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">

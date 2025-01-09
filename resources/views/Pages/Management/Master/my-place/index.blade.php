@@ -8,7 +8,7 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Create Place/Object</h1>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">@lang('messages.my-place.title_heading')</h1>
 
         @if (session()->has('success'))
             <div class="alert alert-success">
@@ -16,14 +16,14 @@
             </div>
         @endif
         @if ($Place)
-            <a href="{{ $url }}" target="_blank" class="btn btn-primary m-2">Visit Your Live Preview</a>
-            <a href="{{ $printUrl }}" target="_blank" class="btn btn-success m-2">Print Barcode</a>
+            <a href="{{ $url }}" target="_blank" class="btn btn-primary m-2">@lang('messages.my-place.visit_preview')</a>
+            <a href="{{ $printUrl }}" target="_blank" class="btn btn-success m-2">@lang('messages.my-place.print_barcode')</a>
         @endif
 
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Create My Place</h6>
+                <h6 class="m-0 font-weight-bold text-primary">@lang('messages.my-place.create_my_place')</h6>
             </div>
             <div class="card-body">
                 {{-- Create Place Form --}}
@@ -35,7 +35,7 @@
                 @csrf
                 <input type="hidden" value="{{ $Place ? $Place->id : '' }}">
                 <div class="mb-3">
-                    <label class="form-label" for="title">Title<span class="text-danger">*</span></label>
+                    <label class="form-label" for="title">@lang('messages.my-place.title')<span class="text-danger">*</span></label>
                     <input required class="form-control" value="{{ $Place ? $Place->title : '' }}" name="title" type="text"
                         id="title" placeholder="Place Title...">
                     @error('title')
@@ -43,7 +43,7 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="description">Description<span class="text-danger">*</span></label>
+                    <label class="form-label" for="description">@lang('messages.my-place.description')<span class="text-danger">*</span></label>
                     <input required value="{{ $Place ? $Place->description : '' }}" class="form-control" name="description"
                         type="text" id="description" placeholder="Place Description...">
                     @error('description')
@@ -51,7 +51,7 @@
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="phoneNum">Phone Number</label>
+                    <label class="form-label" for="phoneNum">@lang('messages.my-place.contact_person')</label>
                     <input value="{{ $Place ? $Place->phone_num : '' }}" class="form-control" name="phone_num"
                         type="number" id="phoneNum" placeholder="Phone Number References...">
                     @error('phone_num')
@@ -316,7 +316,7 @@
                                                         iframe.src = data
                                                             .url; // URL returned by the server
                                                         iframe.width =
-                                                            '95%';
+                                                            '100%';
                                                         iframe.height =
                                                             '400px';
                                                         iframe.style

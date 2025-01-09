@@ -21,6 +21,8 @@ Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
 
 Route::get('/sync', [DashboardController::class, 'sync']);
 
+Route::get('set-locale/{locale}', [DashboardController::class, 'setLocale'])->name('set.locale');
+
 Route::group(['prefix' => 'management'], function(){
     Route::group(['prefix' => 'master'], function(){
         // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different

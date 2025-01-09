@@ -8,7 +8,9 @@ use App\Models\Place;
 use App\Models\User;
 use App\Models\UserHasPlaceLimit;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Comments;
 use stdClass;
 
@@ -144,5 +146,15 @@ class DashboardController extends Controller
 
         // Return the data as a JSON response or as part of a view
         return response()->json($userGrowthData);
+    }
+    public function setLocale($locale)
+    {
+        if (in_array($locale, ['en', 'id'])) {
+            Session::put('locale', $locale);
+            
+        }
+
+        // Redirect the user back to the previous page
+        return redirect()->back();
     }
 }

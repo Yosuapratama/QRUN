@@ -37,6 +37,43 @@
             </div>
         </li>
 
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-globe fa-fw"></i>
+                <!-- Counter - Alerts -->
+                <span class="badge badge-danger "></span>
+            </a>
+            <!-- Dropdown - Alerts -->
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">
+                    @lang('messages.dashboard.select_lang')
+                </h6>
+                <a class="dropdown-item d-flex align-items-center" href="{{ route('set.locale', 'id') }}">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-primary">
+                           <img src="{{asset('indonesian-flag.jpeg')}}" style="width:25px" alt="">
+                        </div>
+                    </div>
+                    <div>
+                        {{-- <div class="small text-gray-500">December 12, 2019</div> --}}
+                        <span class="font-weight-bold">@lang('messages.dashboard.indonesia_lang')</span>
+                    </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="{{ route('set.locale', 'en') }}">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-primary">
+                            <img src="{{asset('english-flag.jpeg')}}" style="width:25px; background-color: white" alt="">
+                        </div>
+                    </div>
+                    <div>
+                        {{-- <div class="small text-gray-500">December 12, 2019</div> --}}
+                        <span class="font-weight-bold">@lang('messages.dashboard.english_lang')</span>
+                    </div>
+                </a>
+               
+               
+            </div>
+        </li>
        
 
         <!-- Nav Item - User Information -->
