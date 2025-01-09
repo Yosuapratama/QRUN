@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\LogActivitiesController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
 use App\Http\Controllers\SettingsController;
@@ -88,6 +89,7 @@ Route::group(['prefix' => 'management'], function(){
                     return back();
                 })->name('artisan.queue');
 
+                Route::get('/log-activity', [LogActivitiesController::class, 'index'])->name('settings.log-activity');
             });
 
             Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds' ])->name('upload.ads');

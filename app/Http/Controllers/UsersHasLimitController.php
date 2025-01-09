@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivities;
 use App\Models\PlaceLimit;
 use App\Models\User;
 use App\Models\UserHasPlaceLimit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -115,6 +117,14 @@ class UsersHasLimitController extends Controller
             'place_limit_id' => $request->place_limit
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User created user place limit at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_USER_LIMIT
+        ]);
+
         return response()->json([
             'success' => 'Data successfully added !'
         ]);
@@ -167,6 +177,14 @@ class UsersHasLimitController extends Controller
             'place_limit_id' => $request->place_limit
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User updated user place limit with id : ".$request->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_USER_LIMIT
+        ]);
+
         return response()->json([
             'success' => 'Data successfully updated !'
         ]);
@@ -187,6 +205,15 @@ class UsersHasLimitController extends Controller
         }
 
         $UserHasLimitPlace->delete();
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User deleted user place limit with id : ".$id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_USER_LIMIT
+        ]);
+
 
         return response()->json([
             'success' => 'Data successfully deleted !'

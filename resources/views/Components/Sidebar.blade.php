@@ -112,7 +112,7 @@
                  </span>
              </a>
              <div id="collapsePages2"
-                 class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') ? 'show' : '' }}"
+                 class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') || Route::is('settings.log-activity') ? 'show' : '' }}"
                  aria-labelledby="headingPages" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
                      <a class="collapse-item  {{ Route::is('settings.general') ? 'active' : '' }}"
@@ -123,6 +123,10 @@
                          href="{{ route('place-limit.index') }}">
                          @lang('messages.navigation_admin.settings.place_limit')
                      </a>
+                     <a class="collapse-item {{ Route::is('settings.log-activity') ? 'active' : '' }}"
+                     href="{{route('settings.log-activity')}}">
+                     @lang('messages.navigation_admin.settings.log_activity')
+                 </a>
                      {{-- <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a> --}}
                  </div>
              </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
 use App\Models\Place;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 
 class AuthController extends Controller
@@ -60,12 +62,20 @@ class AuthController extends Controller
                 $this->logout($request);
                 return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
             }
-            Log::info([
-                'status' => 'User Logged in',
-                'time' => Date::now(),
+            // Log::info([
+            //     'status' => 'User Logged in',
+            //     'time' => Date::now(),
+            //     'user_id' => Auth::user()->id,
+            //     'email' => Auth::user()->email,
+            //     'ip_address' => request()->ip()
+            // ]);
+
+            LogActivities::create([
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->header('User-Agent'),
                 'user_id' => Auth::user()->id,
-                'email' => Auth::user()->email,
-                'ip_address' => request()->ip()
+                'activities' => "User Login at ".Carbon::now()->format('Y-m-d H:i:s'),
+                "type" => LogActivities::TYPE_LOGIN
             ]);
 
             return redirect()->route('dashboard')->with('success', 'Login Success !');
@@ -128,6 +138,14 @@ class AuthController extends Controller
             'ip_address' => request()->ip()
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => $user->id,
+            'activities' => "User Register at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_REGISTER
+        ]);
+
         $user->assignRole('localadmin');
 
         // Mail::to($user->email)->send(new RegisterMail($user));
@@ -138,6 +156,15 @@ class AuthController extends Controller
     // (5) Logout function for all users
     public function logout(Request $request)
     {
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Logout at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_LOGOUT
+        ]);
+
         Auth::logout();
 
         $request->session()->invalidate();

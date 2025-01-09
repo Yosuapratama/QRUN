@@ -61,6 +61,11 @@
                                                 {{ session()->get('status') }}
                                             </div>
                                         @endif
+                                        @if (session()->has('success'))
+                                            <div class="alert alert-success">
+                                                {{ session()->get('success') }}
+                                            </div>
+                                        @endif
                                         <div class="form-group mt-2">
                                             <label for="exampleInputEmail">Email</label>
                                             <input autofocus type="email" class="form-control form-control-user"

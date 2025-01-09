@@ -26,7 +26,9 @@ return [
         "settings" => [
             "index" => "Settings",
             "general" => "General",
-            "place_limit" => "Place Limit"
+            "place_limit" => "Place Limit",
+            "log_activity" => "Log Activity"
+
         ],
         "my_profile" => "My Profile",
         "my_place" => "My Place",

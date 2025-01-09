@@ -12,8 +12,10 @@ use Illuminate\Support\Str;
 use App\Models\Place;
 use App\Models\Image;
 use App\Models\Event;
+use App\Models\LogActivities;
 use App\Models\UserHasPlaceLimit;
 use DOMDocument;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class PlaceController extends Controller
@@ -192,6 +194,14 @@ class PlaceController extends Controller
             }
         }
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Deleted Place Data with Place Code : ".$place_code." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_PLACE
+        ]);
+
         return response()->json([
             'success' => 'Delete Success !'
         ]);
@@ -332,6 +342,15 @@ class PlaceController extends Controller
         $Place->update();
 
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Updated Place Data with Place id : ".$Place->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_PLACE
+        ]);
+
+
         foreach ($imageData as $img) {
             Image::create([
                 'description' => '-',
@@ -457,6 +476,15 @@ class PlaceController extends Controller
             'views' => 0,
             'is_comment' => $request->AllowComment == 'on' ? 1 : 0,
             'phone_num' => $request->phone_num
+        ]);
+
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Place Data with Place id : ".$Place->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_PLACE
         ]);
 
         foreach ($imageData as $img) {

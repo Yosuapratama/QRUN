@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Place;
 use App\Models\Event;
+use App\Models\LogActivities;
+use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {
@@ -116,6 +118,15 @@ class EventController extends Controller
             'date' => $request->datetime
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Event Data at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_EVENT
+        ]);
+
+
         return response()->json([
             'success' => 'Event Created Successfully !'
         ]);
@@ -196,6 +207,14 @@ class EventController extends Controller
             'date' => $request->datetime
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Event Data at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_EVENT
+        ]);
+
         return response()->json([
             'success' => 'Event Created Successfully !'
         ]);
@@ -237,6 +256,14 @@ class EventController extends Controller
         $Event->date = $request->datetime;
         $Event->update();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Updated Event Data with Id : ".$Event->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_EVENT
+        ]);
+
         return response()->json([
             'success' => 'Edit Event Successfully !'
         ]);
@@ -262,6 +289,14 @@ class EventController extends Controller
                 ]);
             }
         }
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Deleted Event Data with Id : ".$Event->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_EVENT
+        ]);
 
         return response()->json([
             'success' => 'Event Delete Success !'

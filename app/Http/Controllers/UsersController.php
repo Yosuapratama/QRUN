@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivities;
 use App\Models\User;
 use App\Models\Place;
 use Illuminate\Http\Request;
@@ -217,6 +218,14 @@ class UsersController extends Controller
 
         $user->assignRole('localadmin');
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Registered New Users at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_USER
+        ]);
+
         return response()->json([
             'message' => 'Create Data Success !',
             'status' => 'Success'
@@ -246,6 +255,14 @@ class UsersController extends Controller
         $User->address = $request->address;
         $User->update();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Updated user id : ".$User->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_USER
+        ]);
+
         return response()->json([
             'message' => 'Update Data Success !'
         ], 200);
@@ -262,6 +279,15 @@ class UsersController extends Controller
         }
         $FindUsers->approved_at = Carbon::now();
         $FindUsers->update();
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Approved user id : ".$id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_APPROVE_USER
+        ]);
+
 
         return response()->json([
             'message' => 'Approve Success',
@@ -282,6 +308,14 @@ class UsersController extends Controller
         $FindUsers->approved_at = Carbon::now();
         $FindUsers->update();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "UnApproved user id : ".$id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UNAPPROVE_USER
+        ]);
+        
         return response()->json([
             'message' => 'UnApprove Success',
             'status' => $FindUsers->email . ' has been downgraded to user'
@@ -322,6 +356,15 @@ class UsersController extends Controller
 
         $FindUsers->delete();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Deleted/Blocked user id : ".$id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_USER
+        ]);
+        
+
         return response()->json([
             'message' => 'User Deleted Success',
             'status' => $FindUsers->email . ' has been Deleted by admin'
@@ -344,6 +387,14 @@ class UsersController extends Controller
         }
 
         $FindUsers->restore();
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Undo Delete/Blocked user id : ".$id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_RESTORE_USER
+        ]);
 
         return response()->json([
             'message' => 'User UnBlocked Success',
@@ -401,6 +452,15 @@ class UsersController extends Controller
             }
         }
 
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Updated user profile with id : ".$User->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_PROFILE_USER
+        ]);
+
         $User->update();
 
         return back()->with('success', 'Profile Updated Successfully !');
@@ -454,6 +514,14 @@ class UsersController extends Controller
         $User->email_verified_at = Date::now();
         $User->save();
 
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Verify Account with account id : ".$User->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_VERIFY_USER
+        ]);
 
         return response()->json([
             'status' => 'Verify Account Success !',

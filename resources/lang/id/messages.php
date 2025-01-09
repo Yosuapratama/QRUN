@@ -27,7 +27,9 @@ return [
         'settings' => [
             'index' => 'Pengaturan',
             'general' => 'Umum',
-            'place_limit' => 'Batas Tempat'
+            'place_limit' => 'Batas Tempat',
+            "log_activity" => "Aktivitas Log"
+
         ],
         'my_profile' => 'Profil Saya',
         "my_place" => "Tempat Saya",

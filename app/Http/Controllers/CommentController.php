@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\LogActivities;
 use App\Models\Place;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -129,6 +131,14 @@ class CommentController extends Controller
             ]);
         }
       
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Comments Data at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_COMMENT
+        ]);
+
         $comment = Comment::create([
             'user_id' => $request->user_id,
             'rating' => $request->rating,
@@ -156,6 +166,14 @@ class CommentController extends Controller
                 ]);
             }
         }
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Deleted Comments Data with id : ".$comment->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_COMMENT
+        ]);
 
         $comment->delete();
 
@@ -188,6 +206,15 @@ class CommentController extends Controller
                 ]);
             }
         }
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Deleted Comments Data with id : ".$comment->id. " at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_COMMENT
+        ]);
+
 
         $comment->delete();
 
@@ -235,6 +262,15 @@ class CommentController extends Controller
         $comment->update([
             'comment' => $request->comment
         ]);
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Updated Comments Data with id : ".$comment->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_COMMENT
+        ]);
+
 
         return response()->json([
             'message' => 'Data updated successfully !'

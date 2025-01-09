@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\CustomAdsSettings;
 use App\Models\CustomRunningTextSettings;
+use App\Models\LogActivities;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class SettingsController extends Controller
 {
@@ -28,6 +31,14 @@ class SettingsController extends Controller
         ]);
 
         $customAdsData = CustomAdsSettings::first();
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Updated General Settings at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_SETTINGS
+        ]);
 
         $customAdsData->update([
             "is_active" => $request->ads_active == "on" ? 1 : 0,
