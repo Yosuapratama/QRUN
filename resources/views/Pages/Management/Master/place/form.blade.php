@@ -33,7 +33,7 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label" for="title">Title<span class="text-danger">*</span></label>
-                        <input required class="form-control" name="title" type="text" id="title"
+                        <input required class="form-control" name="title" type="text" id="title"  value="{{old('title')}}"
                             placeholder="Place Title...">
                         @error('title')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -43,7 +43,7 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="description">Description<span class="text-danger">*</span></label>
-                        <input required class="form-control" name="description" type="text" id="description"
+                        <input required class="form-control" name="description" type="text" id="description" value="{{old('description')}}"
                             placeholder="Place Description...">
                         @error('description')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
@@ -53,7 +53,7 @@
                     <div class="mb-3">
                         <label class="form-label" for="phoneNum">Contact Person</label>
                         <input class="form-control" name="phone_num" type="number" id="phoneNum"
-                            placeholder="Phone Number References...">
+                            placeholder="Phone Number References..." value="{{old('phone_num')}}">
                         @error('phone_num')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
@@ -61,10 +61,15 @@
 
 
                     <div class="mb-3">
-                        <textarea required class="form-control" name="content" id="summernote"></textarea>
+                        {{-- <textarea required class="form-control" name="content" id="summernote"></textarea>
+                        @error('content')
+                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        @enderror --}}
+                        <textarea class="form-control" name="content" id="summernote">{{ old('content') }}</textarea>
                         @error('content')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
+
                     </div>
                     <div class="slider-container mb-3">
                         <label for="yesno-slider" class="slider-label">Turn on comment ? No / Yes</label>

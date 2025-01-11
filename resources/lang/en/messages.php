@@ -23,6 +23,9 @@ return [
         "manage_comments" => [
             "manage_comments" => "Manage Comments"
         ],
+        'manage_advertise' => [
+            'manage_advertise' => 'Manage Advertise'
+        ],
         "settings" => [
             "index" => "Settings",
             "general" => "General",

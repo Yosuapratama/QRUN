@@ -24,6 +24,9 @@ return [
         'manage_comments' => [
             'manage_comments' => 'Kelola Komentar'
         ],
+        'manage_advertise' => [
+            'manage_advertise' => 'Kelola Iklan'
+        ],
         'settings' => [
             'index' => 'Pengaturan',
             'general' => 'Umum',

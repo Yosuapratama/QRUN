@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdvertiseController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthGoogleController;
@@ -75,6 +76,14 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/{id}/verify', [UsersController::class, 'verifyAccountManual'])->name('pending-verify.verify');
             });
 
+            Route::prefix('advertise')->group(function(){
+                Route::get('/', [AdvertiseController::class, 'index'])->name('advertise.index');
+                Route::get('/create', [AdvertiseController::class, 'create'])->name('advertise.create');
+                Route::post('/store', [AdvertiseController::class, 'storeOrUpdate'])->name('advertise.storeOrUpdate');
+                Route::get('/{id}/edit', [AdvertiseController::class, 'edit'])->name('advertise.edit');
+                Route::delete('/{id}/delete', [AdvertiseController::class, 'destroy'])->name('advertise.destroy');
+            });
+            
             Route::group(['prefix' => 'settings'], function(){
                 Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
                 Route::post('/general/store', [SettingsController::class, 'store'])->name('settings.store');
@@ -93,6 +102,7 @@ Route::group(['prefix' => 'management'], function(){
             });
 
             Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds' ])->name('upload.ads');
+            Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace' ])->name('upload.place.ads');
         });
         
         Route::middleware(['checkUserLimitPermissions'])->group(function(){

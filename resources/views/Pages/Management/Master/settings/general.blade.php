@@ -109,7 +109,7 @@
 
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Ads Settings</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Global Ads Settings</h6>
                 </div>
                 <div class="card-body">
                     <div class="slider-container mb-3">

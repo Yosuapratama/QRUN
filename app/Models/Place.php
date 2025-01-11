@@ -15,6 +15,11 @@ class Place extends Model
 
     public $guarded = ['id'];
 
+    public function advertises()
+    {
+        return $this->belongsToMany(Advertise::class, 'advertise_place');
+    }
+    
     public function creator_id()
     {
         return $this->belongsTo(User::class, 'creator_id', 'id')->select('id', 'email');

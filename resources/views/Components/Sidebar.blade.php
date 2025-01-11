@@ -86,7 +86,7 @@
          <li class="nav-item {{ Route::is('comments.admin') ? 'active' : '' }} ">
              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
                  aria-expanded="true" aria-controls="collapsePages">
-                 <i class="fas fa-envelope fa-fw"></i>
+                 <i class="fas  fa-comment fa-fw"></i>
                  <span>@lang('messages.navigation_admin.manage_comments.manage_comments')</span>
              </a>
              <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
@@ -97,6 +97,22 @@
                  </div>
              </div>
          </li>
+         {{-- Manage Advertise --}}
+
+         <li class="nav-item {{Route::is('advertise.index') ? 'active' : ''}} ">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages4"
+                aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-list-alt fa-fw"></i>
+                <span>@lang('messages.navigation_admin.manage_advertise.manage_advertise')</span>
+            </a>
+            <div id="collapsePages4" class="collapse {{ Route::is('advertise.index') ? 'show' : '' }}"
+                aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item {{ Route::is('advertise.index') ? 'active' : '' }}"
+                        href="{{ route('advertise.index') }}">@lang('messages.navigation_admin.manage_advertise.manage_advertise')</a>
+                </div>
+            </div>
+        </li>
 
          <hr class="sidebar-divider">
          <!-- Heading -->
@@ -175,7 +191,7 @@
              <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
                  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
                      aria-expanded="true" aria-controls="collapsePages">
-                     <i class="fas fa-envelope fa-fw"></i>
+                     <i class="fas  fa-comment fa-fw"></i>
                      <span>Manage Comments</span>
                  </a>
                  <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
@@ -210,7 +226,7 @@
              <li class="nav-item {{ Route::is('comments.admin') ? 'show' : '' }}">
                  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
                      aria-expanded="true" aria-controls="collapsePages">
-                     <i class="fas fa-envelope fa-fw"></i>
+                     <i class="fas  fa-comment fa-fw"></i>
                      <span>@lang('messages.navigation_admin.manage_comments.manage_comments')</span>
                  </a>
                  <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"

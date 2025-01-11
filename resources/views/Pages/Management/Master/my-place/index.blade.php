@@ -15,6 +15,13 @@
                 {{ session()->get('success') }}
             </div>
         @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </div>
+        @endif
         @if ($Place)
             <a href="{{ $url }}" target="_blank" class="btn btn-primary m-2">@lang('messages.my-place.visit_preview')</a>
             <a href="{{ $printUrl }}" target="_blank" class="btn btn-success m-2">@lang('messages.my-place.print_barcode')</a>
@@ -36,30 +43,31 @@
                 <input type="hidden" value="{{ $Place ? $Place->id : '' }}">
                 <div class="mb-3">
                     <label class="form-label" for="title">@lang('messages.my-place.title')<span class="text-danger">*</span></label>
-                    <input required class="form-control" value="{{ $Place ? $Place->title : '' }}" name="title" type="text"
-                        id="title" placeholder="Place Title...">
+                    <input required class="form-control" value="{{ old('title', $Place ? $Place->title : '') }}"
+                        name="title" type="text" id="title" placeholder="Place Title...">
                     @error('title')
                         <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="description">@lang('messages.my-place.description')<span class="text-danger">*</span></label>
-                    <input required value="{{ $Place ? $Place->description : '' }}" class="form-control" name="description"
-                        type="text" id="description" placeholder="Place Description...">
+                    <input required value="{{ old('description', $Place ? $Place->description : '') }}" class="form-control"
+                        name="description" type="text" id="description" placeholder="Place Description...">
                     @error('description')
                         <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="phoneNum">@lang('messages.my-place.contact_person')</label>
-                    <input value="{{ $Place ? $Place->phone_num : '' }}" class="form-control" name="phone_num"
-                        type="number" id="phoneNum" placeholder="Phone Number References...">
+                    <input value="{{ old('phone_num', $Place ? $Place->phone_num : '') }}" class="form-control"
+                        name="phone_num" type="number" id="phoneNum" placeholder="Phone Number References...">
                     @error('phone_num')
                         <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="mb-3">
-                    <textarea required class="form-control" name="content" id="summernote">{{ $Place ? $Place->content : '' }}</textarea>
+                    {{-- <textarea required class="form-control" name="content" id="summernote">{{ $Place ? $Place->content : '' }}</textarea> --}}
+                    <textarea class="form-control" name="content" id="summernote">{{ old('content', $Place ? $Place->content : '') }}</textarea>
                     @error('content')
                         <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                     @enderror

@@ -25,14 +25,19 @@
                         <form id="createUserForm">
                             <div class="modal-header">
                                 <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">
-                                    {{ $customSettingAds->title }}
+                                    @if ($ads)
+                                        {{ $ads->title }}
+                                    @else
+                                        {{ $customSettingAds->title }}
+                                    @endif
                                 </h4>
                                 {{-- <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">X</button> --}}
                             </div>
                             <div class="modal-body">
                                 <div class="centered-main"
                                     style="width: 100%; display:flex; justify-content:center; align-items:center">
-                                    <img src="{{ asset($customSettingAds->image_url) }}" style="max-width: 90%" alt="">
+                                    <img  @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds->image_url) }}" @endif  style="max-width: 90%"
+                                        alt="">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -346,20 +351,20 @@
         }
 
         /* #\:2\.container {
-                                display: none !important;
-                            } */
+                                        display: none !important;
+                                    } */
 
         /* .skiptranslate > #\:2\.container {
-                        display: none !important;
-                    }
+                                display: none !important;
+                            }
 
-                    body {
-                        top: 0px !important;
-                    } */
+                            body {
+                                top: 0px !important;
+                            } */
 
         /* .skiptranslate > iframe{
-                                       display: none !important;
-                                    } */
+                                               display: none !important;
+                                            } */
     </style>
     @if ($customSettingRunningText->is_active === 1)
         <style scoped>
@@ -636,14 +641,24 @@
                     // console.log(this.userId); // Logs updated comments
                 });
 
+                @if ($ads)
+                    this.disabledAfter = "{!! $ads->time !!}";
+                    this.isAdsActive = "{!! $ads->is_active !!}";
+                    this.timeAds =  "{!! $ads->time !!}";
 
-                if (this.isAdsActive === "1") {
-                    this.showModal();
-                    this.setCountDownModal();
-                }
+                    if (this.isAdsActive === "1") {
+                        this.showModal();
+                        this.setCountDownModal();
+                    }
+                @else
+                    if (this.isAdsActive === "1") {
+                        this.showModal();
+                        this.setCountDownModal();
+                    }
+                @endif
 
                 // console.log(this.disabledAfter);
-                if(this.disabledAfter > 0){
+                if (this.disabledAfter > 0) {
                     this.setCountdownRunningText();
                 }
             }

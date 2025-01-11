@@ -562,7 +562,9 @@ class PlaceController extends Controller
         $customSettingRunningText = CustomRunningTextSettings::first();
         $customSettingAds = CustomAdsSettings::first();
 
-        return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds'));
+        $ads = $place->advertises->first();
+      
+        return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds', 'ads'));
     }
 
 
