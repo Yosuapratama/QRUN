@@ -18,10 +18,10 @@
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
-                @foreach ($errors->all() as $err)
-                    <li>{{ $err }}</li>
-                @endforeach
-            </ul>
+                    @foreach ($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
         <!-- DataTales Example -->
@@ -42,7 +42,8 @@
                             @if ($adsSettings) {{ $adsSettings->is_active ? 'checked' : '' }} @endif>
                     </div>
                     <div class="form-group">
-                        <label for="place_id" class="slider-label">Add Place (Can Multiple)<span class="text-danger">*</span></label>
+                        <label for="place_id" class="slider-label">Add Place (Can Multiple)<span
+                                class="text-danger">*</span></label>
                         <select class="form-control" id="place_id" name="places[]" multiple>
                             {{-- <option value="">Select Place...</option> --}}
                             @foreach ($placeId as $place)
@@ -285,7 +286,15 @@
                     this.on('sending', function(file, xhr, formData) {
                         var token = $('meta[name="csrf-token"]').attr('content');
                         formData.append('_token', token);
-                        console.log("hei");
+                        Swal.fire({
+                            title: 'Uploading...',
+                            text: 'Please wait while we upload your file.',
+                            didOpen: () => {
+                                Swal.showLoading(); // Show the loading spinner
+                            },
+                            allowOutsideClick: false, // Prevent closing the modal by clicking outside
+                            showConfirmButton: false // Hide the confirm button
+                        });
                     });
 
                     // When file is added to Dropzone
@@ -305,6 +314,7 @@
                         var imageUrl = response.image_url; // Adjust this according to your API response
                         $('#image_url').val(imageUrl); // Set the URL in the hidden input
 
+                        Swal.close();
                         // dz.removeAllFiles(); // Optional: Remove files after success
 
                     });
