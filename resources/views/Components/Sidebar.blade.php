@@ -103,7 +103,7 @@
          <div class="sidebar-heading">
              @lang('messages.navigation_admin.settings.index')
          </div>
-         <li class="nav-item">
+         <li class="nav-item {{ Route::is('settings.general') || Route::is('place-limit.index') || Route::is('settings.log-activity') ? 'active' : '' }} ">
              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages2"
                  aria-expanded="true" aria-controls="collapsePages">
                  <i class="fas fa-fw fa-cog"></i>
