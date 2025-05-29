@@ -16,6 +16,7 @@ use App\Models\LogActivities;
 use App\Models\UserHasPlaceLimit;
 use DOMDocument;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PlaceController extends Controller
@@ -94,12 +95,12 @@ class PlaceController extends Controller
     // (2) This Func For Superadmin to edit users place
     function editPlace($place_code)
     {
-        if(!Auth::user()->hasRole('superadmin')){
+        if (!Auth::user()->hasRole('superadmin')) {
             $Place = Place::where('place_code', $place_code)->where('creator_id', Auth::user()->id)->first();
-            if(!$Place){
+            if (!$Place) {
                 return abort(404);
             }
-        }else{
+        } else {
             $Place = Place::where('place_code', $place_code)->first();
         }
         if (!$Place) {
@@ -134,19 +135,19 @@ class PlaceController extends Controller
         if (!Auth::user()->hasRole('superadmin')) {
             if (Auth::user()->approved_at) {
                 $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
-                if($checkTheLimitOfUserPlace){
-                    if(Place::where('creator_id', Auth::user()->id)->count() <= $checkTheLimitOfUserPlace->placeLimit->total_limit){
+                if ($checkTheLimitOfUserPlace) {
+                    if (Place::where('creator_id', Auth::user()->id)->count() <= $checkTheLimitOfUserPlace->placeLimit->total_limit) {
                         return view('Pages.Management.Master.place.form');
-                    }else{
+                    } else {
                         return redirect()->route('dashboard')->withErrors('Your account place has entered the limit !');
                     }
-                }else{
+                } else {
                     $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
-    
+
                     if ($Place) {
                         $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
                         $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
-        
+
                         return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
                     } else {
                         $Place = null;
@@ -155,15 +156,12 @@ class PlaceController extends Controller
                         return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
                     }
                 }
-            }else {
+            } else {
                 return back()->withErrors('Your Account Need Approval First !');
-            }   
-
-        }else{
+            }
+        } else {
             return view('Pages.Management.Master.place.form');
         }
-
-        
     }
     // (5) For admin to delete place user, after do this delete, the user can create a new place, like new account approved
     function deletePlace($place_code)
@@ -178,13 +176,12 @@ class PlaceController extends Controller
             }
 
             $GetPlace->delete();
-            
+
             $commentData = Comment::where('place_id', $GetPlace->id)->get();
 
             foreach ($commentData as $key => $comment) {
                 $commentData[$key]->delete();
             }
-
         } else {
             $GetPlace->delete();
             $commentData = Comment::where('place_id', $GetPlace->id)->get();
@@ -198,7 +195,7 @@ class PlaceController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User Deleted Place Data with Place Code : ".$place_code." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User Deleted Place Data with Place Code : " . $place_code . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_DELETE_PLACE
         ]);
 
@@ -250,11 +247,11 @@ class PlaceController extends Controller
         );
 
         if ($request->id) {
-            if(Auth::user()->hasRole('superadmin')){
+            if (Auth::user()->hasRole('superadmin')) {
                 $Place = Place::where('id', $request->id)->first();
-            }else{
+            } else {
                 $Place = Place::where('id', $request->id)->where('creator_id', Auth::user()->id)->first();
-                if(!$Place){
+                if (!$Place) {
                     return abort(404);
                 }
             }
@@ -291,41 +288,40 @@ class PlaceController extends Controller
                 $data = $img->getAttribute('src');
 
                 if (strpos($data, 'data') !== false) {
-                   list($type, $data) = array_pad(explode(';', $data), 2, null);
+                    list($type, $data) = array_pad(explode(';', $data), 2, null);
                     list(, $data) = array_pad(explode(',', $data), 2, null);
                     $dataConvert = base64_decode($data);
 
                     $str = $img->getAttribute('src');
                     $trim = Str::after($str, 'image/');
                     $trim2 = Str::before($trim, ';');
-                    
+
                     // Generate a unique image name
                     $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
-                    
+
                     // Define the directory and path for storing the image
                     $directory = public_path() . "/UploadImage/PlaceImage/{$Place->id}/";
                     if (!file_exists($directory)) {
                         mkdir($directory, 0755, true);
                     }
-                    
+
                     $path = $directory . $image_name; // Full path to the file
-                    
+
                     // Store the file using file_put_contents
                     $menu = file_put_contents($path, $dataConvert);
                     if ($menu === false) {
                         throw new Exception('Failed to save the image.');
                     }
-                    
+
                     // Generate the public URL for the image
                     $publicUrl = asset("UploadImage/PlaceImage/{$Place->id}/" . $image_name);
-                    
+
                     // Remove the src attribute and set the new src
                     $img->removeAttribute('src');
                     $img->setAttribute('src', $publicUrl);
-                    
+
                     // Store the public URL in the array
                     $imageData[] = $publicUrl;
-
                 }
             }
         }
@@ -337,8 +333,13 @@ class PlaceController extends Controller
         $Place->description = $request->description;
         $Place->content = $content;
         $Place->is_comment = $request->AllowComment == 'on' ? 1 : 0;
-        $Place->phone_num = $request->phone_num;
-        
+        // $Place->phone_num = $request->phone_num;
+        // $Place->province_id = $request->reg_province ? $request->reg_province : null;
+        $Place->province_id = $request->reg_province ? $request->reg_province : null;
+        $Place->regency_id = $request->reg_regency ? $request->reg_regency : null;
+        $Place->district_id = $request->reg_district ? $request->reg_district : null;
+        $Place->village_id = $request->reg_village ? $request->reg_village : null;
+
         $Place->update();
 
 
@@ -346,7 +347,7 @@ class PlaceController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User Updated Place Data with Place id : ".$Place->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User Updated Place Data with Place id : " . $Place->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_UPDATE_PLACE
         ]);
 
@@ -369,15 +370,15 @@ class PlaceController extends Controller
         if (!Auth::user()->approved_at) {
             return back()->withErrors('Your Account Need Approval First !');
         }
-        if(!Auth::user()->hasRole('superadmin')){
+        if (!Auth::user()->hasRole('superadmin')) {
             $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
-            if($checkTheLimitOfUserPlace){
-                if(Place::where('creator_id', Auth::user()->id)->count() >= $checkTheLimitOfUserPlace->placeLimit->total_limit){
+            if ($checkTheLimitOfUserPlace) {
+                if (Place::where('creator_id', Auth::user()->id)->count() >= $checkTheLimitOfUserPlace->placeLimit->total_limit) {
                     return back()->withErrors('Your account place has entered the limit !');
                 }
-            }else{
+            } else {
                 $Place = Place::where('creator_id', Auth::user()->id)->first();
-                if($Place){
+                if ($Place) {
                     return back()->withErrors('You have created place !');
                 }
             }
@@ -386,14 +387,16 @@ class PlaceController extends Controller
         $Validate = $request->validate([
             'title' => 'required',
             'description' => 'required',
-            'content' => 'required'
+            'content' => 'required',
+            "reg_province" => "nullable|exists:reg_provinces,id",
+            "reg_regency" => "nullable|exists:reg_regencies,id",
+            "reg_district" => "nullable|exists:reg_districts,id",
+            "reg_village" => "nullable|exists:reg_villages,id",
         ], [
             'title.required' => 'Title Fields is required',
             'description.required' => 'Description is required',
             'content.required' => 'Content is required',
         ]);
-
-
 
         $getPlaceData = Place::latest()->first() !== null ? Place::select('id')->latest()->first()->id + 1 : 1;
         $convertedCode = sprintf('%05d', $getPlaceData);
@@ -410,7 +413,7 @@ class PlaceController extends Controller
         $user_id = Auth::user()->id;
 
         $Place_id = Place::latest()->first()->id + 1;
-        
+
         // Setup Images
         if ($images) {
             foreach ($images as $key => $img) {
@@ -436,24 +439,24 @@ class PlaceController extends Controller
 
                     // // Generate the public URL for the image
                     // $publicUrl = Storage::url($path);
-                    
+
                     $directory = public_path() . "/storage/UploadImage/PlaceImage/{$Place_id}/";
                     if (!file_exists($directory)) {
                         mkdir($directory, 0755, true);
                     }
-                    
+
                     $path = $directory . $image_name; // Full path to the file
-                    
+
                     // Store the file using file_put_contents
                     $menu = file_put_contents($path, $dataConvert);
                     if ($menu === false) {
                         throw new Exception('Failed to save the image.');
                     }
-                    
+
                     // Generate the public URL for the image
                     $publicUrl = asset("/storage/UploadImage/PlaceImage/{$Place_id}/" . $image_name);
-                    
-                    
+
+
 
                     // Update the image src
                     $img->removeAttribute('src');
@@ -466,6 +469,7 @@ class PlaceController extends Controller
 
 
         $content = $dom->saveHTML();
+        // dd($request->reg_province);
 
         $Place = Place::create([
             'place_code' => time() . $convertedCode,
@@ -475,15 +479,19 @@ class PlaceController extends Controller
             'content' => $content,
             'views' => 0,
             'is_comment' => $request->AllowComment == 'on' ? 1 : 0,
-            'phone_num' => $request->phone_num
+            'province_id' => $request->reg_province ? $request->reg_province : null,
+            'regency_id' => $request->reg_regency ? $request->reg_regency : null,
+            'district_id' => $request->reg_district ? $request->reg_district : null,
+            'village_id' => $request->reg_village ? $request->reg_village : null
         ]);
+
 
 
         LogActivities::create([
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User Created Place Data with Place id : ".$Place->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User Created Place Data with Place id : " . $Place->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_CREATE_PLACE
         ]);
 
@@ -563,7 +571,7 @@ class PlaceController extends Controller
         $customSettingAds = CustomAdsSettings::first();
 
         $ads = $place->advertises->first();
-      
+
         return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds', 'ads'));
     }
 
@@ -582,14 +590,72 @@ class PlaceController extends Controller
 
     function fetchAll()
     {
-        if(Auth::user()->hasRole('superadmin')){
+        if (Auth::user()->hasRole('superadmin')) {
             $placeData = Place::select('id', 'place_code', 'title')->get();
-        }else{
+        } else {
             $placeData = Place::where('creator_id', Auth::user()->id)->select('id', 'place_code', 'title')->get();
         }
 
         return response()->json([
             'data' => $placeData
+        ]);
+    }
+
+
+    public function getPlaceChartData()
+    {
+        $provinces = DB::table('reg_provinces')->pluck('name', 'id');
+        $regencies = DB::table('reg_regencies')->pluck('name', 'id');
+        $districts = DB::table('reg_districts')->pluck('name', 'id');
+        $villages = DB::table('reg_villages')->pluck('name', 'id');
+
+        $charts = [];
+
+        // Province
+        $provinceData = Place::selectRaw('COALESCE(province_id, 0) as id, COUNT(*) as total')
+            ->groupBy('province_id')->get()
+            ->map(function ($item) use ($provinces) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($provinces[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        // Regency
+        $regencyData = Place::selectRaw('COALESCE(regency_id, 0) as id, COUNT(*) as total')
+            ->groupBy('regency_id')->get()
+            ->map(function ($item) use ($regencies) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($regencies[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        // District
+        $districtData = Place::selectRaw('COALESCE(district_id, 0) as id, COUNT(*) as total')
+            ->groupBy('district_id')->get()
+            ->map(function ($item) use ($districts) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($districts[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        // Village
+        $villageData = Place::selectRaw('COALESCE(village_id, 0) as id, COUNT(*) as total')
+            ->groupBy('village_id')->get()
+            ->map(function ($item) use ($villages) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($villages[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        return response()->json([
+            'province' => $provinceData,
+            'regency' => $regencyData,
+            'district' => $districtData,
+            'village' => $villageData,
         ]);
     }
 }

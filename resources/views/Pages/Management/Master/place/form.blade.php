@@ -33,8 +33,8 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label" for="title">Title<span class="text-danger">*</span></label>
-                        <input required class="form-control" name="title" type="text" id="title"  value="{{old('title')}}"
-                            placeholder="Place Title...">
+                        <input required class="form-control" name="title" type="text" id="title"
+                            value="{{ old('title') }}" placeholder="Place Title...">
                         @error('title')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
@@ -43,8 +43,8 @@
 
                     <div class="mb-3">
                         <label class="form-label" for="description">Description<span class="text-danger">*</span></label>
-                        <input required class="form-control" name="description" type="text" id="description" value="{{old('description')}}"
-                            placeholder="Place Description...">
+                        <input required class="form-control" name="description" type="text" id="description"
+                            value="{{ old('description') }}" placeholder="Place Description...">
                         @error('description')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
@@ -53,10 +53,47 @@
                     <div class="mb-3">
                         <label class="form-label" for="phoneNum">Contact Person</label>
                         <input class="form-control" name="phone_num" type="number" id="phoneNum"
-                            placeholder="Phone Number References..." value="{{old('phone_num')}}">
+                            placeholder="Phone Number References..." value="{{ old('phone_num') }}">
                         @error('phone_num')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    <div class="parent-container">
+                        <div class="d-flex flex-column flex-md-row mb-3 align-items-start">
+                            <div class="col-md-6 flex-grow-1 p-0">
+                                <label for="provinceDataSelect" class="me-2">Provinsi :
+                                </label>
+                                <select id="provinceDataSelect" name="reg_province" class="form-control select2">
+                                    <option value="">Select Province</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 flex-grow-1 p-0">
+                                <label for="regencyDataSelect" class="me-2">Kota/Kab :
+                                </label>
+                                <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
+                                    <option value="">Select Regency</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column flex-md-row mb-3 align-items-start">
+                            <div class="col-md-6 flex-grow-1 p-0">
+                                <label for="districtDataSelect" class="me-2">Kecamatan :
+                                </label>
+                                <select id="districtDataSelect" name="reg_district" class="form-control select2">
+                                    <option value="">Select District</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 flex-grow-1 p-0">
+                                <label for="villagesDataSelect" class="me-2">Desa/Kel :
+                                </label>
+                                <select id="villagesDataSelect" name="reg_village" class="form-control select2">
+                                    <option value="">Select Village</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
 
 
@@ -135,6 +172,10 @@
             .slider:checked+.slider-label {
                 color: #4CAF50;
             }
+
+            .select2-container {
+                display: block !important;
+            }
         </style>
     @endpush
 
@@ -156,6 +197,196 @@
             // });
 
             $(document).ready(function() {
+                var isInitedprovince = false;
+
+                // Show CV
+                function fetchLocation(province_id = null, regency_id = null, district_id = null, isFromRegency = false,
+                    isFromDistrict = false, isFromVillage = false) {
+                    $.ajax({
+                        url: "{{ route('getLocation') }}", // URL to your Laravel route
+                        data: {
+                            province_id: province_id, // Pass province_id dynamically
+                            regency_id: regency_id, // Pass regency_id dynamically
+                            district_id: district_id // Pass district_id dynamically
+                        },
+                        method: 'GET', // HTTP method (GET, POST, etc.)
+                        success: function(data) {
+                            console.log({
+                                datas: data
+                            });
+                            if (!isInitedprovince) {
+                                var provinceSelect = $('#provinceDataSelect');
+
+                                // Clear any existing options (if needed)
+                                provinceSelect.empty();
+
+                                // Add the default "Select Province" option
+                                provinceSelect.append('<option value="">Select Province</option>');
+
+                                // Populate the select2 dropdown with provinces data
+                                data.province.forEach(function(province) {
+                                    provinceSelect.append(
+                                        $('<option>', {
+                                            value: province
+                                                .id, // Assuming each province has an 'id'
+                                            text: province
+                                                .name // Assuming each province has a 'name'
+                                        })
+                                    );
+                                });
+
+                                // Re-initialize the select2 dropdown with the newly added options
+                                provinceSelect.select2({
+                                    placeholder: "Select a province",
+                                    allowClear: true,
+                                    // width: style,
+                                    // minimumResultsForSearch: Infinity, 
+                                });
+
+                                isInitedprovince = true;
+                            }
+
+
+                            if (!isFromRegency) {
+                                var regencySelect = $('#regencyDataSelect');
+
+                                // Clear any existing options (if needed)
+                                regencySelect.empty();
+
+                                // Add the default "Select Province" option
+                                regencySelect.append('<option value="">Select Regency</option>');
+
+                                // Populate the select2 dropdown with provinces data
+                                data.regency.forEach(function(province) {
+                                    regencySelect.append(
+                                        $('<option>', {
+                                            value: province
+                                                .id, // Assuming each province has an 'id'
+                                            text: province
+                                                .name // Assuming each province has a 'name'
+                                        })
+                                    );
+                                });
+
+                                regencySelect.select2({
+                                    placeholder: "Select a regency",
+                                    allowClear: true,
+                                });
+
+                            }
+
+                            if (!isFromDistrict) {
+                                var districtSelect = $('#districtDataSelect');
+
+                                // Clear any existing options (if needed)
+                                districtSelect.empty();
+
+                                // Add the default "Select Province" option
+                                districtSelect.append('<option value="">Select District</option>');
+
+                                // Populate the select2 dropdown with provinces data
+                                data.districts.forEach(function(province) {
+                                    districtSelect.append(
+                                        $('<option>', {
+                                            value: province
+                                                .id, // Assuming each province has an 'id'
+                                            text: province
+                                                .name // Assuming each province has a 'name'
+                                        })
+                                    );
+                                });
+
+                                // Re-initialize the select2 dropdown with the newly added options
+                                districtSelect.select2({
+                                    placeholder: "Select a district",
+                                    allowClear: true,
+                                });
+                            }
+                            //  villagesDataSelect
+                            if (!isFromVillage) {
+                                var villagesDataSelect = $('#villagesDataSelect');
+
+                                // Clear any existing options (if needed)
+                                villagesDataSelect.empty();
+
+                                // Add the default "Select Province" option
+                                villagesDataSelect.append('<option value="">Select Village</option>');
+
+                                // Populate the select2 dropdown with provinces data
+                                data.villages.forEach(function(province) {
+                                    villagesDataSelect.append(
+                                        $('<option>', {
+                                            value: province
+                                                .id, // Assuming each province has an 'id'
+                                            text: province
+                                                .name // Assuming each province has a 'name'
+                                        })
+                                    );
+                                });
+
+                                // Re-initialize the select2 dropdown with the newly added options
+                                villagesDataSelect.select2({
+                                    placeholder: "Select a village",
+                                    allowClear: true,
+                                });
+                                // Re-initialize the select2 dropdown with the newly added options
+
+                            }
+
+                            // 
+
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:',
+                                error); // Log error to console if something went wrong
+                        }
+                    });
+                }
+
+                fetchLocation();
+
+                $("#provinceDataSelect").change(function() {
+                    // Get the current value of both #provinceDataSelect and #regencyDataSelect
+                    var provinceId = $("#provinceDataSelect").val();
+                    var regencyId = $("#regencyDataSelect").val();
+                    var districtSelect = $('#districtDataSelect').val();
+                    var villageSelect = $('#villagesDataSelect').val();
+
+                    // Call the fetchLocation function with both provinceId and regencyId as parameters
+                    fetchLocation(provinceId, regencyId, districtSelect);
+
+                    // $("#regencyDataSelect").val(regencyId).trigger('change');
+                });
+                $("#regencyDataSelect").change(function() {
+                    var provinceId = $("#provinceDataSelect").val();
+                    var regencyId = $("#regencyDataSelect").val();
+                    var districtSelect = $('#districtDataSelect').val();
+                    var villageSelect = $('#villagesDataSelect').val();
+
+                    $('#districtDataSelect').empty().append('<option value="">Select District</option>')
+                        .trigger('change');
+                    $('#villagesDataSelect').empty().append('<option value="">Select Village</option>').trigger(
+                        'change');
+
+
+                    // Call the fetchLocation function with both provinceId and regencyId as parameters
+                    fetchLocation(provinceId, regencyId, districtSelect, true);
+
+                });
+
+                $("#districtDataSelect").change(function() {
+                    var provinceId = $("#provinceDataSelect").val();
+                    var regencyId = $("#regencyDataSelect").val();
+                    var districtSelect = $('#districtDataSelect').val();
+                    var villageSelect = $('#villagesDataSelect').val();
+
+                    // Call the fetchLocation function with both provinceId and regencyId as parameters
+                    fetchLocation(provinceId, regencyId, districtSelect, true, true);
+
+                });
+
+
                 $(document).on('click', '.note-modal .close', function() {
                     // This will close the Summernote modal (if it's part of the Summernote plugin)
                     $('.note-modal').modal('hide');

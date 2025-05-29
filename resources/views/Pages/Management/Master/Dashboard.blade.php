@@ -170,6 +170,41 @@
                 <!-- Pending Requests Card Example -->
                 <!-- Earnings (Monthly) Card Example -->
             </div>
+            <div class="row my-2">
+                <div class="col-md-3">
+                    <div class="card border-1">
+                        <div class="d-flex">
+                            <p class="text-md m-auto pt-2 font-weight-bold text-uppercase mb-1">Province Data</p>
+                        </div>
+                        <canvas id="chartProvince" width="100" height="100"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-1">
+                        <div class="d-flex">
+                            <p class="text-md m-auto pt-2 font-weight-bold text-uppercase mb-1">Regency Data</p>
+                        </div>
+                        <canvas id="chartRegency" width="100" height="100"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-1">
+                        <div class="d-flex">
+                            <p class="text-md m-auto pt-2 font-weight-bold text-uppercase mb-1">District Data</p>
+                        </div>
+                        <canvas id="chartDistrict" width="100" height="100"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-1">
+                        <div class="d-flex">
+                            <p class="text-md m-auto pt-2 font-weight-bold text-uppercase mb-1">Village Data</p>
+                        </div>
+                        <canvas id="chartVillage" width="100" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <canvas id="myChart" width="800" height="400"></canvas>
             <canvas id="myChart2" style="margin-top: 50px; margin-bottom: 30px" width="800" height="300"></canvas>
         @else
@@ -248,6 +283,48 @@
     <!-- /.container-fluid -->
     @push('script')
         <script>
+            $(document).ready(function() {
+                $.ajax({
+                    url: "{{ route('place.chart-data') }}",
+                    method: 'GET',
+                    success: function(res) {
+                        drawPieChart('chartProvince', res.province, 'Places by Province');
+                        drawPieChart('chartRegency', res.regency, 'Places by Regency');
+                        drawPieChart('chartDistrict', res.district, 'Places by District');
+                        drawPieChart('chartVillage', res.village, 'Places by Village');
+                    }
+                });
+
+                function drawPieChart(canvasId, data, title) {
+                    const ctx = document.getElementById(canvasId).getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.map(item => item.label),
+                            datasets: [{
+                                data: data.map(item => item.value),
+                                backgroundColor: [
+                                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                                    '#9966FF', '#FF9F40', '#C9CBCF', '#E7E9ED', '#4D5360'
+                                ],
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: title
+                                },
+                                legend: {
+                                    position: 'bottom',
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
             fetch('/management/master/dashboard/data/chart')
                 .then(response => response.json())
                 .then(data => {
@@ -288,57 +365,56 @@
                     });
                 });
 
-                fetch('/management/master/dashboard/data/user-growth/chart')
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
+            fetch('/management/master/dashboard/data/user-growth/chart')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
 
-        // Prepare labels and data arrays
-        const labels = data.map(item => item.month); // Extract dates for x-axis
-        const userCounts = data.map(item => item.user_count); // Extract user counts for y-axis
+                    // Prepare labels and data arrays
+                    const labels = data.map(item => item.month); // Extract dates for x-axis
+                    const userCounts = data.map(item => item.user_count); // Extract user counts for y-axis
 
-        // Find the highest value in the userCounts array
-        const maxUserCount = Math.max(...userCounts);
+                    // Find the highest value in the userCounts array
+                    const maxUserCount = Math.max(...userCounts);
 
-        // Set the Y-axis max value to the highest user count + 10
-        const yAxisMax = maxUserCount + 10;
+                    // Set the Y-axis max value to the highest user count + 10
+                    const yAxisMax = maxUserCount + 10;
 
-        const ctx = document.getElementById('myChart2').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'line', // Chart type
-            data: {
-                labels: labels, // Use the labels array here
-                datasets: [{
-                    label: 'User Growth',
-                    data: userCounts, // Use the userCounts array here
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    fill: true
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true, // Ensure the y-axis starts from 0
-                        min: 0, // Set the minimum value for y-axis
-                        max: yAxisMax, // Set the maximum value to the highest value + 10
-                        ticks: {
-                            callback: function(value) {
-                                return value; // Display the value on y-axis
+                    const ctx = document.getElementById('myChart2').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'line', // Chart type
+                        data: {
+                            labels: labels, // Use the labels array here
+                            datasets: [{
+                                label: 'User Growth',
+                                data: userCounts, // Use the userCounts array here
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true, // Ensure the y-axis starts from 0
+                                    min: 0, // Set the minimum value for y-axis
+                                    max: yAxisMax, // Set the maximum value to the highest value + 10
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value; // Display the value on y-axis
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        autoSkip: false // Prevent skipping labels on the x-axis
+                                    }
+                                }
                             }
                         }
-                    },
-                    x: {
-                        ticks: {
-                            autoSkip: false // Prevent skipping labels on the x-axis
-                        }
-                    }
-                }
-            }
-        });
-    });
-
+                    });
+                });
         </script>
     @endpush
     <!-- End of Main Content -->

@@ -26,6 +26,15 @@ return [
         'manage_advertise' => [
             'manage_advertise' => 'Manage Advertise'
         ],
+        'manage_gallery' => [
+            'manage_gallery' => 'Manage Gallery'
+        ],
+        'manage_blog' => [
+            'manage_blog' => 'Manage Blog'
+        ],
+        "report" => [
+            "message" => "Report",
+        ],
         "settings" => [
             "index" => "Settings",
             "general" => "General",

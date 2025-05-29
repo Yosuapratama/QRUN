@@ -27,6 +27,15 @@ return [
         'manage_advertise' => [
             'manage_advertise' => 'Kelola Iklan'
         ],
+        'manage_gallery' => [
+            'manage_gallery' => 'Kelola Galeri'
+        ],
+        'manage_blog' => [
+            'manage_blog' => 'Kelola Blog'
+        ],
+        'report' => [
+            'message' => 'Laporan',
+        ],
         'settings' => [
             'index' => 'Pengaturan',
             'general' => 'Umum',

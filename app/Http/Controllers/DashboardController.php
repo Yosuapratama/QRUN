@@ -10,6 +10,8 @@ use App\Models\UserHasPlaceLimit;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Comments;
 use stdClass;
@@ -157,4 +159,42 @@ class DashboardController extends Controller
         // Redirect the user back to the previous page
         return redirect()->back();
     }
+
+    public function getLocation(Request $request){
+        $provincesResult = DB::table('reg_provinces')
+            ->get();
+        if($request->has('province_id') && $request->province_id !== null && $request->province_id !== ""){
+              $regencyResult = DB::table('reg_regencies')
+            ->when($request->province_id !== null, function ($query) use ($request) {
+                return $query->where('province_id', $request->province_id);
+            })
+            ->get();
+        }
+      
+        if($request->has('regency_id') && $request->regency_id !== null && $request->regency_id !== "" && $request->has('province_id') && $request->province_id !== null && $request->province_id !== ""){
+            $districtResult = DB::table('reg_districts')
+            ->when($request->regency_id !== null, function ($query) use ($request) {
+                return $query->where('regency_id', $request->regency_id);
+            })
+            ->get();
+            
+        }
+        if($request->has('district_id') && $request->district_id !== null && $request->district_id !== "" && $request->has('regency_id') && $request->regency_id !== null && $request->regency_id !== ""  && $request->has('province_id') && $request->province_id !== null && $request->province_id !== ""){
+            $villagesResult = DB::table('reg_villages')
+            ->when($request->district_id !== null, function ($query) use ($request) {
+                return $query->where('district_id', $request->district_id);
+            })
+            ->get();
+        }
+         
+        return response()->json([
+            "code" => 200,
+            "success" => true,
+            "province" => $provincesResult,
+            "regency" => $regencyResult ?? [],
+            "districts" => $districtResult ?? [],
+            "villages" => $villagesResult ?? []
+        ]);
+    }
+
 }

@@ -4,11 +4,13 @@ use App\Http\Controllers\AdvertiseController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthGoogleController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\LogActivitiesController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
@@ -83,6 +85,22 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/{id}/edit', [AdvertiseController::class, 'edit'])->name('advertise.edit');
                 Route::delete('/{id}/delete', [AdvertiseController::class, 'destroy'])->name('advertise.destroy');
             });
+
+            Route::prefix('gallery')->group(function(){
+                Route::get('/', [GalleryController::class, 'index'])->name('gallery.index');
+                Route::get('/create', [GalleryController::class, 'create'])->name('gallery.create');
+                Route::post('/store', [GalleryController::class, 'storeOrUpdate'])->name('gallery.storeOrUpdate');
+                Route::get('/{id}/edit', [GalleryController::class, 'edit'])->name('gallery.edit');
+                Route::delete('/{id}/delete', [GalleryController::class, 'destroy'])->name('gallery.destroy');
+            });
+
+            Route::prefix('blog')->group(function(){
+                Route::get('/', [BlogController::class, 'index'])->name('blog.index');
+                Route::get('/create', [BlogController::class, 'create'])->name('blog.create');
+                Route::post('/store', [BlogController::class, 'storeOrUpdate'])->name('blog.storeOrUpdate');
+                Route::get('/{id}/edit', [BlogController::class, 'edit'])->name('blog.edit');
+                Route::delete('/{id}/delete', [BlogController::class, 'destroy'])->name('blog.destroy');
+            });
             
             Route::group(['prefix' => 'settings'], function(){
                 Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
@@ -113,6 +131,8 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
                 Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
     
+                Route::get('/chart-data', [PlaceController::class, 'getPlaceChartData'])->name('place.chart-data');
+
                 Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
             });
 
@@ -149,6 +169,7 @@ Route::group(['prefix' => 'management'], function(){
             });
             
             Route::post('/file/upload', [FileController::class, 'uploadFile'])->name('file.upload');
+            Route::get('getlocationdata', [DashboardController::class, 'getLocation'])->name('getLocation');
         });
         
     });

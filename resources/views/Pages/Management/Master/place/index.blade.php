@@ -53,6 +53,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order:[],
                     ajax: "{{ route('place') }}",
                     columns: [{
                             data: 'title',

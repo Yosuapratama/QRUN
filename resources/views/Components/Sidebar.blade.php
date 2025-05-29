@@ -97,6 +97,39 @@
                  </div>
              </div>
          </li>
+        {{-- Manage Gallery --}}
+
+        <li class="nav-item {{Route::is('gallery.index') ? 'active' : ''}} ">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesgallery"
+                aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-images"></i>
+                <span>@lang('messages.navigation_admin.manage_gallery.manage_gallery')</span>
+            </a>
+            <div id="collapsePagesgallery" class="collapse {{ Route::is('gallery.index') ? 'show' : '' }}"
+                aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item {{ Route::is('gallery.index') ? 'active' : '' }}"
+                        href="{{ route('gallery.index') }}">@lang('messages.navigation_admin.manage_gallery.manage_gallery')</a>
+                </div>
+            </div>
+        </li>
+        {{-- Manage Blog --}}
+
+        <li class="nav-item {{Route::is('blog.index') ? 'active' : ''}} ">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesblog"
+                aria-expanded="true" aria-controls="collapsePages">
+              <i class="fas fa-newspaper"></i>
+                <span>@lang('messages.navigation_admin.manage_blog.manage_blog')</span>
+            </a>
+            <div id="collapsePagesblog" class="collapse {{ Route::is('blog.index') ? 'show' : '' }}"
+                aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item {{ Route::is('blog.index') ? 'active' : '' }}"
+                        href="{{ route('blog.index') }}">@lang('messages.navigation_admin.manage_blog.manage_blog')</a>
+                </div>
+            </div>
+        </li>
+
          {{-- Manage Advertise --}}
 
          <li class="nav-item {{Route::is('advertise.index') ? 'active' : ''}} ">
@@ -113,6 +146,28 @@
                 </div>
             </div>
         </li>
+
+         <hr class="sidebar-divider">
+         <!-- Heading -->
+         <div class="sidebar-heading">
+             @lang('messages.navigation_admin.report.message')
+         </div>
+
+          <li class="nav-item {{Route::is('advertise.index') ? 'active' : ''}} ">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages4"
+                aria-expanded="true" aria-controls="collapsePages">
+                <i class="fas fa-table fa-fw"></i>
+                <span>@lang('messages.navigation_admin.report.message')</span>
+            </a>
+            <div id="collapsePages4" class="collapse {{ Route::is('advertise.index') ? 'show' : '' }}"
+                aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item {{ Route::is('advertise.index') ? 'active' : '' }}"
+                        href="{{ route('advertise.index') }}">@lang('messages.navigation_admin.report.message')</a>
+                </div>
+            </div>
+        </li>
+
 
          <hr class="sidebar-divider">
          <!-- Heading -->
