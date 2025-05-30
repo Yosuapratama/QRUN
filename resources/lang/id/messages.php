@@ -62,9 +62,18 @@ return [
         "add_event" => "Tambah Acara",
         "edit_event" => "Edit Acara",
         "title" => "Judul",
-        "description" => "Deskripsi", 
+        "description" => "Deskripsi",
         "datetime" => "Tanggal Acara (WITA)"
-    ],  
+    ],
+    "blog" => [
+        "title_heading" => "Buat Blog",
+        "table_title" => "Blog Table",
+        "add_blog" => "Create Blog",
+        "edit_blog" => "Edit Blog",
+        "title" => "Title",
+        "description" => "Description",
+        "datetime" => "Blog Datetime (WITA)"
+    ],
     'dashboard' => [
         "place_limit" => "Batas Tempat : ",
         "indonesia_lang" => "Bahasa Indonesia",
@@ -78,7 +87,10 @@ return [
         "total_users_pending_approved" => "Pengguna Menunggu Disetujui",
         "total_place" => "Total Tempat",
         "total_event_active" => "Total Event Active",
-        "total_comments" => "Jumlah Komentar"
+        "total_comments" => "Jumlah Komentar",
+        "total_advertise" => "Total Iklan",
+        "total_gallery" => "Total Galeri",
+        "total_blog" => "Total Blog",
     ],
     'login' => 'Login',
     'logout' => 'Logout',

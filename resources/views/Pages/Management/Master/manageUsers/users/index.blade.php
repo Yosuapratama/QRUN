@@ -50,6 +50,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order: [],
                     ajax: "{{ route('users') }}",
                     columns: [{
                             data: 'name',

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
 use App\Models\Comment;
 use App\Models\Event;
+use App\Models\Gallery;
 use App\Models\Place;
 use App\Models\User;
 use App\Models\UserHasPlaceLimit;
@@ -83,6 +85,8 @@ class DashboardController extends Controller
                 'place_total' => Place::count(),
                 'event_count' => Event::count(),
                 'comments_count' => Comment::count(),
+                'gallery_count' => Gallery::count(),
+                'blog_count' => Blog::count(),
                 'account_limit' =>  'Unlimited',
                 'user_not_verified' => User::whereNull('email_verified_at')->count(),
                 'data' =>  $data = [10, 20, 30, 40, 50]
@@ -114,12 +118,12 @@ class DashboardController extends Controller
 
     function getChartData()
     {
-        $placeData = Place::select('id', 'views', 'place_code')->orderBy('views', 'DESC')->limit(5)->get();
+        $placeData = Place::select('id', 'title', 'views', 'place_code')->orderBy('views', 'DESC')->limit(5)->get();
         $placeCodeArr = [];
         $arrViews = [];
 
         foreach ($placeData as $place) {
-            $placeCodeArr[] = $place->place_code;
+            $placeCodeArr[] = ["code" => $place->place_code, "title" => $place->title];
             $arrViews[] = $place->views;
         }
         return response()->json([
@@ -141,52 +145,69 @@ class DashboardController extends Controller
 
     function userGrowth()
     {
+        // Ambil data user growth dari database
         $userGrowthData = User::selectRaw('DATE_FORMAT(created_at, "%Y-%m-01") as month, count(*) as user_count')
             ->groupBy('month')
             ->orderBy('month')
-            ->get();
+            ->get()
+            ->keyBy('month'); // agar mudah diakses per bulan
 
-        // Return the data as a JSON response or as part of a view
-        return response()->json($userGrowthData);
+        // Tentukan rentang bulan (dari bulan pertama user hingga bulan sekarang)
+        $firstUser = User::orderBy('created_at')->first();
+        $start = $firstUser ? \Carbon\Carbon::parse($firstUser->created_at)->startOfMonth() : now()->startOfMonth();
+        $end = now()->startOfMonth();
+
+        $months = [];
+        $current = $start->copy();
+        while ($current <= $end) {
+            $monthKey = $current->format('Y-m-01');
+            $months[] = [
+                'month' => $monthKey,
+                'user_count' => isset($userGrowthData[$monthKey]) ? $userGrowthData[$monthKey]->user_count : 0
+            ];
+            $current->addMonth();
+        }
+
+        return response()->json($months);
     }
+    
     public function setLocale($locale)
     {
         if (in_array($locale, ['en', 'id'])) {
             Session::put('locale', $locale);
-            
         }
 
         // Redirect the user back to the previous page
         return redirect()->back();
     }
 
-    public function getLocation(Request $request){
+    public function getLocation(Request $request)
+    {
         $provincesResult = DB::table('reg_provinces')
             ->get();
-        if($request->has('province_id') && $request->province_id !== null && $request->province_id !== ""){
-              $regencyResult = DB::table('reg_regencies')
-            ->when($request->province_id !== null, function ($query) use ($request) {
-                return $query->where('province_id', $request->province_id);
-            })
-            ->get();
+        if ($request->has('province_id') && $request->province_id !== null && $request->province_id !== "") {
+            $regencyResult = DB::table('reg_regencies')
+                ->when($request->province_id !== null, function ($query) use ($request) {
+                    return $query->where('province_id', $request->province_id);
+                })
+                ->get();
         }
-      
-        if($request->has('regency_id') && $request->regency_id !== null && $request->regency_id !== "" && $request->has('province_id') && $request->province_id !== null && $request->province_id !== ""){
+
+        if ($request->has('regency_id') && $request->regency_id !== null && $request->regency_id !== "" && $request->has('province_id') && $request->province_id !== null && $request->province_id !== "") {
             $districtResult = DB::table('reg_districts')
-            ->when($request->regency_id !== null, function ($query) use ($request) {
-                return $query->where('regency_id', $request->regency_id);
-            })
-            ->get();
-            
+                ->when($request->regency_id !== null, function ($query) use ($request) {
+                    return $query->where('regency_id', $request->regency_id);
+                })
+                ->get();
         }
-        if($request->has('district_id') && $request->district_id !== null && $request->district_id !== "" && $request->has('regency_id') && $request->regency_id !== null && $request->regency_id !== ""  && $request->has('province_id') && $request->province_id !== null && $request->province_id !== ""){
+        if ($request->has('district_id') && $request->district_id !== null && $request->district_id !== "" && $request->has('regency_id') && $request->regency_id !== null && $request->regency_id !== ""  && $request->has('province_id') && $request->province_id !== null && $request->province_id !== "") {
             $villagesResult = DB::table('reg_villages')
-            ->when($request->district_id !== null, function ($query) use ($request) {
-                return $query->where('district_id', $request->district_id);
-            })
-            ->get();
+                ->when($request->district_id !== null, function ($query) use ($request) {
+                    return $query->where('district_id', $request->district_id);
+                })
+                ->get();
         }
-         
+
         return response()->json([
             "code" => 200,
             "success" => true,
@@ -196,5 +217,4 @@ class DashboardController extends Controller
             "villages" => $villagesResult ?? []
         ]);
     }
-
 }

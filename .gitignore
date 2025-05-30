@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/image_ads_by_place
 /storage/*.key
 /vendor
 .env

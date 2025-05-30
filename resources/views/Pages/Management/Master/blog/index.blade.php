@@ -3,18 +3,18 @@
 @section('content')
     <!-- Main Content -->
     @push('title')
-        <title>Management Event Admin - QRUN Website</title>
+        <title>Management Blog Admin - QRUN Website</title>
     @endpush
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Management All Event</h1>
-        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addEventModalAdmin">Add Event</button>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">Management All Blog</h1>
+        <a class="btn btn-success m-2" href="{{route('blog.create')}}">Add Blog</a>
         {{-- <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Place</button> --}}
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Event Table</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Blog Table</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -23,9 +23,8 @@
                             <tr>
                                 <th>Title</th>
                                 <th>Description</th>
-                                <th>Place Code</th>
+                                <th>Slug</th>
                                 <th>Date</th>
-                                <th>Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -85,8 +84,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
-                    order: [],
-                    ajax: "{{ route('event') }}",
+                    ajax: "{{ route('blog.index') }}",
                     columns: [{
                             data: 'title',
                             name: 'title',
@@ -96,8 +94,8 @@
                             data: 'description'
                         },
                         {
-                            name: 'place_code',
-                            data: 'place_code',
+                            name: 'slug',
+                            data: 'slug',
                             defaultContent: "-"
                         },
 
@@ -105,10 +103,6 @@
                             data: 'date',
                             name: 'date',
                             "defaultContent": "-"
-                        },
-                        {
-                            data: 'deleted_at',
-                            name: 'deleted_at'
                         },
                         {
                             data: 'action',
@@ -164,7 +158,7 @@
                     });
                 })
 
-                $(document).on('click', '.deleteEventButtonNew', function(e) {
+                $(document).on('click', '.delete', function(e) {
                     e.preventDefault();
                     var id = $(this).attr('id');
 
@@ -174,7 +168,7 @@
                             cancelButton: "btn btn-danger"
                         },
                         title: "Are you sure?",
-                        text: "Delete this Event",
+                        text: "Delete this Blog",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: "Yes, delete it!",
@@ -183,8 +177,8 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
-                                type: "POST",
-                                url: "/management/master/my-event/delete/" + id,
+                                type: "DELETE",
+                                url: "/management/master/blog/" + id+"/delete",
                                 dataType: "json",
                                 headers: {
                                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

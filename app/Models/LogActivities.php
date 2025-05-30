@@ -54,6 +54,10 @@ class LogActivities extends Model
     public CONST TYPE_UPDATE_ADVERTISE = "UPDATE_ADVERTISE";
     public CONST TYPE_DELETE_ADVERTISE = "DELETE_ADVERTISE";
 
+    public CONST TYPE_CREATE_BLOG = "CREATE_BLOG";
+    public CONST TYPE_UPDATE_BLOG = "UPDATE_BLOG";
+    public CONST TYPE_DELETE_BLOG = "DELETE_BLOG";
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
 Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
+Route::get('/contact', [AuthController::class, 'contactPage'])->name('contact');
+Route::get('/blog', [AuthController::class, 'blogPage'])->name('blog');
+Route::get('/gallery/ajax-list', [GalleryController::class, 'ajaxList'])->name('gallery.ajax-list');
 
 Route::get('/sync', [DashboardController::class, 'sync']);
 
@@ -91,14 +94,16 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/create', [GalleryController::class, 'create'])->name('gallery.create');
                 Route::post('/store', [GalleryController::class, 'storeOrUpdate'])->name('gallery.storeOrUpdate');
                 Route::get('/{id}/edit', [GalleryController::class, 'edit'])->name('gallery.edit');
+                Route::post('/{id}/toggle-status', [GalleryController::class, 'toggleStatus'])->name('gallery.toggle-status');
                 Route::delete('/{id}/delete', [GalleryController::class, 'destroy'])->name('gallery.destroy');
             });
 
             Route::prefix('blog')->group(function(){
                 Route::get('/', [BlogController::class, 'index'])->name('blog.index');
                 Route::get('/create', [BlogController::class, 'create'])->name('blog.create');
-                Route::post('/store', [BlogController::class, 'storeOrUpdate'])->name('blog.storeOrUpdate');
+                Route::post('/store', [BlogController::class, 'store'])->name('blog.store');
                 Route::get('/{id}/edit', [BlogController::class, 'edit'])->name('blog.edit');
+                Route::post('/update', [BlogController::class, 'update'])->name('blog.update');
                 Route::delete('/{id}/delete', [BlogController::class, 'destroy'])->name('blog.destroy');
             });
             
@@ -120,6 +125,7 @@ Route::group(['prefix' => 'management'], function(){
             });
 
             Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds' ])->name('upload.ads');
+            Route::post('/file/upload/gallery', [FileController::class, 'uploadImageGallery' ])->name('upload.gallery');
             Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace' ])->name('upload.place.ads');
         });
         

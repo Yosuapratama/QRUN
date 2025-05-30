@@ -161,6 +161,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order: [],
                     // ajax: "{{ route('settings.log-activity') }}",
                     ajax: {
                         url: "{{ route('settings.log-activity') }}",

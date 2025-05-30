@@ -110,6 +110,20 @@
             line-height: 35px !important;
         }
 
+        .dataTables_filter {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+
+        .dataTables_length {
+            height: 100%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            margin-right: 10px;
+        }
+
         
     </style>
 @endpush

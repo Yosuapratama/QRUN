@@ -154,12 +154,12 @@
          </div>
 
           <li class="nav-item {{Route::is('advertise.index') ? 'active' : ''}} ">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages4"
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesreport"
                 aria-expanded="true" aria-controls="collapsePages">
                 <i class="fas fa-table fa-fw"></i>
                 <span>@lang('messages.navigation_admin.report.message')</span>
             </a>
-            <div id="collapsePages4" class="collapse {{ Route::is('advertise.index') ? 'show' : '' }}"
+            <div id="collapsePagesreport" class="collapse {{ Route::is('advertise.index') ? 'show' : '' }}"
                 aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item {{ Route::is('advertise.index') ? 'active' : '' }}"

@@ -8,9 +8,86 @@
     <meta name="robots" content="index, follow">
 @endpush
 
+@push('css')
+    <style>
+        #toc-sidebar {
+            right: -10px !important;
+            min-width: 10px !important;
+        }
+
+        #toc-sidebar {
+            right: 0;
+        }
+
+        #toc-sidebar.closed {
+            right: -220px;
+            min-width: 200px;
+            max-width: 260px;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        #toc-sidebar.closed #toc-list,
+        #toc-sidebar.closed div {
+            display: none;
+        }
+
+        #toc-sidebar.closed #toc-toggle {
+            transform: rotate(180deg);
+        }
+
+        #toc-toggle {
+            margin-top: 0px !important;
+        }
+
+        #toc-sidebar ul li {
+            margin-bottom: 8px;
+        }
+
+        #toc-sidebar ul li a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        #toc-sidebar ul li a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="container-fluid overflow-x-hidden">
         <div id="app">
+            <!-- Sidebar TOC -->
+            <div id="toc-sidebar"
+                style="position: fixed; top: 50%; right: 0; transform: translateY(-50%); z-index: 9999; background: #fff; border-radius: 8px 0 0 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 12px 8px 12px 16px; min-width: 200px; max-width: 260px; transition: right 0.3s; border: 1px solid #eee;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex flex-col gap-2 mt-2">
+                        <a href="#contents"
+                            class="d-block px-4 py-2 rounded-lg font-semibold text-gray-700 bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm">
+                            <i class="fa-solid fa-file-lines mr-2 text-blue-500"></i> Content
+                        </a>
+                        @if ($event)
+                            <a href="#events"
+                                class="d-block px-4 py-2 rounded-lg font-semibold text-gray-700 bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm">
+                                <i class="fa-solid fa-calendar-days mr-2 text-green-500"></i> Event
+                            </a>
+                        @endif
+                        <a href="#comments"
+                            class="d-block px-4 py-2 rounded-lg font-semibold text-gray-700 bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm">
+                            <i class="fa-solid fa-comments mr-2 text-yellow-500"></i> Comment
+                        </a>
+                    </div>
+                    <button id="toc-toggle"
+                        style="background: none; border: none; font-size: 18px; cursor: pointer;">❯</button>
+                </div>
+                <ul id="toc-list"
+                    style="margin: 12px 0 0 0; padding: 0; list-style: none; max-height: 400px; overflow-y: auto;"></ul>
+            </div>
+
             @if ($customSettingRunningText->is_active === 1)
                 <marquee direction="left" scrollamount="5" v-if="disabledAfter > 0 || disabledAfter === '0'"
                     style="position: fixed; top: 0; left:0; z-index: 10000; color: {{ $customSettingRunningText->text_color }}; background-color: {{ $customSettingRunningText->background_color }}; font-size: {{ $customSettingRunningText->font_size }}px !important;">
@@ -36,8 +113,8 @@
                             <div class="modal-body">
                                 <div class="centered-main"
                                     style="width: 100%; display:flex; justify-content:center; align-items:center">
-                                    <img  @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds->image_url) }}" @endif  style="max-width: 90%"
-                                        alt="">
+                                    <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds->image_url) }}" @endif
+                                        style="max-width: 90%" alt="">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -70,7 +147,7 @@
             </div>
             <small class="ml-2 mb-2">Translate By Google Translate</small>
             <!-- DataTales Example -->
-            <div class="card shadow mb-4" style="overflow-x: scroll">
+            <div class="card shadow mb-4" style="overflow-x: scroll" id="contents">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Title : {{ $place->title }}</h6>
                     <small class="font-weight-bold text-gray-900">{{ $place->description }} | Created At :
@@ -92,12 +169,38 @@
                     <small class="font-weight-bold text-gray-900">
                     </small>
                 </div>
+                <!-- filepath: d:\QRUN\resources\views\Pages\detail-place\index.blade.php -->
+                <div
+                    class="card-header py-2 d-flex flex-column flex-md-row align-items-md-center justify-content-md-between bg-light rounded mb-2">
+                    <div class="d-flex align-items-center text-secondary">
+                        <i class="fa-solid fa-location-dot text-primary mr-2"></i>
+                        <span class="font-weight-bold mr-2">Daerah:</span>
+
+                        @php
+                            function sentence_case($string)
+                            {
+                                return ucfirst(strtolower($string));
+                            }
+                        @endphp
+
+                        <span>
+                            <span>{{ $place->province?->name ? sentence_case($place->province->name) : '-' }}</span>,
+                            <span>{{ $place->regency?->name ? sentence_case($place->regency->name) : '-' }}</span>,
+                            <span>{{ $place->district?->name ? sentence_case($place->district->name) : '-' }}</span>,
+                            <span>{{ $place->village?->name ? sentence_case($place->village->name) : '-' }}</span>,
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center mt-2 mt-md-0">
+                        <span class="text-muted small mr-1">Kode Wilayah:</span>
+                        <span class="font-monospace text-primary">{{ $place->village?->id ?? '-' }}</span>
+                    </div>
+                </div>
                 <div class="card-body m-2" style="overflow-x: scroll !important;">
                     {!! $place->content !!}
                 </div>
 
                 @if ($event)
-                    <div class="card-header py-3">
+                    <div class="card-header py-3" id="events">
                         <h6 class="m-0 font-weight-bold text-primary">Upcoming Event</h6>
                         <small class="font-weight-bold text-gray-900">Next Event</small>
                     </div>
@@ -107,7 +210,8 @@
                                 <div class="card-header p-2 m-2 rounded text-gray-900 font-weight-bold">
                                     <p class="m-0 font-weight-bold text-primary">{{ $evnt->title }}</p>
                                     <hr class="sidebar-divider">
-                                    <p class="font-weight-bold text-gray-900">{{ $evnt->date->format('Y M d | H:i') }} Wita
+                                    <p class="font-weight-bold text-gray-900">{{ $evnt->date->format('Y M d | H:i') }}
+                                        Wita
                                     </p>
                                     <p></p>
                                     <small>{{ $evnt->description }}</small>
@@ -120,11 +224,12 @@
             </div>
 
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
+                <div class="card-header py-3" id="comments">
                     <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
                     <small class="font-weight-bold text-gray-900">Before posting, make sure your comment is clear and does
                         not contain inappropriate language.</small>
-                    <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to terms
+                    <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to
+                            terms
                             of service</small></p>
                 </div>
                 <div class="card-body">
@@ -351,20 +456,20 @@
         }
 
         /* #\:2\.container {
-                                        display: none !important;
-                                    } */
+                                                                                                display: none !important;
+                                                                                            } */
 
         /* .skiptranslate > #\:2\.container {
-                                display: none !important;
-                            }
+                                                                                        display: none !important;
+                                                                                    }
 
-                            body {
-                                top: 0px !important;
-                            } */
+                                                                                    body {
+                                                                                        top: 0px !important;
+                                                                                    } */
 
         /* .skiptranslate > iframe{
-                                               display: none !important;
-                                            } */
+                                                                                                       display: none !important;
+                                                                                                    } */
     </style>
     @if ($customSettingRunningText->is_active === 1)
         <style scoped>
@@ -381,6 +486,59 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
     <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ambil konten utama (ganti selector jika perlu)
+            const content = document.querySelector('.card-body.m-2');
+            if (!content) return;
+
+            // Ambil semua heading (h2, h3, h4) dalam konten
+            const headings = content.querySelectorAll('h2, h3, h4');
+            const tocList = document.getElementById('toc-list');
+            tocList.innerHTML = '';
+
+            headings.forEach((heading, idx) => {
+                // Buat id unik jika belum ada
+                if (!heading.id) heading.id = 'toc-heading-' + idx;
+                const li = document.createElement('li');
+                li.style.marginLeft = (parseInt(heading.tagName[1]) - 2) * 16 +
+                    'px'; // Indentasi untuk h3, h4 dst
+                const a = document.createElement('a');
+                a.href = '#' + heading.id;
+                a.textContent = heading.textContent;
+                a.onclick = function(e) {
+                    e.preventDefault();
+                    document.getElementById(heading.id).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                };
+                li.appendChild(a);
+                tocList.appendChild(li);
+            });
+
+            // Toggle sidebar
+            const sidebar = document.getElementById('toc-sidebar');
+            const toggleBtn = document.getElementById('toc-toggle');
+            toggleBtn.onclick = function() {
+                sidebar.classList.toggle('closed');
+            };
+
+            // Untuk semua link di sidebar TOC
+            document.querySelectorAll('#toc-sidebar a.d-block').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Cegah perubahan URL
+                    const targetId = this.getAttribute('href').replace('#', '');
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
         // Initialize Vue without jQuery
         var app = new Vue({
             el: '#app',
@@ -644,7 +802,7 @@
                 @if ($ads)
                     this.disabledAfter = "{!! $ads->time !!}";
                     this.isAdsActive = "{!! $ads->is_active !!}";
-                    this.timeAds =  "{!! $ads->time !!}";
+                    this.timeAds = "{!! $ads->time !!}";
 
                     if (this.isAdsActive === "1") {
                         this.showModal();

@@ -49,6 +49,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order: [],
                     ajax: "{{ route('pending-verify.index') }}",
                     columns: [{
                             data: 'name',

@@ -167,6 +167,55 @@
                     </div>
                 </div>
 
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">@lang('messages.dashboard.total_gallery')
+                                    </div>
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ $data['gallery_count'] }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-images fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">@lang('messages.dashboard.total_blog')
+                                    </div>
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                {{ $data['blog_count'] }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-images fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Pending Requests Card Example -->
                 <!-- Earnings (Monthly) Card Example -->
             </div>
@@ -205,8 +254,11 @@
                 </div>
             </div>
 
-            <canvas id="myChart" width="800" height="400"></canvas>
-            <canvas id="myChart2" style="margin-top: 50px; margin-bottom: 30px" width="800" height="300"></canvas>
+           
+             <div class="row" style="gap:10px">
+                <div id="myChart" class="card col-md-12"></div>
+                <div class="card col-md-12" id="myChart2"></d>
+            </div>
         @else
             @php
                 $limitUser = \App\Helpers\SidebarHelper::getAmountOfLimitUser();
@@ -282,6 +334,8 @@
     </div>
     <!-- /.container-fluid -->
     @push('script')
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
         <script>
             $(document).ready(function() {
                 $.ajax({
@@ -328,92 +382,157 @@
             fetch('/management/master/dashboard/data/chart')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data.data);
+                    // Ambil array objek tempat
+                    const places = data.data.place_code[0];
+                    // Ambil views
+                    const views = data.data.no[0];
 
-                    const ctx = document.getElementById('myChart').getContext('2d');
-                    const myChart = new Chart(ctx, {
-                        type: 'line', // jenis chart
-                        data: {
-                            labels: data.data.place_code[0],
-                            datasets: [{
-                                label: 'Highest Views Data (By Place Code)',
-                                data: data.data.no[0],
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1,
-                                fill: true
-                            }]
+                    // Buat label: pakai title jika ada, jika tidak pakai code
+                    const labels = places.map(item => item.title ? item.title : item.code);
+
+                    var options = {
+                        chart: {
+                            type: 'bar',
+                            height: 350,
+                            toolbar: {
+                                show: false
+                            }
                         },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true, // Memastikan y-axis mulai dari 0
-                                    min: 0, // Mengatur nilai minimum
-                                    ticks: {
-                                        callback: function(value) {
-                                            return value; // Menampilkan nilai di y-axis
-                                        }
-                                    }
-                                },
-                                x: {
-                                    ticks: {
-                                        autoSkip: false // Menghindari penghilangan label
-                                    }
+                        plotOptions: {
+                            bar: {
+                                borderRadius: 6,
+                                horizontal: false,
+                                columnWidth: '45%',
+                                distributed: true
+                            }
+                        },
+                        dataLabels: {
+                            enabled: true
+                        },
+                        colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'],
+                        series: [{
+                            name: 'Views',
+                            data: views
+                        }],
+                        xaxis: {
+                            categories: labels,
+                            labels: {
+                                rotate: -30,
+                                style: {
+                                    fontSize: '14px'
+                                }
+                            },
+                            title: {
+                                text: 'Place'
+                            }
+                        },
+                        yaxis: {
+                            min: 0,
+                            title: {
+                                text: 'Views'
+                            }
+                        },
+                        title: {
+                            text: 'Top 5 Places by Views',
+                            align: 'center',
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: function(val) {
+                                    return val + " views";
                                 }
                             }
                         }
-                    });
+                    };
+
+                    var chart = new ApexCharts(document.querySelector("#myChart"), options);
+                    chart.render();
                 });
 
             fetch('/management/master/dashboard/data/user-growth/chart')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
+                    // Format bulan menjadi "MMM YYYY"
+                    const labels = data.map(item => {
+                        const date = new Date(item.month);
+                        return date.toLocaleString('default', {
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                    });
+                    const userCounts = data.map(item => item.user_count);
 
-                    // Prepare labels and data arrays
-                    const labels = data.map(item => item.month); // Extract dates for x-axis
-                    const userCounts = data.map(item => item.user_count); // Extract user counts for y-axis
-
-                    // Find the highest value in the userCounts array
-                    const maxUserCount = Math.max(...userCounts);
-
-                    // Set the Y-axis max value to the highest user count + 10
-                    const yAxisMax = maxUserCount + 10;
-
-                    const ctx = document.getElementById('myChart2').getContext('2d');
-                    const myChart = new Chart(ctx, {
-                        type: 'line', // Chart type
-                        data: {
-                            labels: labels, // Use the labels array here
-                            datasets: [{
-                                label: 'User Growth',
-                                data: userCounts, // Use the userCounts array here
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1,
-                                fill: true
-                            }]
+                    const options = {
+                        chart: {
+                            type: 'area',
+                            height: 350,
+                            toolbar: {
+                                show: false
+                            }
                         },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true, // Ensure the y-axis starts from 0
-                                    min: 0, // Set the minimum value for y-axis
-                                    max: yAxisMax, // Set the maximum value to the highest value + 10
-                                    ticks: {
-                                        callback: function(value) {
-                                            return value; // Display the value on y-axis
-                                        }
-                                    }
-                                },
-                                x: {
-                                    ticks: {
-                                        autoSkip: false // Prevent skipping labels on the x-axis
-                                    }
+                        series: [{
+                            name: 'User Growth',
+                            data: userCounts
+                        }],
+                        xaxis: {
+                            categories: labels,
+                            title: {
+                                text: 'Month'
+                            },
+                            labels: {
+                                style: {
+                                    fontSize: '14px'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            min: 0,
+                            title: {
+                                text: 'User Count'
+                            }
+                        },
+                        dataLabels: {
+                            enabled: true
+                        },
+                        stroke: {
+                            curve: 'smooth',
+                            width: 3
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.4,
+                                opacityTo: 0.1,
+                                stops: [0, 90, 100]
+                            }
+                        },
+                        colors: ['#00B8D9'],
+                        title: {
+                            text: 'User Growth Per Month',
+                            align: 'center',
+                            style: {
+                                fontSize: '20px'
+                            }
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: function(val) {
+                                    return val + " users";
                                 }
                             }
                         }
-                    });
+                    };
+
+                    // Hapus chart lama jika ada
+                    if (window.userGrowthChart) {
+                        window.userGrowthChart.destroy();
+                    }
+                    window.userGrowthChart = new ApexCharts(document.querySelector("#myChart2"), options);
+                    window.userGrowthChart.render();
                 });
         </script>
     @endpush

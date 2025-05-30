@@ -48,6 +48,7 @@
                     },
                     filter: true,
                     processing: true,
+                    order: [],
                     serverSide: false,
                     ajax: "{{ route('users.pending') }}",
                     columns: [{

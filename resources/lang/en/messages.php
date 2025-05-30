@@ -55,6 +55,15 @@ return [
         "description" => "Description",
         "contact_person" => "Contact Person"
     ],
+    "blog" => [
+        "title_heading" => "Create Blog",
+        "table_title" => "Blog Table",
+        "add_blog" => "Create Blog",
+        "edit_blog" => "Edit Blog",
+        "title" => "Title",
+        "description" => "Description", 
+        "datetime" => "Blog Datetime (WITA)"
+    ],
     "my-event" => [
         "title_heading" => "Management Event",
         "table_title" => "Event Table",
@@ -77,7 +86,10 @@ return [
             "total_users_pending_approved" => "PENDING APPROVED",
             "total_place" => "PLACE TOTAL",
             "total_event_active" => "TOTAL EVENT ACTIVE",
-            "total_comments" => "TOTAL COMMENTS"
+            "total_comments" => "TOTAL COMMENTS",
+            "total_advertise" => "TOTAL ADVERTISE",
+            "total_gallery" => "TOTAL GALLERY",
+            "total_blog" => "TOTAL BLOG",
     ],
     'login' => 'Login',
     'logout' => 'Logout',

@@ -113,4 +113,25 @@ class FileController extends Controller
         // return the result
         return response()->json(["image_url" => $path])->header('Content-Type', 'application/json');;
     }
+
+    function uploadImageGallery(Request $request)
+    {
+        $request->validate([
+            'file' => 'mimes:png,jpg,jpeg,gif,webp|max:5000'
+        ]);
+
+        if ($request->file('file')) {
+            $file = $request->file('file');
+
+            $path = "gallery/" . time() . '_' . $file->getClientOriginalName();
+
+            // Define the directory where you want to store the PDF (in the public folder)
+            $publicPath = public_path($path);
+
+            $file->move(dirname($publicPath), basename($publicPath));
+        }
+
+        // return the result
+        return response()->json(["image_url" => $path])->header('Content-Type', 'application/json');;
+    }
 }

@@ -7,19 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
-class Place extends Model
+class Blog extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $table = 'place';
+    public $table = 'blogs';
 
     public $guarded = ['id'];
 
-    public function advertises()
-    {
-        return $this->belongsToMany(Advertise::class, 'advertise_place');
-    }
-    
     public function creator_id()
     {
         return $this->belongsTo(User::class, 'creator_id', 'id')->select('id', 'email');
@@ -40,23 +35,4 @@ class Place extends Model
     {
         return Carbon::parse($value)->format('Y-m-d H:i:s'); // Change format as needed
     }
-
-    public function province()
-    {
-        return $this->belongsTo(Province::class, 'province_id', 'id');
-    }
-
-    public function regency()
-    {
-        return $this->belongsTo(Regency::class, 'regency_id', 'id');
-    }
-    public function district()
-    {
-        return $this->belongsTo(District::class, 'district_id', 'id');
-    }
-    public function village()
-    {
-        return $this->belongsTo(Village::class, 'village_id', 'id');
-    }
-
 }

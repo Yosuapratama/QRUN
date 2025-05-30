@@ -55,6 +55,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order: [],
                     ajax: "{{ route('place-limit.index') }}",
                     columns: [{
                             data: 'name',

@@ -193,6 +193,13 @@ class AuthController extends Controller
             ]);
         }
     
+    public function contactPage(){
+        return view('Pages.Contact');
+    }
+
+    public function blogPage(){
+        return view('Pages.Blog');
+    }
 
     public function resendMailVerification(Request $request){
         $request->user()->sendEmailVerificationNotification();

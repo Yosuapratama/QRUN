@@ -528,7 +528,7 @@ class PlaceController extends Controller
     // (10) This function is used to get detail place for public user to see the detail of the place
     function getDetailPlace($place_code)
     {
-        $place = Place::where('place_code', $place_code)->first();
+        $place = Place::with('province', 'regency', 'district')->where('place_code', $place_code)->first();
         if (!$place) {
             return redirect()->route('homes')->withErrors('Place Not Found !');
         }
@@ -571,7 +571,7 @@ class PlaceController extends Controller
         $customSettingAds = CustomAdsSettings::first();
 
         $ads = $place->advertises->first();
-
+        // dd($place);
         return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds', 'ads'));
     }
 
