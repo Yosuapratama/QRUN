@@ -7,7 +7,7 @@
                         Platform terbaik untuk berbagi informasi baik sejarah ataupun lainnya dan membangun komunitas. 
                         Mulai perjalanan Anda bersama kami.
                     </p>
-                    <div class="flex space-x-4">
+                    {{-- <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white">
                             <i class="fab fa-facebook-f"></i>
                         </a>
@@ -20,26 +20,26 @@
                         <a href="#" class="text-gray-400 hover:text-white">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
                 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Menu</h4>
                     <ul class="space-y-2">
-                        <li><a href="index.html" class="text-gray-400 hover:text-white">Beranda</a></li>
-                        <li><a href="blog.html" class="text-gray-400 hover:text-white">Blog</a></li>
+                        <li><a href="{{route('homes')}}" class="text-gray-400 hover:text-white">Beranda</a></li>
+                        <li><a href="{{route('blog')}}" class="text-gray-400 hover:text-white">Blog</a></li>
                         {{-- <li><a href="#" class="text-gray-400 hover:text-white">Tentang</a></li> --}}
-                        <li><a href="contact.html" class="text-gray-400 hover:text-white">Kontak</a></li>
+                        <li><a href="{{route('contact')}}" class="text-gray-400 hover:text-white">Kontak</a></li>
                     </ul>
                 </div>
                 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Akun</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Login</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Register</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="{{route('login')}}" class="text-gray-400 hover:text-white">Login</a></li>
+                        <li><a href="{{route('register')}}" class="text-gray-400 hover:text-white">Register</a></li>
+                        <li><a href="{{route('termsOfService')}}" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                        <li><a href="{{route('privacyPolicy')}}" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
                     </ul>
                 </div>
             </div>

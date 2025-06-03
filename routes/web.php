@@ -24,6 +24,11 @@ use Illuminate\Support\Facades\Session;
 Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
 Route::get('/contact', [AuthController::class, 'contactPage'])->name('contact');
 Route::get('/blog', [AuthController::class, 'blogPage'])->name('blog');
+Route::get('/blog/{slug}', [AuthController::class, 'detailBlog'])->name('blog.detail');
+
+Route::get('/blog-ajax/search', [AuthController::class, 'search'])->name('blog.search');
+Route::get('/blog-ajax/load-more', [AuthController::class, 'loadMore'])->name('blog.loadMore');
+
 Route::get('/gallery/ajax-list', [GalleryController::class, 'ajaxList'])->name('gallery.ajax-list');
 
 Route::get('/sync', [DashboardController::class, 'sync']);
@@ -126,6 +131,7 @@ Route::group(['prefix' => 'management'], function(){
 
             Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds' ])->name('upload.ads');
             Route::post('/file/upload/gallery', [FileController::class, 'uploadImageGallery' ])->name('upload.gallery');
+            Route::post('/file/upload/blog', [FileController::class, 'uploadImageBlog' ])->name('upload.blog');
             Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace' ])->name('upload.place.ads');
         });
         

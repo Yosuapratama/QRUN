@@ -76,13 +76,13 @@ class BlogController extends Controller
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $url = $this->applicationURLLocal . '/detail-place/' . $row->place_code;
+                    // $url = $this->applicationURLLocal . '/detail-place/' . $row->place_code;
                     $editUrl = $this->applicationURLLocal . '/management/master/blog/' . $row->id . '/edit';
                     // $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $row->place_code;
 
                     $btn = "<div class='d-flex'>";
-                    $btn = $btn . "<button id='$row->place_code' class='detailPlaceButton btn btn-primary btn-sm mr-1'>Detail</button>";
-                    $btn = $btn . "<a target='_blank' href='$url' class='btn btn-warning btn-sm mr-1'>Visit</a>";
+                    // $btn = $btn . "<button id='$row->place_code' class='detailPlaceButton btn btn-primary btn-sm mr-1'>Detail</button>";
+                    // $btn = $btn . "<a target='_blank' href='$url' class='btn btn-warning btn-sm mr-1'>Visit</a>";
                     $btn = $btn . "<a target='_blank' href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
                     // $btn = $btn . "<a target='_blank' href='$printUrl' class='btn btn-success btn-sm mr-1'>Print</a>";
                     $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
@@ -159,7 +159,9 @@ class BlogController extends Controller
             [
                 'title' => 'required',
                 'description' => 'required',
-                'content' => 'required'
+                'content' => 'required',
+                'image_url' => 'required',
+                'slug' => 'required|unique:blogs,slug,' . $request->id ?? null
             ],
             [
                 'title.required' => 'Title Fields is required',
@@ -254,10 +256,11 @@ class BlogController extends Controller
         $content = $dom->saveHTML();
 
         $Blog->title = $request->title;
-        $Blog->slug = 'blog-' . Str::slug($request->title) . '-' . Str::random(10) . '-' . time();
+        $Blog->slug = Str::slug($request->slug);
         $Blog->description = $request->description;
         $Blog->content = $content;
-        $Blog->is_publish = $request->is_published == 'on' ? 1 : 0;
+        $Blog->is_published = $request->is_published == 'on' ? 1 : 0;
+        $Blog->image_url = $request->image_url;
 
         $Blog->update();
 
@@ -279,7 +282,9 @@ class BlogController extends Controller
         $Validate = $request->validate([
             'title' => 'required',
             'description' => 'required',
-            'content' => 'required'
+            'content' => 'required',
+            'image_url' => 'required',
+            'slug' => 'required|unique:blogs,slug,' . $request->id ?? null
         ], [
             'title.required' => 'Title Fields is required',
             'description.required' => 'Description is required',
@@ -296,7 +301,7 @@ class BlogController extends Controller
         $imageData = [];
 
         $user_id = Auth::user()->id;
-        $Blog_id = Blog::latest()->first()->id + 1;
+        $Blog_id = Blog::latest()->first()?->id == null ? 1 : Blog::latest()->first()->id + 1;
 
         // Setup Images
         if ($images) {
@@ -356,13 +361,14 @@ class BlogController extends Controller
         // dd($request->reg_province);
 
         $Blog = Blog::create([
-            'slug' => 'blog-' . Str::slug($request->title) . '-' . Str::random(10) . '-' . time(),
+            'slug' => Str::slug($request->slug),
             'title' => $request->title,
             'description' => $request->description,
             'creator_id' => $user_id,
             'content' => $content,
             'views' => 0,
             'is_published' => $request->is_published == "on" ? 1 : 0,
+            'image_url' => $request->image_url
         ]);
 
 

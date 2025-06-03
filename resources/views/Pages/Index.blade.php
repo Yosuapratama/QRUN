@@ -55,10 +55,10 @@
                         mudah digunakan untuk semua kalangan.
                     </p>
                     <div class="space-x-4">
-                        <a href="{{route('login')}}"
+                        <a href="{{ route('login') }}"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium inline-block">Mulai
                             Sekarang</a>
-                        <a href="{{route('blog')}}"
+                        <a href="{{ route('blog') }}"
                             class="border border-gray-300 hover:border-gray-400 text-gray-700 px-6 py-3 rounded-lg font-medium inline-block">Lihat
                             Blog</a>
                     </div>
@@ -82,7 +82,11 @@
             </p>
             <div class="relative bg-gray-900 rounded-lg overflow-hidden shadow-xl">
                 <div class="aspect-w-16 aspect-h-9">
-                    <iframe width="100%" height="400px" src="https://www.youtube.com/embed/W5IUwH-tk8g?si=_2OtIl56GzFtULGh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <iframe width="100%" height="400px"
+                        src="https://www.youtube.com/embed/W5IUwH-tk8g?si=_2OtIl56GzFtULGh" title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
@@ -273,104 +277,59 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Blog Post 1 -->
-                <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <img src="/placeholder.svg?height=200&width=400" alt="Blog Post 1"
-                        class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <div class="flex items-center text-sm text-gray-500 mb-3">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            <span>15 Januari 2024</span>
-                            <span class="mx-2">•</span>
-                            <i class="fas fa-user mr-2"></i>
-                            <span>Admin</span>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-3 hover:text-blue-600">
-                            <a href="blog-detail.html">Tips Memulai Blog untuk Pemula</a>
-                        </h3>
-                        <p class="text-gray-600 mb-4">
-                            Panduan lengkap untuk memulai perjalanan blogging Anda. Dari memilih niche hingga menulis
-                            konten yang menarik...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                <span><i class="fas fa-eye mr-1"></i> 1.2k</span>
-                                <span><i class="fas fa-heart mr-1"></i> 89</span>
-                                <span><i class="fas fa-comment mr-1"></i> 23</span>
+                @forelse ($blogs as $blog)
+                    <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                        <img src="{{ asset($blog->image_url) }}" alt="Blog Post 1" class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center text-sm text-gray-500 mb-3">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <span>
+                                    {{-- format this date --}}
+                                    {{ $blog->created_at }}
+                                </span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-user mr-2"></i>
+                                <span>Admin</span>
                             </div>
-                            <a href="blog-detail.html" class="text-blue-600 hover:text-blue-700 font-medium">
-                                Baca Selengkapnya <i class="fas fa-arrow-right ml-1"></i>
-                            </a>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3 hover:text-blue-600">
+                                <a href="/blog/{{ $blog->slug }}">{{ $blog->title }}</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                {{ $blog->description }}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-eye mr-1"></i>
+                                        @php
+                                            $num = $blog->views;
+                                            $formatted = $num < 1000 ? $num : number_format($num / 1000, 1) . 'K';
+                                        @endphp
+                                        {{ $formatted }}
+                                    </span>
+                                    {{-- <span><i class="fas fa-heart mr-1"></i> 89</span>
+                                    <span><i class="fas fa-comment mr-1"></i> 23</span> --}}
+                                </div>
+                                <a href="/blog/{{ $blog->slug }}"
+                                    class="text-blue-600 hover:text-blue-700 font-medium">
+                                    Baca Selengkapnya <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                @empty
+                    <div class="col-span-full flex flex-col items-center justify-center py-12 px-4">
+                        <div class="text-center">
+                            <i class="fas fa-newspaper text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak Ada Artikel Terkait</h3>
+                            <p class="text-gray-500">Belum ada artikel lain yang tersedia saat ini.</p>
                         </div>
                     </div>
-                </article>
+                @endforelse
 
-                <!-- Blog Post 2 -->
-                <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <img src="/placeholder.svg?height=200&width=400" alt="Blog Post 2"
-                        class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <div class="flex items-center text-sm text-gray-500 mb-3">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            <span>12 Januari 2024</span>
-                            <span class="mx-2">•</span>
-                            <i class="fas fa-user mr-2"></i>
-                            <span>Sarah</span>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-3 hover:text-blue-600">
-                            <a href="blog-detail.html">Strategi SEO untuk Blog di 2024</a>
-                        </h3>
-                        <p class="text-gray-600 mb-4">
-                            Pelajari teknik SEO terbaru yang akan membantu blog Anda mendapat ranking tinggi di mesin
-                            pencari...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                <span><i class="fas fa-eye mr-1"></i> 2.1k</span>
-                                <span><i class="fas fa-heart mr-1"></i> 156</span>
-                                <span><i class="fas fa-comment mr-1"></i> 45</span>
-                            </div>
-                            <a href="blog-detail.html" class="text-blue-600 hover:text-blue-700 font-medium">
-                                Baca Selengkapnya <i class="fas fa-arrow-right ml-1"></i>
-                            </a>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Blog Post 3 -->
-                <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                    <img src="/placeholder.svg?height=200&width=400" alt="Blog Post 3"
-                        class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <div class="flex items-center text-sm text-gray-500 mb-3">
-                            <i class="fas fa-calendar-alt mr-2"></i>
-                            <span>10 Januari 2024</span>
-                            <span class="mx-2">•</span>
-                            <i class="fas fa-user mr-2"></i>
-                            <span>Budi</span>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-3 hover:text-blue-600">
-                            <a href="blog-detail.html">Monetisasi Blog: Cara Menghasilkan Uang</a>
-                        </h3>
-                        <p class="text-gray-600 mb-4">
-                            Berbagai cara untuk menghasilkan income dari blog Anda. Mulai dari affiliate marketing
-                            hingga sponsored content...
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                <span><i class="fas fa-eye mr-1"></i> 3.5k</span>
-                                <span><i class="fas fa-heart mr-1"></i> 234</span>
-                                <span><i class="fas fa-comment mr-1"></i> 67</span>
-                            </div>
-                            <a href="blog-detail.html" class="text-blue-600 hover:text-blue-700 font-medium">
-                                Baca Selengkapnya <i class="fas fa-arrow-right ml-1"></i>
-                            </a>
-                        </div>
-                    </div>
-                </article>
             </div>
 
             <div class="text-center mt-12">
-                <a href="{{route('blog')}}"
+                <a href="{{ route('blog') }}"
                     class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium inline-flex items-center">
                     Lihat Semua Blog <i class="fas fa-arrow-right ml-2"></i>
                 </a>
@@ -542,10 +501,11 @@
             if (loading) return;
             loading = true;
             $('#load-more').prop('disabled', true).text('Loading...');
+
             $.get("{{ route('gallery.ajax-list') }}", {
                 page: page
             }, function(res) {
-                if (res.data.length) {
+                if (res.data && res.data.length > 0) {
                     res.data.forEach(item => {
                         $('#gallery-grid').append(renderGalleryItem(item));
                     });
@@ -555,7 +515,17 @@
                     } else {
                         $('#load-more').hide();
                     }
-                } else {
+                } else if (page === 1) {
+                    // Show empty state if no data on first load
+                    $('#gallery-grid').html(`
+                <div class="col-span-full flex flex-col items-center justify-center py-12 px-4">
+                    <div class="text-center">
+                        <i class="fas fa-images text-4xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Tidak Ada Gallery</h3>
+                        <p class="text-gray-500">Belum ada gallery yang tersedia saat ini.</p>
+                    </div>
+                </div>
+            `);
                     $('#load-more').hide();
                 }
                 loading = false;

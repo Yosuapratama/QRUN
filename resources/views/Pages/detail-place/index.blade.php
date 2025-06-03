@@ -229,8 +229,8 @@
                     <small class="font-weight-bold text-gray-900">Before posting, make sure your comment is clear and does
                         not contain inappropriate language.</small>
                     <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to
-                            terms
-                            of service</small></p>
+                            <a href="{{route('termsOfService')}}">terms
+                            of service</a> and <a href="{{route('privacyPolicy')}}">Privacy Policy</a></small></p>
                 </div>
                 <div class="card-body">
                     @if ($place->is_comment)

@@ -15,12 +15,17 @@ class Blog extends Model
 
     public $guarded = ['id'];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
     public function creator_id()
     {
         return $this->belongsTo(User::class, 'creator_id', 'id')->select('id', 'email');
     }
 
-     /**
+    /**
      * Get the formatted created_at attribute.
      */
     public function getCreatedAtAttribute($value)

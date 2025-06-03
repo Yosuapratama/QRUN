@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('title');
             $table->string('description');
+            $table->text('image_url');
             $table->foreignId('creator_id')->nullable()->references('id')->on('users');
             $table->longText('content');
             $table->integer('views');
