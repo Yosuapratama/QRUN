@@ -93,8 +93,8 @@ class DashboardController extends Controller
             ];
         } else {
 
-            $place = Place::select('id')->where('creator_id', Auth::user()->id)->get();
-            $event = $place ? Event::whereIn('place_id', $place)->count() : 0;
+            $place = Place::select('id')->where('creator_id', Auth::user()->id)->get()->pluck('id');
+            $event = $place->isNotEmpty() ? Event::whereIn('place_id', $place)->count() : 0;
 
             // Get All place created by user
             $placeData = Place::where('creator_id', Auth::user()->id)->get()->pluck('id');

@@ -7,6 +7,14 @@
     <title>{{ $data->title }} - Qrun Website</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="description" content="{{ $data->description ?? $data->title }}">
+    <meta name="keywords" content="blog, tips, pemula, tutorial, qrun, artikel, {{ $data->title }}">
+    <meta property="og:title" content="{{ $data->title }} - Qrun Website">
+    <meta property="og:description" content="{{ $data->description ?? $data->title }}">
+    <meta property="og:image" content="{{ asset($data->image_url) }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="author" content="Admin">
 </head>
 
 <body class="bg-gray-50">

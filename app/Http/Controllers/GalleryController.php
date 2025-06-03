@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
+use App\Models\LogActivities;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class GalleryController extends Controller
@@ -76,8 +79,24 @@ class GalleryController extends Controller
             if (!$gallery) {
                 return redirect()->route('gallery.index')->withErrors('Gallery data not found !');
             }
+
+            LogActivities::create([
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->header('User-Agent'),
+                'user_id' => Auth::user()->id,
+                'activities' => "User update data with gallery id = " . $gallery->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+                "type" => LogActivities::TYPE_UPDATE_GALLERY
+            ]);
         } else {
             $gallery = new Gallery;  // Create a new galleryvertise instance if no ID is provided
+
+            LogActivities::create([
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->header('User-Agent'),
+                'user_id' => Auth::user()->id,
+                'activities' => "User create data with gallery id = " . $gallery->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+                "type" => LogActivities::TYPE_CREATE_GALLERY
+            ]);
         }
 
 
@@ -151,7 +170,19 @@ class GalleryController extends Controller
 
         $gallery->delete(); // Soft delete the gallery
 
-        return redirect()->route('gallery.index')->with('success', 'Gallery deleted successfully !');
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User delete data with gallery id = " . $gallery->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_GALLERY
+        ]);
+
+        return response()->json([
+            'success' => 'Data deleted successfully !'
+        ]);
+
+        // return redirect()->route('gallery.index')->with('success', 'Gallery deleted successfully !');
     }
 
     public function ajaxList(Request $request)

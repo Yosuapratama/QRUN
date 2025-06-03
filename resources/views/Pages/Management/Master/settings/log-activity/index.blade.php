@@ -54,6 +54,18 @@
                                 <option value="UPDATE_USER_LIMIT">Update user limit</option>
                                 <option value="DELETE_USER_LIMIT">Delete user limit</option>
 
+                                <option value="CREATE_BLOG">Create blog</option>
+                                <option value="UPDATE_BLOG">Update blog</option>
+                                <option value="DELETE_BLOG">Delete blog</option>
+
+                                <option value="CREATE_GALLERY">Create Gallery</option>
+                                <option value="UPDATE_GALLERY">Update Gallery</option>
+                                <option value="DELETE_GALLERY">Delete Gallery</option>
+
+                                <option value="CREATE_ADVERTISE">Create Advertise</option>
+                                <option value="UPDATE_ADVERTISE">Update Advertise</option>
+                                <option value="DELETE_ADVERTISE">Delete Advertise</option>
+
                             </select>
                         </div>
                         <div class="form-group">

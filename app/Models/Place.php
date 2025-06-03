@@ -15,9 +15,24 @@ class Place extends Model
 
     public $guarded = ['id'];
 
+    protected $appends = ['comment_count'];
+
+    // Relationship to advertises
     public function advertises()
     {
         return $this->belongsToMany(Advertise::class, 'advertise_place');
+    }
+
+    // Relationship to comments
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'place_id', 'id');
+    }
+
+    // Get the count of comments for this place
+    public function getCommentCountAttribute()
+    {
+        return $this->comments()->count();
     }
     
     public function creator_id()

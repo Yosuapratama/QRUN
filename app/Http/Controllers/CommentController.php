@@ -49,7 +49,7 @@ class CommentController extends Controller
             
         }else {
             if ($request->ajax()) {
-                $place = Place::select('id')->where('creator_id', Auth::user()->id)->get();
+                $place = Place::select('id')->where('creator_id', Auth::user()->id)->get()->pluck('id');
 
                 $data = Comment::whereIn('place_id', $place)->with('user', 'place')->get();
                 
