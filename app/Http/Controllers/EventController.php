@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Place;
 use App\Models\Event;
+use App\Models\LogActivities;
+use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {
@@ -40,8 +42,10 @@ class EventController extends Controller
 
             $data = Event::with('places')->orderBy('updated_at', 'DESC')->get();
             foreach($data as $dt){
-                if($dt->places->creator_id === Auth::user()->id){
-                    $arrData[] = $dt;
+                if($dt->places){
+                    if($dt->places->creator_id === Auth::user()->id){
+                        $arrData[] = $dt;
+                    }
                 }
             }
         }
@@ -55,6 +59,10 @@ class EventController extends Controller
                 ->editColumn('deleted_at', function ($row) {
                     return $row->deleted_at ? 'Deleted' : 'Active'  ;
                 })
+                ->editColumn('place_code', function ($row) {
+                    $place_code = $row->places->place_code ?? '-';
+                    return "<a target='_blank' href='/detail-place/$place_code'>$place_code</a>";
+                })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $btn = "<div class='d-flex justify-content-center'>";
@@ -65,7 +73,7 @@ class EventController extends Controller
                     $btn = $btn."</div>";
                     return $btn;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['action', 'place_code'])
                 ->make(true);    
         }
 
@@ -109,6 +117,15 @@ class EventController extends Controller
             'description' => $request->description,
             'date' => $request->datetime
         ]);
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Event Data at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_EVENT
+        ]);
+
 
         return response()->json([
             'success' => 'Event Created Successfully !'
@@ -190,6 +207,14 @@ class EventController extends Controller
             'date' => $request->datetime
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Event Data at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_EVENT
+        ]);
+
         return response()->json([
             'success' => 'Event Created Successfully !'
         ]);
@@ -231,6 +256,14 @@ class EventController extends Controller
         $Event->date = $request->datetime;
         $Event->update();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Updated Event Data with Id : ".$Event->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_EVENT
+        ]);
+
         return response()->json([
             'success' => 'Edit Event Successfully !'
         ]);
@@ -256,6 +289,14 @@ class EventController extends Controller
                 ]);
             }
         }
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Deleted Event Data with Id : ".$Event->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_EVENT
+        ]);
 
         return response()->json([
             'success' => 'Event Delete Success !'

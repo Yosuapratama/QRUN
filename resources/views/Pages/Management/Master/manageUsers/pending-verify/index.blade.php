@@ -49,6 +49,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order: [],
                     ajax: "{{ route('pending-verify.index') }}",
                     columns: [{
                             data: 'name',
@@ -56,13 +57,15 @@
                             orderable: true
                         }, {
                             data: 'phone',
-                            name: 'phone'
+                            name: 'phone',
+                            "defaultContent": "-"
                         }, {
                             data: 'email',
                             name: 'email'
                         }, {
                             data: 'address',
-                            name: 'address'
+                            name: 'address',
+                            "defaultContent": "-"
                         },
                         {
                             data: 'status',

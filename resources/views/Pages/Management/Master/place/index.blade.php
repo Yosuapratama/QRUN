@@ -48,11 +48,12 @@
                         $('td:eq(2)', row).css('min-width', '200px');
                         $('td:eq(3)', row).css('min-width', '200px');
                         $('td:eq(4)', row).css('min-width', '200px');
-                        $('td:eq(5)', row).css('min-width', '120px');
+                        $('td:eq(5)', row).css('min-width', '180px');
                     },
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order:[],
                     ajax: "{{ route('place') }}",
                     columns: [{
                             data: 'title',
@@ -91,7 +92,6 @@
 
                 $(document).on('click', '.detailPlaceButton', function(e) {
                     e.preventDefault();
-                    $('#detailPlaceModal').modal('show');
                     var id = $(this).attr('id');
                     $.ajax({
                         type: "GET",
@@ -101,13 +101,16 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function(response) {
-                            console.log(response);
                             $('#detailTitle').val(response.data.title);
                             $('#description').val(response.data.description);
-                            $('#created_by').val(response.data.creator_id.email);
+                            $('#created_by').val(response.data.creator_id?.email ?? '-');
                             $('#updated_at').val(response.data.updated_at);
+                            $('#detailPhoneNumber').val(response.data.phone_num ?? '-');
                             $('#created_at').val(response.data.created_at);
                             $('#total_event').val(response.total_event);
+
+                            console.log(response.data);
+                    $('#detailPlaceModal').modal('show');
 
                         },
                         error: function(err) {

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewUserRegistered;
+use App\Models\Blog;
+use App\Models\LogActivities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +16,10 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
+use App\Models\Place;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -54,16 +61,24 @@ class AuthController extends Controller
 
 
         if (Auth::attempt($request->only(['email', 'password']))) {
-            if(!Auth::user()->email_verified_at){
+            if (!Auth::user()->email_verified_at) {
                 $this->logout($request);
                 return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
             }
-            Log::info([
-                'status' => 'User Logged in',
-                'time' => Date::now(),
+            // Log::info([
+            //     'status' => 'User Logged in',
+            //     'time' => Date::now(),
+            //     'user_id' => Auth::user()->id,
+            //     'email' => Auth::user()->email,
+            //     'ip_address' => request()->ip()
+            // ]);
+
+            LogActivities::create([
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->header('User-Agent'),
                 'user_id' => Auth::user()->id,
-                'email' => Auth::user()->email,
-                'ip_address' => request()->ip()
+                'activities' => "User Login at " . Carbon::now()->format('Y-m-d H:i:s'),
+                "type" => LogActivities::TYPE_LOGIN
             ]);
 
             return redirect()->route('dashboard')->with('success', 'Login Success !');
@@ -79,6 +94,40 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->withErrors('You Already Logged in !');
         }
         return view('Pages.Register');
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+        $blogs = Blog::select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')
+            ->where('title', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
+            ->where('is_published', true)
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get();
+
+        return response()->json([
+            'blogs' => $blogs,
+            'html' => view('partials.blog-cards', compact('blogs'))->render()
+        ]);
+    }
+
+    public function loadMore(Request $request)
+    {
+        $page = $request->get('page', 1);
+        $blogs = Blog::select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')
+            ->where('is_published', true)
+            ->orderBy('created_at', 'desc')
+            ->skip(($page - 1) * 6)
+            ->take(6)
+            ->get();
+
+        return response()->json([
+            'blogs' => $blogs,
+            'hasMore' => $blogs->count() == 6,
+            'html' => view('partials.blog-cards', compact('blogs'))->render()
+        ]);
     }
 
     // (4) Store Register & Auto attempt/login to dashboard admin
@@ -106,7 +155,7 @@ class AuthController extends Controller
             'password2.same' => 'Confirm Password is wrong !'
         ]);
 
-        if(!$request->has('agreedTOS')){
+        if (!$request->has('agreedTOS')) {
             return back()->withErrors('You Must Agreed Terms of service this application !');
         }
         $user = User::create([
@@ -126,9 +175,18 @@ class AuthController extends Controller
             'ip_address' => request()->ip()
         ]);
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => $user->id,
+            'activities' => "User Register at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_REGISTER
+        ]);
+
         $user->assignRole('localadmin');
 
-        // Mail::to($user->email)->send(new RegisterMail($user));
+        //Mail::to(config('mail.to.address'))->send(new NewUserRegistered($user));
+        Mail::to(env('MAIL_TO_ADDRESS', 'qrunonline@gmail.com'))->send(new NewUserRegistered($user));
         event(new Registered($user));
 
         return redirect()->route('login')->with('success', 'Register Success, Check Your Email for verification !');
@@ -136,6 +194,15 @@ class AuthController extends Controller
     // (5) Logout function for all users
     public function logout(Request $request)
     {
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Logout at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_LOGOUT
+        ]);
+
         Auth::logout();
 
         $request->session()->invalidate();
@@ -146,34 +213,94 @@ class AuthController extends Controller
     }
 
     // (6) Redirect Login Function
-    function redirectToLogin()
+
+    function redirectToLogin(Request $request)
     {
-        return redirect()->route('login');
+        $query = $request->input('search');
+        if ($query) {
+            $data = Place::when($query, function ($queryBuilder) use ($query) {
+                return $queryBuilder->where('title', 'LIKE', "%{$query}%")
+                    ->orWhere('description', 'LIKE', "%{$query}%");
+            })->paginate(10);
+        } else {
+            $data = Place::orderBy('views', 'DESC')->paginate(5);
+        }
+
+        return view('Pages.Index', [
+            'data' => $data,
+            'blogs' => Blog::where('is_published', 1)->select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')->orderByDesc('created_at')->limit(3)->get()
+        ]);
     }
 
-    public function resendMailVerification(Request $request){
+    public function detailBlog($slug)
+    {
+        $blog = Blog::where('slug', $slug)->first();
+
+        if (!$blog) {
+            abort(404);
+        }
+
+        // Check if user has viewed this blog in the last 24 hours
+        $cookieName = 'blog_view_' . $blog->id;
+        if (!request()->cookie($cookieName)) {
+            // Increment view count
+            $blog->increment('views');
+
+            // Set cookie that expires in 24 hours
+            cookie()->queue($cookieName, true, 60 * 24); // 24 hours in minutes
+        }
+
+        return view('Pages.BlogDetail', [
+            'data' => $blog,
+            'blogs' => Blog::where('is_published', 1)
+                ->whereNot('slug', $slug)
+                ->select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')
+                ->orderByDesc('created_at')
+                ->limit(4)
+                ->get()
+        ]);
+    }
+
+    public function contactPage()
+    {
+        return view('Pages.Contact');
+    }
+
+    public function blogPage()
+    {
+        return view('Pages.Blog', [
+            'popularBlogs' => Blog::where('is_published', 1)->select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')->orderByDesc('created_at')->orderByDesc('views')->limit(6)->get(),
+            'blogs' => Blog::where('is_published', 1)->select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')->orderByDesc('created_at')->limit(6)->get()
+        ]);
+    }
+
+    public function resendMailVerification(Request $request)
+    {
         $request->user()->sendEmailVerificationNotification();
- 
+
         return back()->with('success', 'Verification link sent!');
     }
 
-    public function verifyMail(EmailVerificationRequest $request){
+    public function verifyMail(EmailVerificationRequest $request)
+    {
         $request->fulfill();
         return redirect()->route('dashboard')->with('success', 'Your email has been verified');
     }
-    public function forgotPassword(){
+    public function forgotPassword()
+    {
         return view('Pages.auth.ForgotPassword');
     }
-    public function submitForgotPassword(Request $request){
+    public function submitForgotPassword(Request $request)
+    {
         $request->validate([
             'email' => 'required|email'
         ]);
 
         $isValidUser = User::where('email', $request->email)->first();
-        if(!$isValidUser){
+        if (!$isValidUser) {
             return back()->withErrors('Email not found !');
         }
- 
+
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -187,17 +314,22 @@ class AuthController extends Controller
         if ($status == Password::RESET_LINK_SENT) {
             return back()->with('status', __('We have emailed your password reset link!'));
         }
-     
+
         return $status === Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
     }
 
-    public function resetPassView(){
+    public function resetPassView()
+    {
+        if (Auth::check()) {
+            Auth::logout();
+        }
         return view('Pages.auth.ResetPassword');
     }
 
-    public function updatePassword(Request $request){
+    public function updatePassword(Request $request)
+    {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
@@ -210,26 +342,26 @@ class AuthController extends Controller
             'password.min' => 'Password minimum 8 characters',
             'password.confirmed' => 'Confirm Password is required'
         ]);
-     
+
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password)
                 ])->setRememberToken(Str::random(60));
-     
+
                 $user->save();
-     
+
                 event(new PasswordReset($user));
             }
         );
 
-        if($status == Password::INVALID_TOKEN){
+        if ($status == Password::INVALID_TOKEN) {
             return back()->withErrors('Token is invalid !');
         }
-     
+
         return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', 'Your password has been reset!')
-                    : back()->withErrors(['email' => trans($status)]);
+            ? redirect()->route('login')->with('status', 'Your password has been reset!')
+            : back()->withErrors(['email' => trans($status)]);
     }
 }

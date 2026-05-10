@@ -49,6 +49,7 @@
                     filter: true,
                     processing: true,
                     serverSide: false,
+                    order: [],
                     ajax: "{{ route('users.blocked') }}",
                     columns: [{
                             data: 'name',
@@ -56,13 +57,16 @@
                             orderable: true
                         }, {
                             data: 'phone',
-                            name: 'phone'
+                            name: 'phone',
+                            "defaultContent": "-"
                         }, {
                             data: 'email',
-                            name: 'email'
+                            name: 'email',
+                            "defaultContent": "-"
                         }, {
                             data: 'address',
-                            name: 'address'
+                            name: 'address',
+                            "defaultContent": "-"
                         },
                         {
                             data: 'status',

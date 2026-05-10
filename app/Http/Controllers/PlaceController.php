@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\CustomAdsSettings;
+use App\Models\CustomRunningTextSettings;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
@@ -10,8 +12,11 @@ use Illuminate\Support\Str;
 use App\Models\Place;
 use App\Models\Image;
 use App\Models\Event;
+use App\Models\LogActivities;
 use App\Models\UserHasPlaceLimit;
 use DOMDocument;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PlaceController extends Controller
@@ -90,12 +95,12 @@ class PlaceController extends Controller
     // (2) This Func For Superadmin to edit users place
     function editPlace($place_code)
     {
-        if(!Auth::user()->hasRole('superadmin')){
+        if (!Auth::user()->hasRole('superadmin')) {
             $Place = Place::where('place_code', $place_code)->where('creator_id', Auth::user()->id)->first();
-            if(!$Place){
+            if (!$Place) {
                 return abort(404);
             }
-        }else{
+        } else {
             $Place = Place::where('place_code', $place_code)->first();
         }
         if (!$Place) {
@@ -130,19 +135,19 @@ class PlaceController extends Controller
         if (!Auth::user()->hasRole('superadmin')) {
             if (Auth::user()->approved_at) {
                 $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
-                if($checkTheLimitOfUserPlace){
-                    if(Place::where('creator_id', Auth::user()->id)->count() <= $checkTheLimitOfUserPlace->placeLimit->total_limit){
+                if ($checkTheLimitOfUserPlace) {
+                    if (Place::where('creator_id', Auth::user()->id)->count() <= $checkTheLimitOfUserPlace->placeLimit->total_limit) {
                         return view('Pages.Management.Master.place.form');
-                    }else{
+                    } else {
                         return redirect()->route('dashboard')->withErrors('Your account place has entered the limit !');
                     }
-                }else{
+                } else {
                     $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
-    
+
                     if ($Place) {
                         $url = $this->applicationURLLocal . '/detail-place/' . $Place->place_code;
                         $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $Place->place_code;
-        
+
                         return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
                     } else {
                         $Place = null;
@@ -151,15 +156,12 @@ class PlaceController extends Controller
                         return view('Pages.Management.Master.my-place.index', compact('Place', 'url', 'printUrl'));
                     }
                 }
-            }else {
+            } else {
                 return back()->withErrors('Your Account Need Approval First !');
-            }   
-
-        }else{
+            }
+        } else {
             return view('Pages.Management.Master.place.form');
         }
-
-        
     }
     // (5) For admin to delete place user, after do this delete, the user can create a new place, like new account approved
     function deletePlace($place_code)
@@ -174,13 +176,12 @@ class PlaceController extends Controller
             }
 
             $GetPlace->delete();
-            
+
             $commentData = Comment::where('place_id', $GetPlace->id)->get();
 
             foreach ($commentData as $key => $comment) {
                 $commentData[$key]->delete();
             }
-
         } else {
             $GetPlace->delete();
             $commentData = Comment::where('place_id', $GetPlace->id)->get();
@@ -189,6 +190,14 @@ class PlaceController extends Controller
                 $commentData[$key]->delete();
             }
         }
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Deleted Place Data with Place Code : " . $place_code . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_PLACE
+        ]);
 
         return response()->json([
             'success' => 'Delete Success !'
@@ -216,6 +225,54 @@ class PlaceController extends Controller
             return back()->withErrors('Your Account Need Approval First !');
         }
     }
+    
+    public function sanitizeHtml($html) {
+        // 1. Hapus tag berbahaya (kecuali iframe)
+        $dangerousTags = ['script', 'object', 'embed', 'style', 'link', 'meta', 'base'];
+        foreach ($dangerousTags as $tag) {
+            $html = preg_replace("#<\s*{$tag}[^>]*>.*?<\s*/\s*{$tag}>#is", '', $html);
+            $html = preg_replace("#<\s*{$tag}[^>]*\s*/?>#is", '', $html);
+        }
+    
+        // 2. Izinkan hanya tag tertentu (termasuk iframe sekarang)
+        $allowedTags = '<p><br><b><strong><i><em><u><ul><ol><li><a><img><blockquote><h1><h2><h3><h4><h5><h6><iframe>';
+        $html = strip_tags($html, $allowedTags);
+    
+        // 3. Hapus event handler berbahaya (onerror, onclick, dll)
+        $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*"[^"]*")/i', '$1', $html);
+        $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*\'[^\']*\')/i', '$1', $html);
+        $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*[^\s>]*)/i', '$1', $html);
+    
+        // 4. Hapus href/src yang mengandung javascript:
+        $html = preg_replace('/href\s*=\s*["\']?javascript:[^"\']*["\']?/i', '', $html);
+        $html = preg_replace('/src\s*=\s*["\']?javascript:[^"\']*["\']?/i', '', $html);
+    
+        // 5. Filter atribut iframe (izinkan hanya src, width, height, frameborder, allow, allowfullscreen)
+        $html = preg_replace_callback('/<iframe([^>]*)>/i', function ($matches) {
+            $allowedAttrs = ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'];
+            $attrs = $matches[1];
+    
+            preg_match_all('/(\w+)\s*=\s*([\'"])(.*?)\2/', $attrs, $attrMatches, PREG_SET_ORDER);
+    
+            $cleanAttrs = '';
+            foreach ($attrMatches as $attr) {
+                $name = strtolower($attr[1]);
+                $value = $attr[3];
+                if (in_array($name, $allowedAttrs)) {
+                    // Cegah javascript: di src
+                    if ($name === 'src' && stripos($value, 'javascript:') === 0) {
+                        continue;
+                    }
+                    $cleanAttrs .= " {$name}=\"{$value}\"";
+                }
+            }
+    
+            return "<iframe{$cleanAttrs}></iframe>";
+        }, $html);
+    
+        return $html;
+    }
+
 
     // (7) Update Place Data With Place Code For user approved
     function updatePlace(Request $request)
@@ -238,11 +295,11 @@ class PlaceController extends Controller
         );
 
         if ($request->id) {
-            if(Auth::user()->hasRole('superadmin')){
+            if (Auth::user()->hasRole('superadmin')) {
                 $Place = Place::where('id', $request->id)->first();
-            }else{
+            } else {
                 $Place = Place::where('id', $request->id)->where('creator_id', Auth::user()->id)->first();
-                if(!$Place){
+                if (!$Place) {
                     return abort(404);
                 }
             }
@@ -264,11 +321,26 @@ class PlaceController extends Controller
         //     }
         // }
 
+        // libxml_use_internal_errors(true);
         $dom = new DOMDocument();
         $content = $request->content;
 
         $dom->loadHtml($content, 9);
 
+        // libxml_clear_errors();
+        
+        //new
+        // libxml_use_internal_errors(true);
+
+        // $cleanContent = $this->sanitizeHtml($request->content);
+        // $content = preg_replace('/<o:p[^>]*>.*?<\/o:p>/i', '', $cleanContent);
+        //  $content = $this->sanitizeHtml($request->content);
+         
+        // $dom = new DOMDocument();
+        // $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        // libxml_clear_errors();
+        //end
+        
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
@@ -290,15 +362,22 @@ class PlaceController extends Controller
                     // Generate a unique image name
                     $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
 
+                    // Define the directory and path for storing the image
+                    $directory = public_path() . "/UploadImage/PlaceImage/{$Place->id}/";
+                    if (!file_exists($directory)) {
+                        mkdir($directory, 0755, true);
+                    }
 
-                    // Define the path for storing the image
-                    $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
+                    $path = $directory . $image_name; // Full path to the file
 
-                    // Store the file using the Storage facade
-                    Storage::put($path, $dataConvert);
+                    // Store the file using file_put_contents
+                    $menu = file_put_contents($path, $dataConvert);
+                    if ($menu === false) {
+                        throw new Exception('Failed to save the image.');
+                    }
 
                     // Generate the public URL for the image
-                    $publicUrl = Storage::url($path);
+                    $publicUrl = asset("UploadImage/PlaceImage/{$Place->id}/" . $image_name);
 
                     // Remove the src attribute and set the new src
                     $img->removeAttribute('src');
@@ -312,12 +391,29 @@ class PlaceController extends Controller
 
 
         $content = $dom->saveHTML();
-
+        // $content = $this->sanitizeHtml($content);
+   
         $Place->title = $request->title;
         $Place->description = $request->description;
         $Place->content = $content;
         $Place->is_comment = $request->AllowComment == 'on' ? 1 : 0;
+        // $Place->phone_num = $request->phone_num;
+        // $Place->province_id = $request->reg_province ? $request->reg_province : null;
+        $Place->province_id = $request->reg_province ? $request->reg_province : null;
+        $Place->regency_id = $request->reg_regency ? $request->reg_regency : null;
+        $Place->district_id = $request->reg_district ? $request->reg_district : null;
+        $Place->village_id = $request->reg_village ? $request->reg_village : null;
+
         $Place->update();
+
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Updated Place Data with Place id : " . $Place->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_PLACE
+        ]);
 
 
         foreach ($imageData as $img) {
@@ -338,15 +434,15 @@ class PlaceController extends Controller
         if (!Auth::user()->approved_at) {
             return back()->withErrors('Your Account Need Approval First !');
         }
-        if(!Auth::user()->hasRole('superadmin')){
+        if (!Auth::user()->hasRole('superadmin')) {
             $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
-            if($checkTheLimitOfUserPlace){
-                if(Place::where('creator_id', Auth::user()->id)->count() >= $checkTheLimitOfUserPlace->placeLimit->total_limit){
+            if ($checkTheLimitOfUserPlace) {
+                if (Place::where('creator_id', Auth::user()->id)->count() >= $checkTheLimitOfUserPlace->placeLimit->total_limit) {
                     return back()->withErrors('Your account place has entered the limit !');
                 }
-            }else{
+            } else {
                 $Place = Place::where('creator_id', Auth::user()->id)->first();
-                if($Place){
+                if ($Place) {
                     return back()->withErrors('You have created place !');
                 }
             }
@@ -355,14 +451,16 @@ class PlaceController extends Controller
         $Validate = $request->validate([
             'title' => 'required',
             'description' => 'required',
-            'content' => 'required'
+            'content' => 'required',
+            "reg_province" => "nullable|exists:reg_provinces,id",
+            "reg_regency" => "nullable|exists:reg_regencies,id",
+            "reg_district" => "nullable|exists:reg_districts,id",
+            "reg_village" => "nullable|exists:reg_villages,id",
         ], [
             'title.required' => 'Title Fields is required',
             'description.required' => 'Description is required',
             'content.required' => 'Content is required',
         ]);
-
-
 
         $getPlaceData = Place::latest()->first() !== null ? Place::select('id')->latest()->first()->id + 1 : 1;
         $convertedCode = sprintf('%05d', $getPlaceData);
@@ -373,10 +471,25 @@ class PlaceController extends Controller
 
         $dom->loadHtml($content, 9);
 
+        //START HERE
+        
+        // libxml_use_internal_errors(true);
+        // dd($request->content);
+        // $content = $this->sanitizeHtml($request->content);
+        // // $content = preg_replace('/<o:p[^>]*>.*?<\/o:p>/i', '', $cleanContent);
+        // dd($content);
+        // $dom = new DOMDocument();
+        // $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        // libxml_clear_errors();
+        //end
+        
+        
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
         $user_id = Auth::user()->id;
+
+        $Place_id = Place::latest()->first()->id + 1;
 
         // Setup Images
         if ($images) {
@@ -396,13 +509,31 @@ class PlaceController extends Controller
                     $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
 
                     // Store the image in the storage path
-                    $path = "public/UploadImage/PlaceImage/{$user_id}/" . $image_name;
+                    // $path = "public/UploadImage/PlaceImage/{$Place_id}/" . $image_name;
 
                     // Store the file
-                    Storage::put($path, $dataConvert);
+                    // Storage::put($path, $dataConvert);
+
+                    // // Generate the public URL for the image
+                    // $publicUrl = Storage::url($path);
+
+                    $directory = public_path() . "/storage/UploadImage/PlaceImage/{$Place_id}/";
+                    if (!file_exists($directory)) {
+                        mkdir($directory, 0755, true);
+                    }
+
+                    $path = $directory . $image_name; // Full path to the file
+
+                    // Store the file using file_put_contents
+                    $menu = file_put_contents($path, $dataConvert);
+                    if ($menu === false) {
+                        throw new Exception('Failed to save the image.');
+                    }
 
                     // Generate the public URL for the image
-                    $publicUrl = Storage::url($path);
+                    $publicUrl = asset("/storage/UploadImage/PlaceImage/{$Place_id}/" . $image_name);
+
+
 
                     // Update the image src
                     $img->removeAttribute('src');
@@ -415,6 +546,8 @@ class PlaceController extends Controller
 
 
         $content = $dom->saveHTML();
+        // dd($request->reg_province);
+        // $content = $this->sanitizeHtml($content);
 
         $Place = Place::create([
             'place_code' => time() . $convertedCode,
@@ -423,7 +556,21 @@ class PlaceController extends Controller
             'creator_id' => $user_id,
             'content' => $content,
             'views' => 0,
-            'is_comment' => $request->AllowComment == 'on' ? 1 : 0
+            'is_comment' => $request->AllowComment == 'on' ? 1 : 0,
+            'province_id' => $request->reg_province ? $request->reg_province : null,
+            'regency_id' => $request->reg_regency ? $request->reg_regency : null,
+            'district_id' => $request->reg_district ? $request->reg_district : null,
+            'village_id' => $request->reg_village ? $request->reg_village : null
+        ]);
+
+
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "User Created Place Data with Place id : " . $Place->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_PLACE
         ]);
 
         foreach ($imageData as $img) {
@@ -459,13 +606,13 @@ class PlaceController extends Controller
     // (10) This function is used to get detail place for public user to see the detail of the place
     function getDetailPlace($place_code)
     {
-        $place = Place::where('place_code', $place_code)->first();
+        $place = Place::with('province', 'regency', 'district')->where('place_code', $place_code)->first();
         if (!$place) {
-            return redirect()->route('dashboard');
+            return redirect()->route('homes')->withErrors('Place Not Found !');
         }
 
         if ($place->deleted_at) {
-            return redirect()->route('dashboard')->withErrors('This Place has been deleted !');
+            return redirect()->route('homes')->withErrors('This Place has been deleted !');
         }
 
         if (!session()->has('views')) {
@@ -498,7 +645,11 @@ class PlaceController extends Controller
             $event = [];
         }
 
-        return view('Pages.detail-place.index', compact('place', 'event'));
+        $customSettingRunningText = CustomRunningTextSettings::first();
+        $customSettingAds = CustomAdsSettings::where('is_active', true)->first();
+        $ads = $place->advertises?->where('is_active', 1)->first();
+
+        return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds', 'ads'));
     }
 
 
@@ -516,14 +667,72 @@ class PlaceController extends Controller
 
     function fetchAll()
     {
-        if(Auth::user()->hasRole('superadmin')){
+        if (Auth::user()->hasRole('superadmin')) {
             $placeData = Place::select('id', 'place_code', 'title')->get();
-        }else{
+        } else {
             $placeData = Place::where('creator_id', Auth::user()->id)->select('id', 'place_code', 'title')->get();
         }
 
         return response()->json([
             'data' => $placeData
+        ]);
+    }
+
+
+    public function getPlaceChartData()
+    {
+        $provinces = DB::table('reg_provinces')->pluck('name', 'id');
+        $regencies = DB::table('reg_regencies')->pluck('name', 'id');
+        $districts = DB::table('reg_districts')->pluck('name', 'id');
+        $villages = DB::table('reg_villages')->pluck('name', 'id');
+
+        $charts = [];
+
+        // Province
+        $provinceData = Place::selectRaw('COALESCE(province_id, 0) as id, COUNT(*) as total')
+            ->groupBy('province_id')->get()
+            ->map(function ($item) use ($provinces) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($provinces[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        // Regency
+        $regencyData = Place::selectRaw('COALESCE(regency_id, 0) as id, COUNT(*) as total')
+            ->groupBy('regency_id')->get()
+            ->map(function ($item) use ($regencies) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($regencies[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        // District
+        $districtData = Place::selectRaw('COALESCE(district_id, 0) as id, COUNT(*) as total')
+            ->groupBy('district_id')->get()
+            ->map(function ($item) use ($districts) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($districts[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        // Village
+        $villageData = Place::selectRaw('COALESCE(village_id, 0) as id, COUNT(*) as total')
+            ->groupBy('village_id')->get()
+            ->map(function ($item) use ($villages) {
+                return [
+                    'label' => $item->id == 0 ? 'Unknown' : ($villages[$item->id] ?? 'Unknown'),
+                    'value' => $item->total
+                ];
+            });
+
+        return response()->json([
+            'province' => $provinceData,
+            'regency' => $regencyData,
+            'district' => $districtData,
+            'village' => $villageData,
         ]);
     }
 }

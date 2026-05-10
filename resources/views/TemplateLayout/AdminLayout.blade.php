@@ -102,7 +102,49 @@
         .note-editor.note-frame .note-editing-area .note-editable {
             background-color: white !important;
         }
+
+        .select2-container .select2-selection--single {
+            height: 35px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 35px !important;
+        }
+
+        .dataTables_filter {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+
+        .dataTables_length {
+            height: 100%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        
     </style>
+@endpush
+
+@push('css')
+<style>
+    #dataTablePlace_filter {
+        display: flex;
+        justify-content: right;
+        align-items: center;
+
+    }
+
+    #dataTablePlace_filter>label {
+        justify-content: center;
+        gap: 10px;
+        display: flex;
+        align-items: center;
+
+    }
+</style>
 @endpush
 
 @push('scriptApp')
@@ -129,8 +171,10 @@
     <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
 
     {{-- SummerNote Import --}}
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <!--<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>-->
+    <link href="{{asset('summernote-0.9.0-dist/summernote-bs4.css')}}" rel="stylesheet">
+    <script src="{{asset('summernote-0.9.0-dist/summernote-bs4.js')}}"></script>
 
     {{-- Import SweetAlert Notification --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

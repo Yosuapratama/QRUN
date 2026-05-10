@@ -45,4 +45,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+    
+    public function saveWithCheck(): array
+    {
+        $isNew = !$this->exists;
+        $this->save();
+        return [$this, $isNew];
+    }
+
 }

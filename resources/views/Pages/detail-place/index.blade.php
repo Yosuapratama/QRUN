@@ -1,309 +1,918 @@
 @extends('TemplateLayout.NormalLayout')
 
 @push('title')
-    <title>QRUN - {{ $place->title }}</title>
+    <title>{{ $place->title }} | Qrun Website</title>
+    <meta name="description" content="{{ $place->title }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+@endpush
+
+@push('css')
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#64748B',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /*#translatable-content p img,  #translatable-content h1 img,  #translatable-content h2 img,  #translatable-content h3 img,  #translatable-content h4 img,  #translatable-content h5 img,  #translatable-content h6 img {*/
+        /*  display: block;*/
+        /*  margin-left: auto;*/
+        /*  margin-right: auto;*/
+        /*}*/
+               #translatable-content audio, canvas, embed, iframe, img, object, svg, video {
+            display: revert !important;
+         }
+
+        .goog-te-gadget img {
+            display: inline-flex !important;
+            vertical-align: middle !important;
+            margin-right: 6px !important;
+            height: 20px !important;
+            width: 20px !important;
+        }
+        
+            #translatable-content h1,
+        #translatable-content h2,
+        #translatable-content h3,
+        #translatable-content h4,
+        #translatable-content h5,
+        #translatable-content h6,
+        #translatable-content p,
+        #translatable-content a{
+            all: revert;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            color: revert;
+        }
+
+        .star {
+            transition: all 0.2s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.1);
+        }
+
+        .toc-sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        .toc-sidebar.closed {
+            transform: translateX(70%);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reply-level-1 {
+            margin-left: 1rem;
+        }
+
+        .reply-level-2 {
+            margin-left: 2rem;
+        }
+
+        .reply-level-3 {
+            margin-left: 3rem;
+        }
+
+        .reply-level-4 {
+            margin-left: 4rem;
+        }
+
+        @media (max-width: 640px) {
+            .reply-level-1 {
+                margin-left: 0.5rem;
+            }
+
+            .reply-level-2 {
+                margin-left: 1rem;
+            }
+
+            .reply-level-3 {
+                margin-left: 1.5rem;
+            }
+
+            .reply-level-4 {
+                margin-left: 2rem;
+            }
+
+            .toc-sidebar {
+                width: 280px !important;
+            }
+        }
+
+        #google_translate_element {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        /* Styling internal iframe dari Google Translate */
+        .goog-te-gadget {
+            display: flex !important;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+
+        .goog-te-gadget img {
+            margin-right: 4px;
+        }
+        
+        iframe[src*="youtube.com"],
+iframe[src*="youtu.be"] {
+  max-width: 90vw;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+        .hidden {
+          display: none;
+        }
+
+    </style>
 @endpush
 
 @section('content')
-    <div class="container-fluid overflow-x-hidden">
-        <div id="app">
+    <div class="min-h-screen bg-gray-50">
+        <div id="app" class="relative">
+            <!-- Table of Contents Sidebar -->
+            <div id="toc-sidebar"
+                class="toc-sidebar fixed top-1/2 right-0 transform -translate-y-1/2 z-50 bg-white rounded-l-xl shadow-2xl border border-gray-200 p-4 w-64 max-h-96 overflow-y-auto hidden md:block">
+                <div class="flex items-center justify-between mb-4">
+                     <!-- Tombol KEMBALI (hanya muncul saat sidebar tertutup) -->
+                    <button id="toc-restore" class="p-2 hover:bg-gray-100 rounded-full transition-colors hidden">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M12.707 14.707a1 1 0 01-1.414 0L7.293 10.707a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L10.414 10l2.293 2.293a1 1 0 010 1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <h3 class="font-bold text-gray-800 text-sm">Navigation</h3>
+                    
+                    <!-- Tombol TUTUP -->
+                    <button id="toc-toggle" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
 
-            <!-- Page Heading -->
-            <h1 class="h3 text-gray-900 font-weight-bold m-2">DETAIL PLACE</h1>
-            <!-- DataTales Example -->
-            <div class="card shadow mb-4" style="overflow-x: scroll">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Title : {{ $place->title }}</h6>
-                    <small class="font-weight-bold text-gray-900">{{ $place->description }} | Created At :
-                        {{ $place->created_at }} | <i class="fa-regular fa-eye"></i> {{ $place->views }}</small>
-                </div>
-                <div class="card-body m-2" style="overflow-x: scroll !important;">
-                    {!! $place->content !!}
+                   
                 </div>
 
-                @if ($event)
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Upcoming Event</h6>
-                        <small class="font-weight-bold text-gray-900">Next Event</small>
+                <div class="space-y-2">
+                    <a href="#contents"
+                        class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Content
+                    </a>
+                    @if ($event)
+                        <a href="#events"
+                            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                            <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Events
+                        </a>
+                    @endif
+                    <a href="#comments"
+                        class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Comments
+                    </a>
+                </div>
+
+                <ul id="toc-list" class="mt-4 space-y-1 text-sm"></ul>
+            </div>
+
+            <!-- Mobile TOC Button -->
+            <button id="mobile-toc-btn"
+                class="fixed bottom-4 right-4 z-50 bg-blue-600 text-white rounded-full p-3 shadow-lg md:hidden">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M3 5h14a1 1 0 100-2H3a1 1 0 100 2zm14 4H3a1 1 0 000 2h14a1 1 0 100-2zm0 6H3a1 1 0 000 2h14a1 1 0 100-2z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </button>
+
+            <!-- Mobile TOC Modal -->
+            <div id="mobile-toc-modal" class="fixed inset-0 z-50 hidden md:hidden">
+                <div class="fixed inset-0 bg-black bg-opacity-50" id="mobile-toc-overlay"></div>
+                <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-xl p-6 max-h-96 overflow-y-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg">Navigation</h3>
+                        <button id="close-mobile-toc" class="p-2 hover:bg-gray-100 rounded-full">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
                     </div>
-                    <div class="card-body m-2">
-                        <div class="d-flex flex-wrap">
-                            @foreach ($event as $evnt)
-                                <div class="card-header p-2 m-2 rounded text-gray-900 font-weight-bold">
-                                    <p class="m-0 font-weight-bold text-primary">{{ $evnt->title }}</p>
-                                    <hr class="sidebar-divider">
-                                    <p class="font-weight-bold text-gray-900">{{ $evnt->date->format('Y M d | H:i') }} Wita
-                                    </p>
-                                    <p></p>
-                                    <small>{{ $evnt->description }}</small>
-                                </div>
-                            @endforeach
-                        </div>
+                    <div class="space-y-3">
+                        <a href="#contents"
+                            class="flex items-center px-4 py-3 text-gray-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors mobile-nav-link">
+                            <svg class="w-5 h-5 mr-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Content
+                        </a>
+                        @if ($event)
+                            <a href="#events"
+                                class="flex items-center px-4 py-3 text-gray-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors mobile-nav-link">
+                                <svg class="w-5 h-5 mr-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                Events
+                            </a>
+                        @endif
+                        <a href="#comments"
+                            class="flex items-center px-4 py-3 text-gray-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors mobile-nav-link">
+                            <svg class="w-5 h-5 mr-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            Comments
+                        </a>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Running Text Banner -->
+            @if ($customSettingRunningText->is_active === 1)
+                <div v-if="disabledAfter > 0 || disabledAfter === '0'"
+                    class="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 overflow-hidden">
+                    <div class="animate-pulse">
+                        <marquee direction="left" scrollamount="5" class="text-sm font-medium">
+                            {{ $customSettingRunningText->title }}
+                        </marquee>
+                    </div>
+                </div>
+            @endif
+
+            @if ($ads || $customSettingAds)
+            <!-- Ads Modal -->
+            <div v-if="showAdsModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+                aria-modal="true">
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <!-- Background overlay (static, cannot close by clicking) -->
+                    <div style="opacity: .7" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                        aria-hidden="true"></div>
+
+                    <!-- Modal panel -->
+                    <div
+                        class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-4">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                                        @if ($ads)
+                                            {{ $ads->title }}
+                                        @else
+                                            {{ $customSettingAds?->title }}
+                                        @endif
+                                    </h3>
+                                    <div class="mt-2 flex justify-center">
+                                        <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
+                                            class="max-w-full h-auto rounded-lg" alt="Advertisement">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="button" @click="closeAdsModal" :disabled="isLoadingAds"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+                                :class="isLoadingAds ? 'bg-gray-400 cursor-not-allowed' :
+                                    'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
+                                <div v-if="isLoadingAds" class="flex items-center">
+                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                    @{{ timeAds }}s
+                                </div>
+                                <span v-else>Close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @endif
+            
+            <!-- Main Content -->
+            <div class="container mx-auto px-4 py-8" :class="{ 'pt-16': disabledAfter > 0 }">
+                <!-- Header -->
+                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 fade-in">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">{{ $place->title }}</h1>
+
+                    <!-- Translation Controls -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                        <div id="google_translate_element" class="flex-1 w-full sm:w-auto"></div>
+                        <button @click="closeTranslate"
+                            class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors w-full sm:w-auto">
+                            <svg class="w-4 h-4 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500">Translate By Google Translate</p>
+                </div>
+
+                <!-- Place Details Card -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 fade-in" id="contents">
+                    <!-- Card Header -->
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 sm:p-6">
+                        <h2 class="text-lg sm:text-xl font-bold mb-2">{{ $place->title }}</h2>
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm opacity-90">
+                            <span class="break-words">{{ $place->description }}</span>
+                            <span class="hidden sm:inline">•</span>
+                            <span>{{ \Carbon\Carbon::parse($place->created_at)->translatedFormat('M d, Y') }}</span>
+                            <span class="hidden sm:inline">•</span>
+                            <span class="flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                    <path fill-rule="evenodd"
+                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                {{ number_format($place->views) }}
+                            </span>
+                            @if (isset($place->phone_num))
+                                <span class="hidden sm:inline">•</span>
+                                <a href="tel:{{ $place->phone_num }}" class="flex items-center gap-1 hover:text-white">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z">
+                                        </path>
+                                    </svg>
+                                    {{ $place->phone_num }}
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Location Info -->
+                    <div class="bg-gray-50 p-4 border-b">
+                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center text-gray-600">
+                                <div class="flex items-center mb-2 sm:mb-0 sm:mr-2">
+                                    <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="font-semibold">Location:</span>
+                                </div>
+                                <span class="text-sm break-words">
+                                    {{ $place->province?->name ? ucfirst(strtolower($place->province->name)) : '-' }},
+                                    {{ $place->regency?->name ? ucfirst(strtolower($place->regency->name)) : '-' }},
+                                    {{ $place->district?->name ? ucfirst(strtolower($place->district->name)) : '-' }},
+                                    {{ $place->village?->name ? ucfirst(strtolower($place->village->name)) : '-' }}
+                                </span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <span class="mr-1">Area Code:</span>
+                                <span
+                                    class="font-mono bg-blue-100 text-blue-800 px-2 py-1 rounded">{{ $place->village?->id ?? '-' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-4 sm:p-6 prose prose-sm sm:prose-lg max-w-none" id="translatable-content" style="overflow-x:scroll">
+                        {!! $place->content !!}
+                    </div>
+                </div>
+
+                <!-- Events Section -->
+                @if ($event)
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 fade-in" id="events">
+                        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-4 sm:p-6">
+                            <h2 class="text-lg sm:text-xl font-bold mb-2">Upcoming Events</h2>
+                            <p class="opacity-90">Don't miss these exciting events</p>
+                        </div>
+                        <div class="p-4 sm:p-6">
+                            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                @foreach ($event as $evnt)
+                                    <div
+                                        class="bg-gradient-to-br from-green-50 to-teal-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                        <h3 class="font-bold text-green-800 mb-2 text-sm sm:text-base">{{ $evnt->title }}
+                                        </h3>
+                                        <div class="flex items-center text-xs sm:text-sm text-gray-600 mb-2">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                            {{ $evnt->date->format('M d, Y | H:i') }} WITA
+                                        </div>
+                                        <p class="text-xs sm:text-sm text-gray-700">{{ $evnt->description }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
                 @endif
-            </div>
 
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
-                    <small class="font-weight-bold text-gray-900">Before posting, make sure your comment is clear and does
-                        not contain inappropriate language.</small>
-                    <p class="alert alert-warning mt-2"><small>by using and accessing qrun services you are subject to terms of service</small></p>
-                </div>
-                <div class="card-body">
-                    @if ($place->is_comment)
-                        @if (Auth::check())
-                            {{-- <form v-if="!editUserId" @submit.prevent="addComment"> --}}
-                            <form v-if="editUserId" @submit.prevent="updateComment">
-                                <div>
-                                    <span v-for="n in 5" :key="n"
-                                        :class="['star', { 'fas': n <= selectedRating, 'far': n > selectedRating }]"
-                                        @click="setRating(n)" @mouseover="hoverRating(n)" @mouseleave="resetHover">
-                                        <i class="fa fa-star"></i>
-                                    </span>
-                                </div>
-                                <div v-if="selectedRating > 0">
-                                    <p class="mt-2">You have selected @{{ selectedRating }} out of 5 stars!</p>
-                                </div>
+                <!-- Comments Section -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden fade-in" id="comments">
+                    <div class="bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-4 sm:p-6">
+                        <h2 class="text-lg sm:text-xl font-bold mb-2">Comments & Reviews</h2>
+                        <p class="opacity-90">Share your thoughts and experiences</p>
+                        <div class="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded-lg text-xs sm:text-sm">
+                            <p>By using our services, you agree to our
+                                <a href="{{ route('termsOfService') }}" class="underline font-medium">Terms of
+                                    Service</a>
+                                and <a href="{{ route('privacyPolicy') }}" class="underline font-medium">Privacy
+                                    Policy</a>
+                            </p>
+                        </div>
+                    </div>
 
-                                <div v-if="isReplying" class="alert alert-primary mt-2">
-                                    <p>You are replying @{{ userReplying.name }} <button class="btn btn-primary mt-1"
-                                            @click="cancelReply">Cancel Reply</button></p>
-                                </div>
-                                <div v-if="editUserId" class="alert alert-primary mt-2">
-                                    <p>You are in editing mode <button class="btn btn-primary mt-1"
-                                            @click="cancelEdit">Cancel Edit</button></p>
-                                </div>
-
-                                {{-- <div class="alert alert-primary" v-if="editUserId">Editing Your Comment</div> --}}
-                                <div
-                                    style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
-                                    <input ref="inputField" v-model="currentComment" type="text" class="form-control">
-                                    <input type="hidden" v-model="currEditId" name="id">
-                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
-                                        v-if="!editUserId">Post</button>
-                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
-                                        v-if="editUserId">Update</button>
-                                </div>
-                            </form>
-                            <form v-if="!editUserId" @submit.prevent="addComment">
-                                <div>
-                                    <span v-for="n in 5" :key="n"
-                                        :class="['star', { 'fas': n <= selectedRating, 'far': n > selectedRating }]"
-                                        @click="setRating(n)" @mouseover="hoverRating(n)" @mouseleave="resetHover">
-                                        <i class="fa fa-star"></i>
-                                    </span>
-                                </div>
-                                <div v-if="selectedRating > 0">
-                                    <p class="mt-2">You have selected @{{ selectedRating }} out of 5 stars!</p>
-                                </div>
-
-                                <div v-if="isReplying" class="alert alert-primary mt-2">
-                                    <p>You are replying @{{ userReplying.name }} <button class="btn btn-primary mt-1"
-                                            @click="cancelReply">Cancel Reply</button></p>
-                                </div>
-                                <div v-if="editUserId" class="alert alert-primary mt-2">
-                                    <p>You are in editing mode <button class="btn btn-primary mt-1"
-                                            @click="cancelEdit">Cancel Edit</button></p>
-                                </div>
-
-                                {{-- <div class="alert alert-primary" v-if="editUserId">Editing Your Comment</div> --}}
-                                <div
-                                    style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top:5px;">
-                                    <input ref="inputField" v-model="currentComment" type="text" class="form-control">
-                                    <input type="hidden" v-model="currEditId" name="id">
-                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
-                                        v-if="!editUserId">Post</button>
-                                    <button type="submit" class="btn btn-primary mt-0" style="width: 100px"
-                                        v-if="editUserId">Update</button>
-                                </div>
-                            </form>
-                        @else
-                            <div class="alert alert-primary">
-                                <p>You Must login first before post/reply a comment</p>
-                                <a href="{{ route('login') }}" class="btn btn-primary">Login Now</a>
-                            </div>
-                        @endif
-                        <div v-if="isLoadingComment">Please Wait...</div>
-                        <p v-if="comments.length > 0 && !isLoadingComment">Average Rating : </p>
-                        <p v-if="comments.length < 1 && !isLoadingComment">No comments data</p>
-                        <div class="p-3 rounded alert-primary mt-3" v-for="item in comments"
-                            v-if="comments.length > 0 && !isLoadingComment">
-                            <span v-for="n in item.rating" :key="n" :class="['star fas']">
-                                <i class="fa fa-star"></i>
-                            </span>
-                            <p style="font-size: 16px;">@{{ item.comment }}</p>
+                    <div class="p-4 sm:p-6">
+                        @if ($place->is_comment)
                             @if (Auth::check())
-                                <button class="btn btn-success mt-0"
-                                    @click="setReplyComment(item.id, item.user)">Reply</button>
-
-                                <button v-if="userId == item.user.id" class="btn btn-danger mt-0"
-                                    @click="deleteComments(item.id)">Delete</button>
-                                <button v-if="userId == item.user.id" class="btn btn-primary mt-0"
-                                    @click="editComments(item.id, item.comment, item.user)"><i
-                                        class="fa-solid fa-pen"></i></button>
-                            @endif
-                            <div>
-                                <span style="font-size: 13px;">@@{{ item.user?.name }}</span>
-                            </div>
-                            <div class="card-body bg-white rounded mt-2" v-for="reply in item.replies"
-                                v-if="item.replies.length > 0">
-                                <p style="font-size: 16px;">@{{ reply.comment }}</p>
-                                <div>
-                                    <span style="font-size: 13px;">@@{{ reply.user?.name }}</span>
-                                </div>
-                                @if (Auth::check())
-                                    <button class="btn btn-success mt-2"
-                                        @click="setReplyComment(reply.id, reply.user)">Reply</button>
-
-                                    <button v-if="userId == reply.user.id" class="btn btn-danger mt-2"
-                                        @click="deleteComments(reply.id)">Delete</button>
-                                    <button v-if="userId == reply.user.id" class="btn btn-primary mt-2"
-                                        @click="editComments(reply.id, reply.comment, reply.user)"><i
-                                            class="fa-solid fa-pen"></i></button>
-                                @endif
-
-                                <div class="card-body alert alert-primary rounded mt-2" v-for="reply2 in reply.replies">
-                                    <p>@{{ reply2.comment }}</p>
-                                    <div>
-                                        <span style="font-size: 13px;">@@{{ reply2?.user?.name }}</span>
+                                <!-- Comment Form -->
+                                <form v-if="!editUserId" @submit.prevent="addComment" class="mb-8">
+                                    <!-- Star Rating -->
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Rate your
+                                            experience:</label>
+                                        <div class="flex gap-1">
+                                            <span v-for="n in 5" :key="n"
+                                                :class="['star cursor-pointer text-xl sm:text-2xl', { 'text-yellow-400': n <=
+                                                        selectedRating, 'text-gray-300': n > selectedRating }]"
+                                                @click="setRating(n)" @mouseover="hoverRating(n)"
+                                                @mouseleave="resetHover">
+                                                ★
+                                            </span>
+                                        </div>
+                                        <p v-if="selectedRating > 0" class="text-xs sm:text-sm text-gray-600 mt-1">
+                                            You selected @{{ selectedRating }} out of 5 stars
+                                        </p>
                                     </div>
 
-                                    @if (Auth::check())
-                                        <button class="btn btn-success mt-2"
-                                            @click="setReplyComment(reply2.id, reply2.user)">Reply</button>
+                                    <!-- Reply/Edit Indicators -->
+                                    <div v-if="isReplying" class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                        <p class="text-xs sm:text-sm text-blue-800">
+                                            Replying to <span class="font-medium">@{{ userReplying.name }}</span>
+                                            <button @click="cancelReply"
+                                                class="ml-2 text-blue-600 hover:text-blue-800 underline">Cancel</button>
+                                        </p>
+                                    </div>
 
-                                        <button v-if="userId == reply2.user.id" class="btn btn-danger mt-2"
-                                            @click="deleteComments(reply2.id)">Delete</button>
-                                        <button v-if="userId == reply2.user.id" class="btn btn-primary mt-2"
-                                            @click="editComments(reply2.id, reply2.comment, reply2.user)"><i
-                                                class="fa-solid fa-pen"></i></button>
-                                    @endif
+                                    <!-- Comment Input -->
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                        <input ref="inputField" v-model="currentComment" type="text"
+                                            placeholder="Share your thoughts..."
+                                            class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                        <button type="submit"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                                            Post
+                                        </button>
+                                    </div>
+                                </form>
 
-                                    <div class="card-body bg bg-white rounded mt-2" v-for="reply3 in reply2.replies">
-                                        <p>@{{ reply3.comment }}</p>
-                                        <div>
-                                            <span style="font-size: 13px;">@@{{ reply3?.user?.name }}</span>
-                                        </div>
+                                <!-- Edit Form -->
+                                <form v-if="editUserId" @submit.prevent="updateComment" class="mb-8">
+                                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+                                        <p class="text-xs sm:text-sm text-amber-800">
+                                            Editing your comment
+                                            <button @click="cancelEdit"
+                                                class="ml-2 text-amber-600 hover:text-amber-800 underline">Cancel</button>
+                                        </p>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row gap-3">
+                                        <input ref="inputField" v-model="currentComment" type="text"
+                                            class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                        <input type="hidden" v-model="currEditId">
+                                        <button type="submit"
+                                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                                            Update
+                                        </button>
+                                    </div>
+                                </form>
+                            @else
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6 text-center mb-8">
+                                    <svg class="w-10 h-10 sm:w-12 sm:h-12 text-blue-600 mx-auto mb-4" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-blue-800 font-medium mb-4 text-sm sm:text-base">Please login to post
+                                        comments and reviews</p>
+                                    <a href="{{ route('login') }}"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-colors text-sm">
+                                        Login Now
+                                    </a>
+                                </div>
+                            @endif
 
+                            <!-- Comments List -->
+                            <div v-if="isLoadingComment" class="flex justify-center py-8">
+                                <svg class="animate-spin h-6 w-6 sm:h-8 sm:w-8 text-blue-600"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </div>
+
+                            <div v-if="comments.length < 1 && !isLoadingComment" class="text-center py-8 text-gray-500">
+                                <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-300" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-base sm:text-lg font-medium">No comments yet</p>
+                                <p class="text-sm sm:text-base">Be the first to share your thoughts!</p>
+                            </div>
+
+                            <!-- Comments with 4-level nested replies -->
+                            <div v-if="comments.length > 0 && !isLoadingComment" class="space-y-4 sm:space-y-6">
+                                <!-- Level 1: Main Comments -->
+                                <div v-for="comment in comments" :key="comment.id"
+                                    class="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                                    <!-- Rating Stars -->
+                                    <div class="flex items-center mb-2">
+                                        <span v-for="n in comment.rating" :key="n"
+                                            class="text-yellow-400 text-base sm:text-lg">★</span>
+                                        <span v-for="n in (5 - comment.rating)" :key="n + comment.rating"
+                                            class="text-gray-300 text-base sm:text-lg">★</span>
+                                    </div>
+
+                                    <!-- Comment Content -->
+                                    <p class="text-gray-800 mb-3 text-sm sm:text-base break-words">@{{ comment.comment }}
+                                    </p>
+
+                                    <!-- Comment Actions -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <span class="text-xs sm:text-sm text-gray-500">@{{ comment.user?.name }}</span>
                                         @if (Auth::check())
-                                            <button class="btn btn-success mt-2"
-                                                @click="setReplyComment(reply3.id, reply3.user)">Reply</button>
-
-                                            <button v-if="userId == reply3.user.id" class="btn btn-danger mt-2"
-                                                @click="deleteComments(reply3.id)">Delete</button>
-                                            <button v-if="userId == reply3.user.id" class="btn btn-primary mt-2"
-                                                @click="editComments(reply3.id, reply3.comment, reply3.user)"><i
-                                                    class="fa-solid fa-pen"></i></button>
+                                            <div class="flex flex-wrap gap-2">
+                                                <button @click="setReplyComment(comment.id, comment.user)"
+                                                    class="text-blue-600 hover:text-blue-800 text-xs sm:text-sm font-medium">Reply</button>
+                                                <button v-if="userId == comment.user.id"
+                                                    @click="editComments(comment.id, comment.comment, comment.user)"
+                                                    class="text-amber-600 hover:text-amber-800 text-xs sm:text-sm font-medium">Edit</button>
+                                                <button v-if="userId == comment.user.id"
+                                                    @click="deleteComments(comment.id)"
+                                                    class="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium">Delete</button>
+                                            </div>
                                         @endif
+                                    </div>
 
-                                        <div class="card-body alert alert-primary rounded mt-2"
-                                            v-for="reply4 in reply3.replies">
-                                            <p>@{{ reply4.comment }}</p>
-                                            <div>
-                                                <span style="font-size: 13px;">@@{{ reply4?.user?.name }}</span>
+                                    <!-- Level 2: First Level Replies -->
+                                    <div v-if="comment.replies && comment.replies.length > 0"
+                                        class="reply-level-1 mt-4 space-y-3">
+                                        <div v-for="reply1 in comment.replies" :key="reply1.id"
+                                            class="bg-white rounded-lg p-3 border border-gray-200">
+                                            <p class="text-gray-800 mb-2 text-sm break-words">@{{ reply1.comment }}</p>
+                                            <div
+                                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                                <span class="text-xs text-gray-500">@{{ reply1.user?.name }}</span>
+                                                @if (Auth::check())
+                                                    <div class="flex flex-wrap gap-2">
+                                                        <button @click="setReplyComment(reply1.id, reply1.user)"
+                                                            class="text-blue-600 hover:text-blue-800 text-xs font-medium">Reply</button>
+                                                        <button v-if="userId == reply1.user.id"
+                                                            @click="editComments(reply1.id, reply1.comment, reply1.user)"
+                                                            class="text-amber-600 hover:text-amber-800 text-xs font-medium">Edit</button>
+                                                        <button v-if="userId == reply1.user.id"
+                                                            @click="deleteComments(reply1.id)"
+                                                            class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button>
+                                                    </div>
+                                                @endif
                                             </div>
 
-                                            @if (Auth::check())
-                                                <button class="btn btn-success mt-2"
-                                                    @click="setReplyComment(reply4.id, reply4.user)">Reply</button>
+                                            <!-- Level 3: Second Level Replies -->
+                                            <div v-if="reply1.replies && reply1.replies.length > 0"
+                                                class="reply-level-2 mt-3 space-y-3">
+                                                <div v-for="reply2 in reply1.replies" :key="reply2.id"
+                                                    class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                                    <p class="text-gray-800 mb-2 text-sm break-words">
+                                                        @{{ reply2.comment }}</p>
+                                                    <div
+                                                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                                        <span class="text-xs text-gray-500">@{{ reply2.user?.name }}</span>
+                                                        @if (Auth::check())
+                                                            <div class="flex flex-wrap gap-2">
+                                                                <button @click="setReplyComment(reply2.id, reply2.user)"
+                                                                    class="text-blue-600 hover:text-blue-800 text-xs font-medium">Reply</button>
+                                                                <button v-if="userId == reply2.user.id"
+                                                                    @click="editComments(reply2.id, reply2.comment, reply2.user)"
+                                                                    class="text-amber-600 hover:text-amber-800 text-xs font-medium">Edit</button>
+                                                                <button v-if="userId == reply2.user.id"
+                                                                    @click="deleteComments(reply2.id)"
+                                                                    class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button>
+                                                            </div>
+                                                        @endif
+                                                    </div>
 
-                                                <button v-if="userId == reply4.user.id" class="btn btn-danger mt-2"
-                                                    @click="deleteComments(reply4.id)">Delete</button>
-                                                <button v-if="userId == reply4.user.id" class="btn btn-primary mt-2"
-                                                    @click="editComments(reply4.id, reply4.comment, reply4.user)"><i
-                                                        class="fa-solid fa-pen"></i></button>
-                                            @endif
+                                                    <!-- Level 4: Third Level Replies -->
+                                                    <div v-if="reply2.replies && reply2.replies.length > 0"
+                                                        class="reply-level-3 mt-3 space-y-3">
+                                                        <div v-for="reply3 in reply2.replies" :key="reply3.id"
+                                                            class="bg-green-50 rounded-lg p-3 border border-green-200">
+                                                            <p class="text-gray-800 mb-2 text-sm break-words">
+                                                                @{{ reply3.comment }}</p>
+                                                            <div
+                                                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                                                <span
+                                                                    class="text-xs text-gray-500">@{{ reply3.user?.name }}</span>
+                                                                @if (Auth::check())
+                                                                    <div class="flex flex-wrap gap-2">
+                                                                        <button
+                                                                            @click="setReplyComment(reply3.id, reply3.user)"
+                                                                            class="text-blue-600 hover:text-blue-800 text-xs font-medium">Reply</button>
+                                                                        <button v-if="userId == reply3.user.id"
+                                                                            @click="editComments(reply3.id, reply3.comment, reply3.user)"
+                                                                            class="text-amber-600 hover:text-amber-800 text-xs font-medium">Edit</button>
+                                                                        <button v-if="userId == reply3.user.id"
+                                                                            @click="deleteComments(reply3.id)"
+                                                                            class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
 
+                                                            <!-- Level 5: Fourth Level Replies (Maximum) -->
+                                                            <div v-if="reply3.replies && reply3.replies.length > 0"
+                                                                class="reply-level-4 mt-3 space-y-2">
+                                                                <div v-for="reply4 in reply3.replies"
+                                                                    :key="reply4.id"
+                                                                    class="bg-yellow-50 rounded-lg p-2 border border-yellow-200">
+                                                                    <p class="text-gray-800 mb-2 text-xs break-words">
+                                                                        @{{ reply4.comment }}</p>
+                                                                    <div
+                                                                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                                                                        <span
+                                                                            class="text-xs text-gray-500">@{{ reply4.user?.name }}</span>
+                                                                        @if (Auth::check())
+                                                                            <div class="flex flex-wrap gap-1">
+                                                                                <button v-if="userId == reply4.user.id"
+                                                                                    @click="editComments(reply4.id, reply4.comment, reply4.user)"
+                                                                                    class="text-amber-600 hover:text-amber-800 text-xs font-medium">Edit</button>
+                                                                                <button v-if="userId == reply4.user.id"
+                                                                                    @click="deleteComments(reply4.id)"
+                                                                                    class="text-red-600 hover:text-red-800 text-xs font-medium">Delete</button>
+                                                                            </div>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <button v-if="!isLoadingComment && currentPage > 1" @click="fetchNewDecrementData"
-                            class="btn btn-primary">Back</button>
-                        <button v-if="!isLoadingComment && currentPage != last_page" class="btn btn-primary"
-                            @click="fetchNewData">Next</button>
-                        <div v-if="isLoadingComment" class="spinner-border text-primary" role="status"
-                            style="width: 1.5rem; height: 1.5rem;"></div>
-                    @else
-                        <p>Comment has disabled by author</p>
-                    @endif
+
+                            <!-- Pagination -->
+                            <div v-if="!isLoadingComment && (currentPage > 1 || currentPage != last_page)"
+                                class="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                                <button v-if="currentPage > 1" @click="fetchNewDecrementData"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                                    Previous
+                                </button>
+                                <button v-if="currentPage != last_page" @click="fetchNewData"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                                    Next
+                                </button>
+                            </div>
+                        @else
+                            <div class="text-center py-8">
+                                <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-300" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <p class="text-base sm:text-lg font-medium text-gray-600">Comments Disabled</p>
+                                <p class="text-sm sm:text-base text-gray-500">The author has disabled comments for this
+                                    post</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
-
-    <style scoped>
-        /* Basic styling for stars */
-        .star {
-            font-size: 20px;
-            cursor: pointer;
-            color: #ccc;
-            /* Light grey color by default */
-            margin-right: 5px;
-        }
-
-        .star.fas {
-            color: #f39c12;
-            /* Yellow color for filled stars */
-        }
-
-        .star.far {
-            color: #ccc;
-            /* Grey color for unfilled stars */
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            background-color: gray;
-            cursor: not-allowed;
-        }
-    </style>
 @endsection
-
 
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-    <script type="text/javascript">
-        // Initialize Vue without jQuery
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile TOC functionality
+            const mobileTocBtn = document.getElementById('mobile-toc-btn');
+            const mobileTocModal = document.getElementById('mobile-toc-modal');
+            const closeMobileToc = document.getElementById('close-mobile-toc');
+            const mobileTocOverlay = document.getElementById('mobile-toc-overlay');
+
+            mobileTocBtn.addEventListener('click', function() {
+                mobileTocModal.classList.remove('hidden');
+            });
+
+            closeMobileToc.addEventListener('click', function() {
+                mobileTocModal.classList.add('hidden');
+            });
+
+            mobileTocOverlay.addEventListener('click', function() {
+                mobileTocModal.classList.add('hidden');
+            });
+
+            // Mobile navigation links
+            document.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    mobileTocModal.classList.add('hidden');
+                });
+            });
+
+            // Table of Contents Generation
+            const content = document.querySelector('.prose');
+            if (content) {
+                const headings = content.querySelectorAll('h2, h3, h4');
+                const tocList = document.getElementById('toc-list');
+                tocList.innerHTML = '';
+
+                headings.forEach((heading, idx) => {
+                    if (!heading.id) heading.id = 'toc-heading-' + idx;
+                    const li = document.createElement('li');
+                    li.className = 'py-1';
+                    li.style.marginLeft = (parseInt(heading.tagName[1]) - 2) * 16 + 'px';
+
+                    const a = document.createElement('a');
+                    a.href = '#' + heading.id;
+                    a.textContent = heading.textContent;
+                    a.className = 'text-sm text-gray-600 hover:text-blue-600 transition-colors';
+                    a.onclick = function(e) {
+                        e.preventDefault();
+                        document.getElementById(heading.id).scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    };
+                    li.appendChild(a);
+                    tocList.appendChild(li);
+                });
+            }
+
+            // TOC Sidebar Toggle (Desktop)
+            // const sidebar = document.getElementById('toc-sidebar');
+            // const toggleBtn = document.getElementById('toc-toggle');
+
+            // if (toggleBtn) {
+            //     toggleBtn.onclick = function() {
+            //         sidebar.classList.toggle('closed');
+            //     };
+            // }
+            const sidebar = document.getElementById('toc-sidebar');
+            const toggleBtn = document.getElementById('toc-toggle');
+            const restoreBtn = document.getElementById('toc-restore');
+            
+            if (toggleBtn && restoreBtn && sidebar) {
+                toggleBtn.onclick = function () {
+                    sidebar.classList.add('closed');
+                    toggleBtn.classList.add('hidden');
+                    restoreBtn.classList.remove('hidden');
+                };
+            
+                restoreBtn.onclick = function () {
+                    sidebar.classList.remove('closed');
+                    restoreBtn.classList.add('hidden');
+                    toggleBtn.classList.remove('hidden');
+                };
+            }
+
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').replace('#', '');
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Vue.js Application
         var app = new Vue({
             el: '#app',
             data() {
                 return {
                     comments: [],
-                    selectedRating: 0, // Initial selected rating
+                    selectedRating: 0,
                     hoveredRating: 0,
                     isLoadingComment: true,
                     currentPage: 1,
-                    currentComment: null,
+                    currentComment: '',
                     last_page: 0,
                     isReplying: null,
                     userReplying: null,
                     userId: null,
                     editUserId: null,
-                    currEditId: null
-                    // Rating on hover
+                    currEditId: null,
+                    isLoadingAds: true,
+                    timeAds: "{!! $customSettingAds?->time !!}",
+                    isAdsActive: "{!! $customSettingAds?->is_active !!}",
+                    disabledAfter: "{!! $customSettingRunningText->disabled_after !!}",
+                    showAdsModal: false
                 }
             },
             methods: {
+                closeAdsModal() {
+                    this.showAdsModal = false;
+                },
+                setCountDownModal() {
+                    const intervalId = setInterval(() => {
+                        this.timeAds--;
+                        if (this.timeAds <= 0) {
+                            this.isLoadingAds = false;
+                            clearInterval(intervalId);
+                        }
+                    }, 1000);
+                },
+                setCountdownRunningText() {
+                    const intervalId = setInterval(() => {
+                        this.disabledAfter--;
+                        if (this.disabledAfter <= 0) {
+                            clearInterval(intervalId);
+                        }
+                    }, 1000);
+                },
+                closeTranslate() {
+                    document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+                    window.location.reload();
+                },
                 setRating(rating) {
                     this.selectedRating = rating;
                 },
-                // Set hover rating when mouse is over a star
                 hoverRating(rating) {
                     this.hoveredRating = rating;
                 },
-                // Reset hover rating when mouse leaves the stars
                 resetHover() {
                     this.hoveredRating = 0;
                 },
@@ -315,179 +924,192 @@
                     this.currentPage++;
                     this.getCommentData();
                 },
-                updateComment() {
-                    const data = {
-                        comment_id: this.currEditId,
-                        comment: this.currentComment,
-                        userId: this.userId
-                    }
-
-                    console.log(data);
-
-                    const baseUrl = window.location.href;
-
-                    const res = fetch(`${baseUrl}/comments/update`, {
-                            method: 'POST', // Set the HTTP method to POST
-                            headers: {
-                                'Content-Type': 'application/json', // Tell the server the body is JSON
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                    'content')
-                            },
-                            body: JSON.stringify(data)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.errors) {
-                                swal("Error!", "Invalid Fields !",
-                                    "error")
-                            } else {
-                                swal("Edited!", "Your comment has been edited.", "success");
-                            }
-                            this.isLoadingComment = false;
-                            this.getCommentData();
-                            this.cancelEdit();
-                            this.currentComment = null;
-                            this.isReplying = null;
-                            this.userReplying = null;
-                        })
-                        .catch(error => swal("Error!", "Server Failed to Edit comment !",
-                            "error"));
-
-                },
-                editComments(idComment, comment, userId) {
-                    this.cancelReply();
-                    this.currEditId = idComment;
-                    // console.log(comment);
-                    this.currentComment = comment;
-                    this.editUserId = userId;
-                    this.$refs.inputField.focus();
-                },
-                cancelEdit() {
-                    this.currentComment = '';
-                    this.editUserId = false;
-                },
                 async getCommentData() {
                     this.isLoadingComment = true;
-                    // Simulate an async operation, like an API call
-                    // Here we're just directly setting the comments
-                    const baseUrl = window.location.href;
+                    const baseUrl = window.location.href.split('#')[0];
 
-                    const res = await fetch(`${baseUrl}/comments?type=api&page=${this.currentPage}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            this.comments = data.data.data;
-                            this.isLoadingComment = false;
-                            this.last_page = data.data.last_page;
-                            this.userId = data.uid;
-                        })
-                        .catch(error => console.error('Error fetching comments:', error));
+                    try {
+                        const response = await fetch(`${baseUrl}/comments?type=api&page=${this.currentPage}`);
+                        const data = await response.json();
+                        this.comments = data.data.data;
+                        this.last_page = data.data.last_page;
+                        this.userId = data.uid;
+                    } catch (error) {
+                        console.error('Error fetching comments:', error);
+                    } finally {
+                        this.isLoadingComment = false;
+                    }
                 },
-                addComment() {
+                async addComment() {
                     this.isLoadingComment = true;
-                    const baseUrl = window.location.href;
+                    // const baseUrl = window.location.href;
+                    const baseUrl = window.location.href.split('#')[0];
 
                     const data = {
                         rating: this.selectedRating,
                         comment: this.currentComment,
                         parent_id: this.isReplying
-                    }
-                    console.log(data);
+                    };
 
-                    const res = fetch(`${baseUrl}/comments/store?type=api`, {
-                            method: 'POST', // Set the HTTP method to POST
+                    try {
+                        const response = await fetch(`${baseUrl}/comments/store?type=api`, {
+                            method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json', // Tell the server the body is JSON
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                    'content')
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
                             },
                             body: JSON.stringify(data)
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.errors) {
-                                swal("Error!", "Invalid Fields !",
-                                    "error")
-                            } else {
-                                swal("Added!", "Your comment has been added.", "success");
-                            }
-                            this.isLoadingComment = false;
-                            this.getCommentData();
-                            this.currentComment = null;
-                            this.isReplying = null;
-                            this.userReplying = null;
-                        })
-                        .catch(error => swal("Error!", "Server Failed to add comment !",
-                            "error"));
+                        });
+
+                        const result = await response.json();
+
+                        if (result.errors) {
+                            swal("Error!", "Invalid Fields!", "error");
+                        } else {
+                            swal("Added!", "Your comment has been added.", "success");
+                            this.currentComment = '';
+                            this.selectedRating = 0;
+                            this.cancelReply();
+                        }
+                    } catch (error) {
+                        swal("Error!", "Server failed to add comment!", "error");
+                    } finally {
+                        this.isLoadingComment = false;
+                        this.getCommentData();
+                    }
+                },
+                async updateComment() {
+                    const data = {
+                        comment_id: this.currEditId,
+                        comment: this.currentComment,
+                        userId: this.userId
+                    };
+
+                    try {
+                        const response = await fetch(`${window.location.href}/comments/update`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        const result = await response.json();
+
+                        if (result.errors) {
+                            swal("Error!", "Invalid Fields!", "error");
+                        } else {
+                            swal("Updated!", "Your comment has been updated.", "success");
+                            this.cancelEdit();
+                        }
+                    } catch (error) {
+                        swal("Error!", "Server failed to update comment!", "error");
+                    } finally {
+                        this.getCommentData();
+                    }
                 },
                 setReplyComment(id, user) {
-                    console.log(id, user);
                     this.cancelEdit();
                     this.$refs.inputField.focus();
                     this.isReplying = id;
                     this.userReplying = user;
                 },
+                editComments(idComment, comment, userId) {
+                    this.cancelReply();
+                    this.currEditId = idComment;
+                    this.currentComment = comment;
+                    this.editUserId = userId;
+                    this.$refs.inputField.focus();
+                },
                 cancelReply() {
-                    this.currEditId = null;
                     this.isReplying = null;
                     this.userReplying = null;
                 },
+                cancelEdit() {
+                    this.currentComment = '';
+                    this.editUserId = null;
+                    this.currEditId = null;
+                },
                 deleteComments(commentId) {
-                    console.log(commentId);
                     swal({
-                            title: "Are you sure?",
-                            text: "Once deleted, you will not be able to recover this comment!",
-                            icon: "warning",
-                            buttons: true,
-                            dangerMode: true,
-                        })
-                        .then((willDelete) => {
-                            if (willDelete) {
-                                this.isLoadingComment = true;
-                                const baseUrl = window.location.href;
+                        title: "Are you sure?",
+                        text: "Once deleted, you will not be able to recover this comment!",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    }).then(async (willDelete) => {
+                        if (willDelete) {
+                            this.isLoadingComment = true;
 
-                                const res = fetch(`${baseUrl}/comments/${commentId}/delete`, {
-                                        method: 'POST', // Set the HTTP method to POST
+                            try {
+                                const response = await fetch(
+                                    `${window.location.href}/comments/${commentId}/delete`, {
+                                        method: 'POST',
                                         headers: {
-                                            'Content-Type': 'application/json', // Tell the server the body is JSON
+                                            'Content-Type': 'application/json',
                                             'X-CSRF-TOKEN': document.querySelector(
-                                                'meta[name="csrf-token"]').getAttribute('content')
+                                                'meta[name="csrf-token"]').getAttribute(
+                                                'content')
                                         }
-                                    })
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            throw new Error('Network response was not ok');
-                                        }
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        this.isLoadingComment = false;
-                                        this.getCommentData();
-                                        this.currentComment = null;
-                                        this.isReplying = null;
-                                        this.userReplying = null;
-
-                                        // Show success message
-                                        swal("Deleted!", "Your comment has been deleted.", "success");
-                                    })
-                                    .catch(error => {
-                                        this.isLoadingComment = false;
-                                        console.error('Error fetching comments:', error);
-                                        swal("Error!", "There was a problem deleting your comment.",
-                                            "error");
                                     });
-                            } else {
-                                // If the user canceled, show a message
-                                swal("Your comment is safe!");
+
+                                if (response.ok) {
+                                    swal("Deleted!", "Your comment has been deleted.", "success");
+                                    this.cancelReply();
+                                    this.cancelEdit();
+                                } else {
+                                    throw new Error('Network response was not ok');
+                                }
+                            } catch (error) {
+                                swal("Error!", "There was a problem deleting your comment.", "error");
+                            } finally {
+                                this.isLoadingComment = false;
+                                this.getCommentData();
                             }
-                        });
+                        } else {
+                            swal("Your comment is safe!");
+                        }
+                    });
+                },
+                showModal() {
+                    this.showAdsModal = true;
+                },
+                hideModal() {
+                    this.showAdsModal = false;
                 }
             },
-            mounted() {
-                // Use a proper lifecycle method to ensure data has been updated
-                this.getCommentData().then(() => {
-                    // console.log(this.userId); // Logs updated comments
-                });
+            async mounted() {
+                await this.getCommentData();
+
+                @if ($ads)
+                    this.timeAds = "{!! $ads->time !!}";
+                    this.isAdsActive = "{!! $ads->is_active !!}";
+                @endif
+
+                if (this.isAdsActive === "1") {
+                    this.showModal();
+                    this.setCountDownModal();
+                }
+
+                if (this.disabledAfter > 0) {
+                    this.setCountdownRunningText();
+                }
             }
         });
     </script>
+
+    <!-- Google Translate -->
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'id',
+                includedLanguages: 'id,en,es,fr,de,it,ja,zh-CN',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 @endpush

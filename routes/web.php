@@ -1,40 +1,59 @@
 <?php
 
+use App\Http\Controllers\AdvertiseController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthGoogleController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\LogActivitiesController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersHasLimitController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
-Route::get('/', [AuthController::class, 'redirectToLogin']);
+Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
+Route::get('/contact', [AuthController::class, 'contactPage'])->name('contact');
+Route::get('/blog', [AuthController::class, 'blogPage'])->name('blog');
+Route::get('/blog/{slug}', [AuthController::class, 'detailBlog'])->name('blog.detail');
+
+Route::get('/blog-ajax/search', [AuthController::class, 'search'])->name('blog.search');
+Route::get('/blog-ajax/load-more', [AuthController::class, 'loadMore'])->name('blog.loadMore');
+
+Route::get('/gallery/ajax-list', [GalleryController::class, 'ajaxList'])->name('gallery.ajax-list');
 
 Route::get('/sync', [DashboardController::class, 'sync']);
 
-Route::group(['prefix' => 'management'], function(){
-    Route::group(['prefix' => 'master'], function(){
+Route::get('set-locale/{locale}', [DashboardController::class, 'setLocale'])->name('set.locale');
+
+Route::group(['prefix' => 'management'], function () {
+    Route::group(['prefix' => 'master'], function () {
         // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
 
-    
+
         // This is middleware/restricted access & checking is the user has role superadmin or not 
-        Route::middleware(['IsSuperAdmin'])->group(function(){
+        Route::middleware(['IsSuperAdmin'])->group(function () {
             // This is administrator Menu to Manage Users of all 
             Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
+            Route::get('/dashboard/data/user-growth/chart', [DashboardController::class, 'userGrowth'])->name('chart.userGrowth');
 
-            Route::group(['prefix' => 'users'], function(){
+            Route::group(['prefix' => 'users'], function () {
                 Route::get('/', [UsersController::class, 'index'])->name('users');
                 Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
                 Route::get('/pending-approval', [UsersController::class, 'pendingApproval'])->name('users.pending');
-    
+
                 Route::post('/store', [UsersController::class, 'store'])->name('users.store');
                 Route::put('/update', [UsersController::class, 'update'])->name('users.update');
                 Route::put('/{id}/approve', [UsersController::class, 'approve'])->name('users.approve');
@@ -44,7 +63,7 @@ Route::group(['prefix' => 'management'], function(){
                 Route::get('/detail/{id}', [UsersController::class, 'getUserDetail'])->name('users.detail');
             });
 
-            Route::group(['prefix' => 'users-limit'], function(){
+            Route::group(['prefix' => 'users-limit'], function () {
                 Route::get('/', [UsersHasLimitController::class, 'index'])->name('users-limit.index');
                 Route::get('/fetchData', [UsersHasLimitController::class, 'getUserHasLimit'])->name('users-limit.fetch');
                 Route::post('/store', [UsersHasLimitController::class, 'store'])->name('users-limit.store');
@@ -62,50 +81,97 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/{id}/update', [PlaceLimitController::class, 'update'])->name('place-limit.update');
                 Route::delete('/{id}/delete', [PlaceLimitController::class, 'destroy'])->name('place-limit.destroy');
             });
-            
-            Route::prefix('pending-verify')->group(function(){
+
+            Route::prefix('pending-verify')->group(function () {
                 Route::get('/', [UsersController::class, 'pendingVerify'])->name('pending-verify.index');
                 Route::post('/{id}/verify', [UsersController::class, 'verifyAccountManual'])->name('pending-verify.verify');
             });
 
-            Route::group(['prefix' => 'settings'], function(){
+            Route::prefix('advertise')->group(function () {
+                Route::get('/', [AdvertiseController::class, 'index'])->name('advertise.index');
+                Route::get('/create', [AdvertiseController::class, 'create'])->name('advertise.create');
+                Route::post('/store', [AdvertiseController::class, 'storeOrUpdate'])->name('advertise.storeOrUpdate');
+                Route::get('/{id}/edit', [AdvertiseController::class, 'edit'])->name('advertise.edit');
+                Route::delete('/{id}/delete', [AdvertiseController::class, 'destroy'])->name('advertise.destroy');
+            });
+
+            Route::prefix('gallery')->group(function () {
+                Route::get('/', [GalleryController::class, 'index'])->name('gallery.index');
+                Route::get('/create', [GalleryController::class, 'create'])->name('gallery.create');
+                Route::post('/store', [GalleryController::class, 'storeOrUpdate'])->name('gallery.storeOrUpdate');
+                Route::get('/{id}/edit', [GalleryController::class, 'edit'])->name('gallery.edit');
+                Route::post('/{id}/toggle-status', [GalleryController::class, 'toggleStatus'])->name('gallery.toggle-status');
+                Route::delete('/{id}/delete', [GalleryController::class, 'destroy'])->name('gallery.destroy');
+            });
+
+            Route::prefix('report')->group(function () {
+                Route::get('/', [ReportController::class, 'index'])->name('report.index');
+                Route::get('/create', [ReportController::class, 'create'])->name('report.create');
+                Route::post('/store', [ReportController::class, 'storeOrUpdate'])->name('report.storeOrUpdate');
+                Route::get('/pdf', [ReportController::class, 'reportPdf'])->name('report.pdf');
+                Route::get('/{id}/edit', [ReportController::class, 'edit'])->name('report.edit');
+                // Route::post('/{id}/toggle-status', [ReportController::class, 'toggleStatus'])->name('report.toggle-status');
+                Route::delete('/{id}/delete', [ReportController::class, 'destroy'])->name('report.destroy');
+
+                Route::get('/places', [ReportController::class, 'getPlaces'])->name('report.places');
+                Route::get('/users', [ReportController::class, 'getUsers'])->name('report.users');
+                Route::get('/events', [ReportController::class, 'getEvents'])->name('report.events');
+            });
+
+            Route::prefix('blog')->group(function () {
+                Route::get('/', [BlogController::class, 'index'])->name('blog.index');
+                Route::get('/create', [BlogController::class, 'create'])->name('blog.create');
+                Route::post('/store', [BlogController::class, 'store'])->name('blog.store');
+                Route::get('/{id}/edit', [BlogController::class, 'edit'])->name('blog.edit');
+                Route::post('/update', [BlogController::class, 'update'])->name('blog.update');
+                Route::delete('/{id}/delete', [BlogController::class, 'destroy'])->name('blog.destroy');
+            });
+
+            Route::group(['prefix' => 'settings'], function () {
                 Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
-                Route::get('/general/artisan/optimize', function(){
+                Route::post('/general/store', [SettingsController::class, 'store'])->name('settings.store');
+                Route::get('/general/artisan/optimize', function () {
                     Artisan::call('optimize');
-                    
+
                     return back();
                 })->name('artisan.optimize');
-                Route::get('/general/artisan/queue', function(){
+                Route::get('/general/artisan/queue', function () {
                     Artisan::call('queue:restart');
-                    
+
                     return back();
                 })->name('artisan.queue');
 
+                Route::get('/log-activity', [LogActivitiesController::class, 'index'])->name('settings.log-activity');
             });
+
+            Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds'])->name('upload.ads');
+            Route::post('/file/upload/gallery', [FileController::class, 'uploadImageGallery'])->name('upload.gallery');
+            Route::post('/file/upload/blog', [FileController::class, 'uploadImageBlog'])->name('upload.blog');
+            Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace'])->name('upload.place.ads');
         });
-        
-        Route::middleware(['checkUserLimitPermissions'])->group(function(){
-            Route::group(['prefix' => 'place'], function(){
+
+        Route::middleware(['checkUserLimitPermissions'])->group(function () {
+            Route::group(['prefix' => 'place'], function () {
                 Route::get('/', [PlaceController::class, 'index'])->name('place');
                 Route::get('/edit/{place_code}', [PlaceController::class, 'editPlace'])->name('place.edit');
                 Route::get('/deleted-place', [PlaceController::class, 'indexDeletedPlace'])->name('place.getDeleted');
                 Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
                 Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
-    
+
+                Route::get('/chart-data', [PlaceController::class, 'getPlaceChartData'])->name('place.chart-data');
+
                 Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
             });
 
-            Route::group(['prefix' => 'event'], function(){
+            Route::group(['prefix' => 'event'], function () {
                 Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
-
-           
         });
         //Create Middleware For User Has Logged In
-        Route::middleware(['checkLogin'])->group(function(){
+        Route::middleware(['checkLogin'])->group(function () {
             Route::get('/print-barcode/{placeCode}', [PlaceController::class, 'print'])->name('place.print');
-            
+
             Route::get('/my-place', [PlaceController::class, 'returnMyPlaceView'])->name('place.myplace');
             Route::post('/my-place/update', [PlaceController::class, 'updatePlace'])->name('place.update');
             Route::post('/store', [PlaceController::class, 'store'])->name('place.store');
@@ -114,7 +180,7 @@ Route::group(['prefix' => 'management'], function(){
             Route::get('/profile', [UsersController::class, 'viewProfile'])->name('profile');
             Route::post('/profile/update', [UsersController::class, 'updateProfile'])->name('profile.update');
 
-            Route::group(['prefix' => 'my-event'], function(){
+            Route::group(['prefix' => 'my-event'], function () {
                 Route::get('/', [EventController::class, 'index'])->name('myevent.users');
                 Route::get('/get-data/{id}', [EventController::class, 'getData'])->name('myevent.getData');
                 Route::post('/store', [EventController::class, 'store'])->name('myevent.store');
@@ -122,19 +188,25 @@ Route::group(['prefix' => 'management'], function(){
                 Route::post('/delete/{id}', [EventController::class, 'delete'])->name('myevent.delete');
             });
 
-            Route::group(['prefix' => 'comments'], function(){
+            Route::group(['prefix' => 'comments'], function () {
                 Route::get('/', [CommentController::class, 'datatable'])->name('comments.admin');
                 Route::delete('/{id}/delete', [CommentController::class, 'delete'])->name('comments.delete');
             });
-            
+
+            Route::post('/file/upload', [FileController::class, 'uploadFile'])->name('file.upload');
+            Route::get('getlocationdata', [DashboardController::class, 'getLocation'])->name('getLocation');
         });
-        
     });
-    
 });
 
+// This Auth google
+Route::get('/auth/google', [AuthGoogleController::class, 'authGoogle'])->name('authGoogle');
+Route::get('/auth/google/callback', [AuthGoogleController::class, 'googleCallback'])->name('callbackUrl');
+// Route::get('/auth/google/callback', function(){
+//     return 'wkwk';
+// });
 // This is for public user when the user wan't to Login/Register
-Route::group(['prefix' => 'auth'], function(){
+Route::group(['prefix' => 'auth'], function () {
     Route::get('/login', [AuthController::class, 'viewLogin'])->name('login');
     Route::post('/login/store', [AuthController::class, 'store'])->name('login.store');
     Route::get('/register', [AuthController::class, 'viewRegister'])->name('register');
@@ -149,6 +221,7 @@ Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentCo
 Route::post('/detail-place/{place_code}/comments/update', [CommentController::class, 'updateComment'])->middleware('checkLogin');
 
 Route::get('/terms-of-service', [DashboardController::class, 'termsOfService'])->name('termsOfService');
+Route::get('/privacy-policy', [DashboardController::class, 'privacyPolicy'])->name('privacyPolicy');
 
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyMail'])->middleware(['auth', 'signed'])->name('verification.verify');
 Route::post('/email/verification-notification', [AuthController::class, 'resendMailVerification'])->middleware(['auth', 'throttle:6,1'])->name('verification.send');

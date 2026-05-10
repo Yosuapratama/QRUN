@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivities;
 use App\Models\User;
 use App\Models\Place;
 use Illuminate\Http\Request;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUserApproved;
+use Illuminate\Support\Str;
 
 class UsersController extends Controller
 {
@@ -217,6 +221,14 @@ class UsersController extends Controller
 
         $user->assignRole('localadmin');
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Registered New Users at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_CREATE_USER
+        ]);
+
         return response()->json([
             'message' => 'Create Data Success !',
             'status' => 'Success'
@@ -246,6 +258,14 @@ class UsersController extends Controller
         $User->address = $request->address;
         $User->update();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Updated user id : " . $User->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_USER
+        ]);
+
         return response()->json([
             'message' => 'Update Data Success !'
         ], 200);
@@ -263,6 +283,21 @@ class UsersController extends Controller
         $FindUsers->approved_at = Carbon::now();
         $FindUsers->update();
 
+        //Mail::to(config('mail.to.address'))->send(new NewUserApproved($FindUsers));
+        // Mail::to($FindUsers->email)->send(new NewUserApproved($FindUsers));
+        if (!Str::endsWith($FindUsers->email, '@qrun.online')) {
+            Mail::to($FindUsers->email)->send(new NewUserApproved($FindUsers));
+        }
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Approved user id : " . $id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_APPROVE_USER
+        ]);
+
+
         return response()->json([
             'message' => 'Approve Success',
             'status' => $FindUsers->email . ' has approved to use this system'
@@ -279,8 +314,16 @@ class UsersController extends Controller
                 'errors' => 'User Not Found !'
             ], 404);
         }
-        $FindUsers->approved_at = Carbon::now();
+        $FindUsers->approved_at = null;
         $FindUsers->update();
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "UnApproved user id : " . $id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UNAPPROVE_USER
+        ]);
 
         return response()->json([
             'message' => 'UnApprove Success',
@@ -322,6 +365,15 @@ class UsersController extends Controller
 
         $FindUsers->delete();
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Deleted/Blocked user id : " . $id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_DELETE_USER
+        ]);
+
+
         return response()->json([
             'message' => 'User Deleted Success',
             'status' => $FindUsers->email . ' has been Deleted by admin'
@@ -344,6 +396,14 @@ class UsersController extends Controller
         }
 
         $FindUsers->restore();
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Undo Delete/Blocked user id : " . $id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_RESTORE_USER
+        ]);
 
         return response()->json([
             'message' => 'User UnBlocked Success',
@@ -401,6 +461,15 @@ class UsersController extends Controller
             }
         }
 
+
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Updated user profile with id : " . $User->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_UPDATE_PROFILE_USER
+        ]);
+
         $User->update();
 
         return back()->with('success', 'Profile Updated Successfully !');
@@ -437,15 +506,16 @@ class UsersController extends Controller
         return view('Pages.Management.Master.manageUsers.pending-verify.index');
     }
 
-    function verifyAccountManual($id){
+    function verifyAccountManual($id)
+    {
         $User = User::find($id);
-        if(!$User){
+        if (!$User) {
             return response()->json([
                 'errors' => 'Data not found'
             ]);
         }
 
-        if($User->email_verified_at){
+        if ($User->email_verified_at) {
             return response()->json([
                 'errors' => 'This account has been verified !'
             ]);
@@ -455,10 +525,17 @@ class UsersController extends Controller
         $User->save();
 
 
+        LogActivities::create([
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->header('User-Agent'),
+            'user_id' => Auth::user()->id,
+            'activities' => "Verify Account with account id : " . $User->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
+            "type" => LogActivities::TYPE_VERIFY_USER
+        ]);
+
         return response()->json([
             'status' => 'Verify Account Success !',
             'message' => 'Successfully verified !'
         ]);
-
     }
 }

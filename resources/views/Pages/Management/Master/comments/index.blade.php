@@ -8,7 +8,7 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Management Comments</h1>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">@lang('messages.navigation_admin.manage_comments.manage_comments')</h1>
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -40,14 +40,10 @@
         <script>
             $(document).ready(function() {
                 $('#datatable').DataTable({
-                    // 'createdRow': function(row, data, dataIndex) {
-                    //     $('td:eq(0)', row).css('min-width', '200px');
-                    //     $('td:eq(1)', row).css('min-width', '150px');
-                    //     $('td:eq(2)', row).css('min-width', '200px');
-                    //     $('td:eq(3)', row).css('min-width', '200px');
-                    //     $('td:eq(4)', row).css('min-width', '200px');
-                    //     $('td:eq(5)', row).css('min-width', '120px');
-                    // },
+                    'createdRow': function(row, data, dataIndex) {
+                        $('td:eq(1)', row).css('min-width', '100px');
+                        $('td:eq(4)', row).css('min-width', '150px');
+                    },
                     filter: true,
                     processing: true,
                     serverSide: false,

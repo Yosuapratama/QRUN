@@ -1,7 +1,16 @@
 @extends('TemplateLayout.UserLayout')
 
 @push('title')
-    <title>QRUN Website - Login</title>
+    <title>Login | Qrun Online</title>
+    <meta name="description" content="Secure login page for accessing your account. Enter your credentials to continue.">
+    <meta name="keywords" content="qrun online, login qrun, login qrun online, sign in qrun, sign in qrun online, register qrun online,register qrun">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Login to Your Account">
+    <meta property="og:description" content="Access your account by logging in.">
+    <meta property="og:url" content="https://qrun.online/auth/login">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Login to Your Account">
+    <meta name="twitter:description" content="Securely log in to your account.">
 @endpush
 
 @push('script')
@@ -52,6 +61,11 @@
                                                 {{ session()->get('status') }}
                                             </div>
                                         @endif
+                                        @if (session()->has('success'))
+                                            <div class="alert alert-success">
+                                                {{ session()->get('success') }}
+                                            </div>
+                                        @endif
                                         <div class="form-group mt-2">
                                             <label for="exampleInputEmail">Email</label>
                                             <input autofocus type="email" class="form-control form-control-user"
@@ -82,13 +96,18 @@
                                         {{-- <hr> --}}
                                         <p class="mt-3 text-center">OR</p>
                                         <a style="border: 1px solid black"
-                                            class="btn btn-user btn-block border-1 rounded-md">
+                                            class="btn btn-user btn-block border-1 rounded-md" href="{{route('authGoogle')}}">
                                             <i class="fa-brands fa-google text-danger mr-2"></i> Login/Register With Google
                                         </a>
 
                                         <p class="mt-3">Don't Have An Account ? <a href="{{ route('register') }}">
                                                 Register Here
                                             </a></p>
+                                           <div class="alert alert-warning">
+                                                <label style="width: 80%; margin-left: 2%" for="agreed">By registering and using our system, you agree to our <a href="{{route('privacyPolicy')}}">Privacy Policy</a> and <a href="{{route('termsOfService')}}">Terms of Service</a>.        
+                                                </label>
+                                            </div>
+
 
                                     </form>
                                 </div>

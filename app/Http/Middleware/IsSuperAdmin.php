@@ -4,8 +4,10 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class IsSuperAdmin
 {
@@ -16,6 +18,12 @@ class IsSuperAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (Session::has('locale')) {
+            App::setLocale(Session::get('locale'));
+        }else{
+            App::setLocale('en');
+        }
+
         if(Auth::check()){
             if(Auth::user()->deleted_at){
                 return redirect()->route('login')->withErrors('Your Account has disabled By Admin');
