@@ -31,7 +31,7 @@
             <!-- Login/Register Buttons -->
             <div class="hidden md:block">
                 <div class="ml-4 flex items-center md:ml-6 space-x-3">
-                    <a href="{{ route('login') }}"
+                    <a href="{{ route('login') }}{{ Route::currentRouteName() == 'place.detail' ? '?redirect_back=true' : '' }}"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Login/Register</a>
                 </div>
             </div>
@@ -65,7 +65,7 @@
             </a>
 
             <div class="border-t pt-3 mt-3">
-                <a href="{{ route('login') }}"
+                <a href="{{ route('login') }}{{ Route::currentRouteName() == 'place.detail' ? '?redirect_back=true' : '' }}"
                     class="{{ Route::currentRouteName() == 'login' ? 'bg-blue-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white block px-3 py-2 rounded-md text-base font-medium">
                     Login/Register
                 </a>

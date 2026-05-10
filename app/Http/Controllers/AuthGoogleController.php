@@ -63,7 +63,7 @@ class AuthGoogleController extends Controller
     
     
             Auth::login($user, true);
-    
+
             LogActivities::create([
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->header('User-Agent'),
@@ -71,7 +71,15 @@ class AuthGoogleController extends Controller
                 'activities' => "User Login By Google at " . Carbon::now()->format('Y-m-d H:i:s'),
                 "type" => LogActivities::TYPE_LOGIN_GOOGLE
             ]);
-    
+
+            if (session()->has('redirect_back')) {
+                $redirectUrl = session('redirect_back');
+                session()->forget('redirect_back');
+                if (parse_url($redirectUrl, PHP_URL_HOST) === request()->getHost()) {
+                    return redirect($redirectUrl);
+                }
+            }
+
             return redirect()->route('dashboard'); // redirect after login
         }catch (\Exception $e) {
             return redirect()->route('login')->withErrors([

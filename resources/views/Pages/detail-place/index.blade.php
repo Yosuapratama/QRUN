@@ -552,7 +552,7 @@ iframe[src*="youtu.be"] {
                                     </svg>
                                     <p class="text-blue-800 font-medium mb-4 text-sm sm:text-base">Please login to post
                                         comments and reviews</p>
-                                    <a href="{{ route('login') }}"
+                                    <a href="{{ route('login') }}?redirect_back=true"
                                         class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-colors text-sm">
                                         Login Now
                                     </a>

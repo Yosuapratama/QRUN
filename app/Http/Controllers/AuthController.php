@@ -45,6 +45,9 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('dashboard')->withErrors('You Already Logged in !');
         }
+        if (request()->has('redirect_back') && !session()->has('redirect_back')) {
+            session(['redirect_back' => url()->previous()]);
+        }
         return view('Pages.Login');
     }
 
@@ -80,6 +83,14 @@ class AuthController extends Controller
                 'activities' => "User Login at " . Carbon::now()->format('Y-m-d H:i:s'),
                 "type" => LogActivities::TYPE_LOGIN
             ]);
+
+            if (session()->has('redirect_back')) {
+                $redirectUrl = session('redirect_back');
+                session()->forget('redirect_back');
+                if (parse_url($redirectUrl, PHP_URL_HOST) === request()->getHost()) {
+                    return redirect($redirectUrl)->with('success', 'Login Success !');
+                }
+            }
 
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
