@@ -13,6 +13,7 @@ use App\Models\Place;
 use App\Models\Image;
 use App\Models\Event;
 use App\Models\LogActivities;
+use App\Models\PlaceCheckpoint;
 use App\Models\UserHasPlaceLimit;
 use DOMDocument;
 use Illuminate\Support\Carbon;
@@ -58,31 +59,144 @@ class PlaceController extends Controller
     // (1) Place Index Menu, on sidenav this menu call ManagePlace
     function index(Request $request)
     {
-        if (Auth::user()->hasRole('superadmin')) {
-            $data = Place::select('id', 'views', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
-        } else {
-            $data = Place::select('id', 'views', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->where('creator_id', Auth::user()->id)->latest()->get();
-        }
-
         if ($request->ajax()) {
-            return DataTables::of($data)
+            $query = Place::query()
+                ->leftJoin('users', 'users.id', '=', 'place.creator_id')
+                ->select([
+                    'place.id',
+                    'place.views',
+                    'place.place_code',
+                    'place.title',
+                    'place.description',
+                    'place.province_id',
+                    'place.regency_id',
+                    'place.district_id',
+                    'place.creator_id',
+                    'users.email as creator_email',
+                    'place.created_at',
+                    'place.updated_at'
+                ]);
+
+            if (!Auth::user()->hasRole('superadmin')) {
+                $query->where('creator_id', Auth::user()->id);
+            }
+
+            if ($request->title) {
+                $query->where('title', 'like', '%' . $request->title . '%');
+            }
+
+            if ($request->place_code) {
+                $query->where('place_code', 'like', '%' . $request->place_code . '%');
+            }
+
+            if ($request->description) {
+                $query->where('description', 'like', '%' . $request->description . '%');
+            }
+
+            if ($request->creator) {
+                $query->where('users.email', 'like', '%' . $request->creator . '%');
+            }
+
+            if ($request->filled('updated_at_start') && $request->filled('updated_at_end')) {
+
+                $query->whereBetween('place.updated_at', [
+                    \Carbon\Carbon::parse($request->updated_at_start)->startOfDay(),
+                    \Carbon\Carbon::parse($request->updated_at_end)->endOfDay(),
+                ]);
+            }
+
+            if ($request->province) {
+                $query->where('province_id', $request->province);
+            }
+
+            if ($request->regency) {
+                $query->where('regency_id', $request->regency);
+            }
+
+            if ($request->district) {
+                $query->where('district_id', $request->district);
+            }
+
+            if ($request->village) {
+                $query->where('village_id', $request->village);
+            }
+
+            return DataTables::of($query)
                 ->editColumn('updated_at', function ($row) {
                     return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
+                })
+                ->addColumn('creator', function ($row) {
+                    return $row->creator_email ?? '-';
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $url = $this->applicationURLLocal . '/detail-place/' . $row->place_code;
                     $editUrl = $this->applicationURLLocal . '/management/master/place/edit/' . $row->place_code;
+                    $detailUrl = $this->applicationURLLocal . '/management/master/place/detail/' . $row->place_code;
                     $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $row->place_code;
 
-                    $btn = "<div class='d-flex'>";
-                    $btn = $btn . "<button id='$row->place_code' class='detailPlaceButton btn btn-primary btn-sm mr-1'>Detail</button>";
-                    $btn = $btn . "<a target='_blank' href='$url' class='btn btn-warning btn-sm mr-1'>Visit</a>";
-                    $btn = $btn . "<a target='_blank' href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
-                    $btn = $btn . "<a target='_blank' href='$printUrl' class='btn btn-success btn-sm mr-1'>Print</a>";
-                    $btn = $btn . "<button id='$row->place_code' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
+                    $btn = "
+                    <div class='dropdown'>
+                        <button 
+                            class='btn btn-primary btn-sm dropdown-toggle' 
+                            type='button' 
+                            data-toggle='dropdown' 
+                            aria-expanded='false'
+                        >
+                            <i class='fas fa-cog'></i> Action
+                        </button>
 
-                    $btn = $btn . "</div>";
+                        <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+
+                            <a 
+                                href='$detailUrl'
+                                class=' dropdown-item'
+                            >
+                                <i class='fas fa-eye text-primary mr-2'></i>
+                                Detail
+                            </a>
+
+                            <a 
+                                target='_blank' 
+                                href='$url' 
+                                class='dropdown-item'
+                            >
+                                <i class='fas fa-external-link-alt text-warning mr-2'></i>
+                                Visit
+                            </a>
+
+                            <a 
+                                target='_blank' 
+                                href='$editUrl' 
+                                class='dropdown-item'
+                            >
+                                <i class='fas fa-edit text-secondary mr-2'></i>
+                                Edit
+                            </a>
+
+                            <a 
+                                target='_blank' 
+                                href='$printUrl' 
+                                class='dropdown-item'
+                            >
+                                <i class='fas fa-print text-success mr-2'></i>
+                                Print
+                            </a>
+
+                            <div class='dropdown-divider'></div>
+
+                            <button 
+                                id='$row->place_code' 
+                                class='delete dropdown-item text-danger'
+                            >
+                                <i class='fas fa-trash mr-2'></i>
+                                Delete
+                            </button>
+
+                        </div>
+                    </div>
+                    ";
+
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -92,6 +206,18 @@ class PlaceController extends Controller
 
         return view('Pages.Management.Master.place.index');
     }
+
+    public function show($place_code)
+    {
+        $Place = Place::where('place_code', $place_code)->with('creator_id')->first();
+
+        if (!$Place) {
+            return abort(404);
+        }
+
+        return view('Pages.Management.Master.place.show', compact('Place'));
+    }
+
     // (2) This Func For Superadmin to edit users place
     function editPlace($place_code)
     {
@@ -107,28 +233,154 @@ class PlaceController extends Controller
             return back()->withErrors('Place Code Not Found !');
         }
 
-        return view('Pages.Management.Master.place.edit', compact('Place'));
+        return view('Pages.Management.Master.place.form', compact('Place'));
     }
 
     // (3) This Func for admin to get all place deleted by admin or a users has blocked by admin
-    function indexDeletedPlace(Request $request)
+    public function indexDeletedPlace(Request $request)
     {
-        if (Auth::user()->hasRole('superadmin')) {
-            $data = Place::whereNotNull('deleted_at')->withTrashed()->select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->latest()->get();
-        } else {
-            $data = Place::whereNotNull('deleted_at')->withTrashed()->select('id', 'place_code', 'title', 'description', 'creator_id', 'created_at', 'updated_at')->with('creator_id')->where('creator_id', Auth::user()->id)->latest()->get();
+        // $query = Place::onlyTrashed()
+        //     ->select([
+        //         'id',
+        //         'place_code',
+        //         'title',
+        //         'description',
+        //         'creator_id',
+        //         'views',
+        //         'created_at',
+        //         'updated_at',
+        //         'deleted_at',
+        //         'province_id',
+        //         'regency_id',
+        //         'district_id',
+        //         'village_id'
+        //     ])
+        //     ->with(['creator_id:id,email']);
+
+        $query = Place::onlyTrashed()
+            ->leftJoin('users', 'users.id', '=', 'place.creator_id')
+            ->select([
+                'place.id',
+                'place.views',
+                'place.place_code',
+                'place.title',
+                'place.description',
+                'place.province_id',
+                'place.regency_id',
+                'place.district_id',
+                'place.creator_id',
+                'users.email as creator_email',
+                'place.created_at',
+                'place.updated_at',
+                'place.deleted_at'
+            ]);
+
+        // Restrict non-superadmin
+        if (!Auth::user()->hasRole('superadmin')) {
+            $query->where('creator_id', Auth::id());
+        }
+
+        // Filters
+        if ($request->filled('title')) {
+            $query->where('title', 'like', '%' . $request->title . '%');
+        }
+
+        if ($request->filled('place_code')) {
+            $query->where('place_code', 'like', '%' . $request->place_code . '%');
+        }
+
+        if ($request->filled('description')) {
+            $query->where('description', 'like', '%' . $request->description . '%');
+        }
+
+        if ($request->filled('creator')) {
+            $query->whereHas('creator_id', function ($q) use ($request) {
+                $q->where('email', 'like', '%' . $request->creator . '%');
+            });
+        }
+
+        if ($request->filled('province')) {
+            $query->where('province_id', $request->province);
+        }
+
+        if ($request->filled('regency')) {
+            $query->where('regency_id', $request->regency);
+        }
+
+        if ($request->filled('district')) {
+            $query->where('district_id', $request->district);
+        }
+
+        if ($request->filled('village')) {
+            $query->where('village_id', $request->village);
+        }
+
+        // Deleted date range
+        if ($request->filled('deleted_at_start') && $request->filled('deleted_at_end')) {
+            $query->whereBetween('place.deleted_at', [
+                $request->deleted_at_start . ' 00:00:00',
+                $request->deleted_at_end . ' 23:59:59'
+            ]);
         }
 
         if ($request->ajax()) {
-            return DataTables::of($data)
-                ->editColumn('updated_at', function ($row) {
-                    return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s') . ' Wita';
+            return DataTables::eloquent($query)
+                // ->addColumn('creator_email', function ($row) {
+                //     return optional($row->creator_id)->email ?? '-';
+                // })
+
+                ->editColumn('deleted_at', function ($row) {
+                    return $row->deleted_at
+                        ? \Carbon\Carbon::parse($row->deleted_at)
+                        ->format('d-M-Y H:i:s') . ' Wita'
+                        : '-';
                 })
+
+                ->addColumn('action', function ($row) {
+                    return '
+                    <button
+                        class="btn btn-success btn-sm restore"
+                        data-id="' . $row->id . '">
+                        <i class="fas fa-undo"></i> Restore
+                    </button>
+                ';
+                })
+
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
         return view('Pages.Management.Master.place.deleted');
     }
+
+    public function restorePlace($placeId)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $place = Place::withTrashed()->findOrFail($placeId);
+
+            $place->restore();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Place restored successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to restore place.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // (4) To Show Pages For user to create new posts/place
     function indexCreatePlace()
     {
@@ -225,35 +477,36 @@ class PlaceController extends Controller
             return back()->withErrors('Your Account Need Approval First !');
         }
     }
-    
-    public function sanitizeHtml($html) {
+
+    public function sanitizeHtml($html)
+    {
         // 1. Hapus tag berbahaya (kecuali iframe)
         $dangerousTags = ['script', 'object', 'embed', 'style', 'link', 'meta', 'base'];
         foreach ($dangerousTags as $tag) {
             $html = preg_replace("#<\s*{$tag}[^>]*>.*?<\s*/\s*{$tag}>#is", '', $html);
             $html = preg_replace("#<\s*{$tag}[^>]*\s*/?>#is", '', $html);
         }
-    
+
         // 2. Izinkan hanya tag tertentu (termasuk iframe sekarang)
         $allowedTags = '<p><br><b><strong><i><em><u><ul><ol><li><a><img><blockquote><h1><h2><h3><h4><h5><h6><iframe>';
         $html = strip_tags($html, $allowedTags);
-    
+
         // 3. Hapus event handler berbahaya (onerror, onclick, dll)
         $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*"[^"]*")/i', '$1', $html);
         $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*\'[^\']*\')/i', '$1', $html);
         $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*[^\s>]*)/i', '$1', $html);
-    
+
         // 4. Hapus href/src yang mengandung javascript:
         $html = preg_replace('/href\s*=\s*["\']?javascript:[^"\']*["\']?/i', '', $html);
         $html = preg_replace('/src\s*=\s*["\']?javascript:[^"\']*["\']?/i', '', $html);
-    
+
         // 5. Filter atribut iframe (izinkan hanya src, width, height, frameborder, allow, allowfullscreen)
         $html = preg_replace_callback('/<iframe([^>]*)>/i', function ($matches) {
             $allowedAttrs = ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'];
             $attrs = $matches[1];
-    
+
             preg_match_all('/(\w+)\s*=\s*([\'"])(.*?)\2/', $attrs, $attrMatches, PREG_SET_ORDER);
-    
+
             $cleanAttrs = '';
             foreach ($attrMatches as $attr) {
                 $name = strtolower($attr[1]);
@@ -266,10 +519,10 @@ class PlaceController extends Controller
                     $cleanAttrs .= " {$name}=\"{$value}\"";
                 }
             }
-    
+
             return "<iframe{$cleanAttrs}></iframe>";
         }, $html);
-    
+
         return $html;
     }
 
@@ -328,19 +581,19 @@ class PlaceController extends Controller
         $dom->loadHtml($content, 9);
 
         // libxml_clear_errors();
-        
+
         //new
         // libxml_use_internal_errors(true);
 
         // $cleanContent = $this->sanitizeHtml($request->content);
         // $content = preg_replace('/<o:p[^>]*>.*?<\/o:p>/i', '', $cleanContent);
         //  $content = $this->sanitizeHtml($request->content);
-         
+
         // $dom = new DOMDocument();
         // $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         // libxml_clear_errors();
         //end
-        
+
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
@@ -392,7 +645,7 @@ class PlaceController extends Controller
 
         $content = $dom->saveHTML();
         // $content = $this->sanitizeHtml($content);
-   
+
         $Place->title = $request->title;
         $Place->description = $request->description;
         $Place->content = $content;
@@ -472,7 +725,7 @@ class PlaceController extends Controller
         $dom->loadHtml($content, 9);
 
         //START HERE
-        
+
         // libxml_use_internal_errors(true);
         // dd($request->content);
         // $content = $this->sanitizeHtml($request->content);
@@ -482,8 +735,8 @@ class PlaceController extends Controller
         // $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         // libxml_clear_errors();
         //end
-        
-        
+
+
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
@@ -623,6 +876,15 @@ class PlaceController extends Controller
         if (!in_array($place_code, session('views'))) {
             session()->push('views', $place_code);
             $place->increment('views');
+            PlaceCheckpoint::create([
+                'place_id' => $place->id,
+                'place_code' => $place->place_code,
+                'user_id' => Auth::id(),
+                'session_id' => session()->getId(),
+                'ip_address' => request()->ip(),
+                'referrer' => request()->header('referer'),
+                'checked_at' => now()
+            ]);
         }
 
 
@@ -733,6 +995,117 @@ class PlaceController extends Controller
             'regency' => $regencyData,
             'district' => $districtData,
             'village' => $villageData,
+        ]);
+    }
+
+    /**
+     * AJAX Search Methods for Select2 Cascading Location Filters
+     */
+
+    // Search Provinces
+    public function searchProvinces(Request $request)
+    {
+        $search = $request->get('q', '');
+
+        $query = DB::table('reg_provinces');
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $results = $query->limit(20)->get();
+
+        return response()->json([
+            'results' => $results->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->name
+                ];
+            })
+        ]);
+    }
+
+    // Search Regencies
+    public function searchRegencies(Request $request)
+    {
+        $province_id = $request->get('province_id');
+        $search = $request->get('q', '');
+
+        $query = DB::table('reg_regencies');
+
+        if ($province_id) {
+            $query->where('province_id', $province_id);
+        }
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $results = $query->limit(20)->get();
+
+        return response()->json([
+            'results' => $results->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->name
+                ];
+            })
+        ]);
+    }
+
+    // Search Districts
+    public function searchDistricts(Request $request)
+    {
+        $regency_id = $request->get('regency_id');
+        $search = $request->get('q', '');
+
+        $query = DB::table('reg_districts');
+
+        if ($regency_id) {
+            $query->where('regency_id', $regency_id);
+        }
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $results = $query->limit(20)->get();
+
+        return response()->json([
+            'results' => $results->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->name
+                ];
+            })
+        ]);
+    }
+
+    // Search Villages
+    public function searchVillages(Request $request)
+    {
+        $district_id = $request->get('district_id');
+        $search = $request->get('q', '');
+
+        $query = DB::table('reg_villages');
+
+        if ($district_id) {
+            $query->where('district_id', $district_id);
+        }
+
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $results = $query->limit(20)->get();
+
+        return response()->json([
+            'results' => $results->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'text' => $item->name
+                ];
+            })
         ]);
     }
 }

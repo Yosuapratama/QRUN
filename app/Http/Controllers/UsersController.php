@@ -63,26 +63,104 @@ class UsersController extends Controller
 
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = "<div class='d-flex justify-content-center'>";
+
+                    $btn = "
+    <div class='dropdown'>
+        <button 
+            class='btn btn-primary btn-sm dropdown-toggle'
+            type='button'
+            data-toggle='dropdown'
+            aria-expanded='false'
+        >
+            <i class='fas fa-cog'></i> Action
+        </button>
+
+        <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+    ";
+
+                    // Detail selalu ada
+                    $btn .= "
+        <button
+            id='{$row->id}'
+            class='detailUser dropdown-item'
+        >
+            <i class='fas fa-eye text-primary mr-2'></i>
+            Detail
+        </button>
+    ";
+
+                    // Edit selalu ada
+                    $btn .= "
+        <button
+            id='{$row->id}'
+            class='editUser dropdown-item'
+        >
+            <i class='fas fa-edit text-warning mr-2'></i>
+            Edit
+        </button>
+    ";
+
+                    // Jangan bisa manage diri sendiri
                     if (Auth::user()->id !== $row->id) {
 
+                        // Approve / Unapprove
                         if ($row->approved_at) {
-                            $btn = $btn . "<button id='$row->id' class='unapprove btn btn-danger btn-sm mr-1'>UnApprove</button>";
+
+                            $btn .= "
+                <button
+                    id='{$row->id}'
+                    class='unapprove dropdown-item text-danger'
+                >
+                    <i class='fas fa-times-circle mr-2'></i>
+                    UnApprove
+                </button>
+            ";
                         } else {
-                            $btn = $btn . "<button id='$row->id' class='approve btn btn-success btn-sm mr-1'>Approve</button>";
+
+                            $btn .= "
+                <button
+                    id='{$row->id}'
+                    class='approve dropdown-item text-success'
+                >
+                    <i class='fas fa-check-circle mr-2'></i>
+                    Approve
+                </button>
+            ";
                         }
 
-                        $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
-                        $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
+                        $btn .= "<div class='dropdown-divider'></div>";
 
-                        $btn = $btn . "<button id='$row->id' class='blockUser btn btn-danger btn-sm mr-1'>Delete</button>";
-                    } else {
-                        $btn = $btn . "<button id='$row->id' class='detailUser btn btn-primary btn-sm mr-1'>Detail</button>";
-                        $btn = $btn . "<button id='$row->id' class='editUser btn btn-warning btn-sm mr-1'>Edit</button>";
+                        // Block / Unblock
+                        if ($row->deleted_at) {
+
+                            $btn .= "
+                <button
+                    id='{$row->id}'
+                    class='unBlockUser dropdown-item text-success'
+                >
+                    <i class='fas fa-user-check mr-2'></i>
+                    Unblock User
+                </button>
+            ";
+                        } else {
+
+                            $btn .= "
+                <button
+                    id='{$row->id}'
+                    class='blockUser dropdown-item text-danger'
+                >
+                    <i class='fas fa-user-slash mr-2'></i>
+                    Block User
+                </button>
+            ";
+                        }
                     }
 
+                    $btn .= "
+        </div>
+    </div>
+    ";
 
-                    $btn = $btn . "</div>";
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -237,13 +315,20 @@ class UsersController extends Controller
     // (5) This update function is used to update users data by admin
     function update(Request $request)
     {
-        $Validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'id' => 'required',
             'address' => 'required',
             'name' => 'required',
             'phone' => 'required',
-            'password' => 'required'
+            'password' => 'nullable|min:8',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $User = User::find($request->id);
 
@@ -256,6 +341,22 @@ class UsersController extends Controller
         $User->name = $request->name;
         $User->phone = $request->phone;
         $User->address = $request->address;
+        if ($request->auto_approved == "1") {
+            $User->approved_at = Carbon::now();
+        } else {
+            $User->approved_at = null;
+        }
+
+        if ($request->auto_verified == "1") {
+            $User->email_verified_at = Carbon::now();
+        } else {
+            $User->email_verified_at = null;
+        }
+
+        if ($request->password) {
+            $User->password = Hash::make($request->password);
+        }
+
         $User->update();
 
         LogActivities::create([

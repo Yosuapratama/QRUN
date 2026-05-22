@@ -6,7 +6,7 @@
     @endphp
 
     @push('title')
-        <title>{{ $isEdit ? 'Edit' : 'Create' }} Place Admin - QRUN Website</title>
+        <title>Detail Place Admin - QRUN Website</title>
     @endpush
 
 
@@ -16,10 +16,10 @@
         <div class="page-header-wrapper mb-3">
             <div>
                 <h1 class="page-title mb-2">
-                    <i class="fas fa-map-pin text-primary mr-3"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }} / Object
+                    <i class="fas fa-map-pin text-primary mr-3"></i>Detail Place
                 </h1>
                 <p class="page-subtitle mb-0">
-                    Add a new location to the directory with detailed information, location details, and content editor.
+                    View the details of the selected place.
                 </p>
             </div>
         </div>
@@ -83,7 +83,7 @@
                                     Title <span class="text-danger">*</span>
                                 </label>
 
-                                <input required class="form-control" name="title" type="text"
+                                <input disabled required class="form-control" name="title" type="text"
                                     value="{{ old('title', $Place->title ?? '') }}" placeholder="Enter place title...">
 
                                 @error('title')
@@ -96,7 +96,7 @@
                                     Contact Person
                                 </label>
 
-                                <input class="form-control" name="phone_num" type="number"
+                                <input disabled class="form-control" name="phone_num" type="number"
                                     value="{{ old('phone_num', $Place->phone_num ?? '') }}"
                                     placeholder="Enter contact phone number...">
 
@@ -110,7 +110,7 @@
                                     Description <span class="text-danger">*</span>
                                 </label>
 
-                                <textarea required class="form-control" rows="3" name="description"
+                                <textarea disabled required class="form-control" rows="3" name="description"
                                     placeholder="Short description about this place...">{{ old('description', $Place->description ?? '') }}</textarea>
 
                                 @error('description')
@@ -148,7 +148,8 @@
                                         Province
                                     </label>
 
-                                    <select id="provinceDataSelect" name="reg_province" class="form-control select2">
+                                    <select disabled id="provinceDataSelect" name="reg_province"
+                                        class="form-control select2">
                                         <option value="">Select Province</option>
                                     </select>
                                 </div>
@@ -158,7 +159,7 @@
                                         City / Regency
                                     </label>
 
-                                    <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
+                                    <select disabled id="regencyDataSelect" name="reg_regency" class="form-control select2">
                                         <option value="">Select Regency</option>
                                     </select>
                                 </div>
@@ -168,7 +169,8 @@
                                         District
                                     </label>
 
-                                    <select id="districtDataSelect" name="reg_district" class="form-control select2">
+                                    <select disabled id="districtDataSelect" name="reg_district"
+                                        class="form-control select2">
                                         <option value="">Select District</option>
                                     </select>
                                 </div>
@@ -178,7 +180,8 @@
                                         Village
                                     </label>
 
-                                    <select id="villagesDataSelect" name="reg_village" class="form-control select2">
+                                    <select disabled id="villagesDataSelect" name="reg_village"
+                                        class="form-control select2">
                                         <option value="">Select Village</option>
                                     </select>
                                 </div>
@@ -261,12 +264,13 @@
                             <i class="fas fa-asterisk text-danger mr-1"></i> Required fields
                         </small>
                         <div class="d-flex gap-3">
-                            <button type="reset" class="btn btn-secondary btn-sm reset-btn">
-                                <i class="fas fa-redo mr-2"></i>Reset
-                            </button>
-                            <button type="submit" class="btn btn-primary submit-btn shadow-sm">
+                            <a type="button" href="{{route('place')}}"
+                                class="btn btn-secondary btn-md back-btn">
+                                <i class="fas fa-arrow-left mr-2"></i>Back
+                            </a>
+                            {{-- <button type="submit" class="btn btn-primary submit-btn shadow-sm">
                                 <i class="fas fa-save mr-2"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }}
-                            </button>
+                            </button> --}}
                         </div>
                     </div>
                 </div>
@@ -278,6 +282,52 @@
 
     @push('css')
         @include('Pages.Management.Master.place.components.style')
+        <style>
+            /* =========================
+                   DISABLED FORM STYLE
+                ========================= */
+
+            input[readonly],
+            textarea[readonly],
+            select:disabled {
+                background-color: #f8f9fc !important;
+                color: #6c757d !important;
+                cursor: not-allowed !important;
+                opacity: 1 !important;
+            }
+
+            /* Select2 Disabled */
+            .select2-container--disabled .select2-selection {
+                background-color: #f8f9fc !important;
+                border-color: #d1d3e2 !important;
+                cursor: not-allowed !important;
+                opacity: 1 !important;
+            }
+
+            .select2-container--disabled .select2-selection__rendered {
+                color: #6c757d !important;
+            }
+
+            /* Summernote Disabled */
+            .note-editor.note-frame .note-editing-area .note-editable[contenteditable="false"] {
+                background-color: #f8f9fc !important;
+                color: #6c757d !important;
+                cursor: not-allowed !important;
+            }
+
+            /* Summernote Toolbar Disabled */
+            .note-toolbar {
+                background-color: #f8f9fc !important;
+                opacity: 0.7;
+                pointer-events: none;
+            }
+
+            /* Checkbox Disabled */
+            input[type="checkbox"]:disabled {
+                cursor: not-allowed;
+                opacity: 0.6;
+            }
+        </style>
     @endpush
 
     @push('script')
@@ -349,65 +399,10 @@
                     }, 10);
                 });
 
-                function makeIframeResponsive() {
-
-                    $('.note-editable iframe').each(function() {
-
-                        $(this).css({
-                            width: '100%',
-                            maxWidth: '100%',
-                            height: 'auto',
-                            minHeight: '220px',
-                            border: '0',
-                            borderRadius: '12px',
-                            display: 'block'
-                        });
-
-                        // remove fixed size bawaan youtube embed
-                        $(this).removeAttr('width');
-                        $(this).removeAttr('height');
-
-                        // ratio 16:9
-                        this.style.aspectRatio = '16 / 9';
-                    });
-                }
                 // =========================
                 // SUMMERNOTE
                 // =========================
 
-                function sanitizePastedContent(html) {
-
-                    let wrapper = $('<div>').html(html);
-
-                    // remove style/class/id
-                    wrapper.find('*').each(function() {
-
-                        $(this)
-                            .removeAttr('style')
-                            .removeAttr('class')
-                            .removeAttr('id')
-                            .removeAttr('width')
-                            .removeAttr('height');
-
-                        // convert h1-h6 ke p
-                        if (/^h[1-6]$/i.test(this.tagName)) {
-                            $(this).replaceWith(
-                                `<p>${$(this).html()}</p>`
-                            );
-                        }
-
-                        // buang empty paragraph
-                        if ($(this).html()?.trim() === '&nbsp;') {
-                            $(this).remove();
-                        }
-                    });
-
-                    // normalize break
-                    wrapper.find('br + br').remove();
-
-                    return wrapper.html();
-                }
-                
                 $('#summernote').summernote({
 
                     placeholder: 'Write detailed information about this place...',
@@ -440,45 +435,12 @@
                         onInit: function() {
 
                             $('.note-editable').css({
-                                textAlign: 'left',
-                                minHeight: '320px'
+                                'text-align': 'left',
+                                'min-height': '320px'
                             });
 
                             $('.note-editor').addClass('shadow-sm');
-
-                            makeIframeResponsive();
-                        },
-
-                        onMediaDelete: function() {
-                            makeIframeResponsive();
-                        },
-
-                        onPaste: function(e) {
-
-                            e.preventDefault();
-
-                            let clipboardData =
-                                (e.originalEvent || e).clipboardData ||
-                                window.clipboardData;
-
-                            let text = clipboardData.getData('text/html');
-
-                            // fallback kalau bukan html
-                            if (!text) {
-                                text = clipboardData.getData('text/plain');
-                                document.execCommand('insertText', false, text);
-                                return;
-                            }
-
-                            // sanitize html
-                            let cleanHtml = sanitizePastedContent(text);
-
-                            $('#summernote').summernote(
-                                'pasteHTML',
-                                cleanHtml
-                            );
                         }
-
                     },
 
                     buttons: {
@@ -867,6 +829,33 @@
                     );
                 });
 
+                function setReadonlyMode() {
+                    console.log('Setting readonly mode...');
+                    // Disable select2
+                    $('#provinceDataSelect').prop('disabled', true).trigger('change.select2');
+                    $('#regencyDataSelect').prop('disabled', true).trigger('change.select2');
+                    $('#districtDataSelect').prop('disabled', true).trigger('change.select2');
+                    $('#villagesDataSelect').prop('disabled', true).trigger('change.select2');
+
+                    // Disable summernote
+                    $('#summernote').summernote('disable');
+
+                    // Disable checkbox
+                    $('input[name="AllowComment"]').prop('disabled', true);
+
+                    // Disable buttons
+                    // $('.submit-btn').hide();
+                    // $('.reset-btn').hide();
+
+                    // Disable all inputs + textarea
+                    $('input, textarea').prop('readonly', true);
+
+                }
+
+                // run after all initialized
+                setTimeout(() => {
+                    setReadonlyMode();
+                }, 300);
             });
         </script>
     @endpush

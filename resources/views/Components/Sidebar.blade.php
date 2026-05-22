@@ -63,8 +63,8 @@
                          href="{{ route('place') }}">@lang('messages.navigation_admin.manage_place.manage_place')</a>
                      <a class="collapse-item {{ Route::is('place.getDeleted') ? 'active' : '' }}"
                          href="{{ route('place.getDeleted') }}">@lang('messages.navigation_admin.manage_place.deleted_place')</a>
-                     <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
-                         href="{{ route('place.create') }}">@lang('messages.navigation_admin.manage_place.create_place')</a>
+                     {{-- <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
+                         href="{{ route('place.create') }}">@lang('messages.navigation_admin.manage_place.create_place')</a> --}}
                  </div>
              </div>
          </li>
@@ -224,8 +224,8 @@
                              Place</a>
                          <a class="collapse-item {{ Route::is('place.getDeleted') ? 'active' : '' }}"
                              href="{{ route('place.getDeleted') }}">Deleted Place</a>
-                         <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
-                             href="{{ route('place.create') }}">Create Place</a>
+                         {{-- <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
+                             href="{{ route('place.create') }}">Create Place</a> --}}
                      </div>
                  </div>
              </li>

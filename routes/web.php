@@ -38,6 +38,8 @@ Route::get('set-locale/{locale}', [DashboardController::class, 'setLocale'])->na
 
 Route::group(['prefix' => 'management'], function () {
     Route::group(['prefix' => 'master'], function () {
+        Route::get('/dashboard/map-data', [DashboardController::class, 'getMapData'])->name('dashboard.map-data');
+        Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats'])->name('dashboard.stats');
         // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
@@ -154,13 +156,21 @@ Route::group(['prefix' => 'management'], function () {
             Route::group(['prefix' => 'place'], function () {
                 Route::get('/', [PlaceController::class, 'index'])->name('place');
                 Route::get('/edit/{place_code}', [PlaceController::class, 'editPlace'])->name('place.edit');
+                Route::get('/detail/{place_code}', [PlaceController::class, 'show'])->name('place.detail');
                 Route::get('/deleted-place', [PlaceController::class, 'indexDeletedPlace'])->name('place.getDeleted');
                 Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
                 Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
+                Route::post('/{id}/restore', [PlaceController::class, 'restorePlace'])->name('place.restore');
 
                 Route::get('/chart-data', [PlaceController::class, 'getPlaceChartData'])->name('place.chart-data');
 
                 Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
+
+                // AJAX Search endpoints for cascading location filters
+                Route::get('/search/provinces', [PlaceController::class, 'searchProvinces'])->name('place.search.provinces');
+                Route::get('/search/regencies', [PlaceController::class, 'searchRegencies'])->name('place.search.regencies');
+                Route::get('/search/districts', [PlaceController::class, 'searchDistricts'])->name('place.search.districts');
+                Route::get('/search/villages', [PlaceController::class, 'searchVillages'])->name('place.search.villages');
             });
 
             Route::group(['prefix' => 'event'], function () {
