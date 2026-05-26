@@ -63,7 +63,7 @@
             @endif
 
             <div class="card form-card shadow-lg border-0">
-                <div class="card-header bg-white py-4 border-bottom border-light">
+                {{-- <div class="card-header bg-white py-4 border-bottom border-light">
                     <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
                         <span class="badge badge-primary-light badge-icon mr-3">1</span>
                         <div>
@@ -71,6 +71,35 @@
                             <small class="section-description">Enter the name and description of the place</small>
                         </div>
                     </h5>
+                </div> --}}
+                 <div class="card-header bg-white py-4 border-bottom border-light">
+                    <div class="d-flex align-items-center flex-wrap w-100">
+                        <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                            <span class="badge badge-primary-light badge-icon mr-3">1</span>
+                            <div>
+                                <div>Basic Information</div>
+                                <small class="section-description">
+                                    Enter the name and description of the place
+                                </small>
+                            </div>
+                        </h5>
+
+                        @if(isset($Place))
+                        <div class="d-flex align-items-center ml-auto mt-3 mt-md-0">
+                            <a href="{{ route('place.detail', $Place->place_code) }}" target="_blank"
+                                class="btn btn-outline-primary btn-sm mr-2">
+                                <i class="fas fa-external-link-alt mr-1"></i>
+                                Live Preview
+                            </a>
+
+                            <a href="{{ route('place.print', $Place->place_code) }}" target="_blank"
+                                class="btn btn-primary btn-sm">
+                                <i class="fas fa-qrcode mr-1"></i>
+                                Print QR Code
+                            </a>
+                        </div>
+                        @endcan
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     {{-- Basic Information --}}

@@ -5,6 +5,9 @@
     <meta name="description" content="{{ $place->title }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 @endpush
 
 @push('css')
@@ -27,9 +30,16 @@
         /*  margin-left: auto;*/
         /*  margin-right: auto;*/
         /*}*/
-               #translatable-content audio, canvas, embed, iframe, img, object, svg, video {
+        #translatable-content audio,
+        canvas,
+        embed,
+        iframe,
+        img,
+        object,
+        svg,
+        video {
             display: revert !important;
-         }
+        }
 
         .goog-te-gadget img {
             display: inline-flex !important;
@@ -38,15 +48,15 @@
             height: 20px !important;
             width: 20px !important;
         }
-        
-            #translatable-content h1,
+
+        #translatable-content h1,
         #translatable-content h2,
         #translatable-content h3,
         #translatable-content h4,
         #translatable-content h5,
         #translatable-content h6,
         #translatable-content p,
-        #translatable-content a{
+        #translatable-content a {
             all: revert;
             margin-top: 1em;
             margin-bottom: 0.5em;
@@ -141,21 +151,42 @@
         .goog-te-gadget img {
             margin-right: 4px;
         }
-        
-        iframe[src*="youtube.com"],
-iframe[src*="youtu.be"] {
-  max-width: 90vw;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
 
-        .hidden {
-          display: none;
+        iframe[src*="youtube.com"],
+        iframe[src*="youtu.be"] {
+            max-width: 90vw;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        .eventSwiper {
+            padding-bottom: 6px;
+        }
+
+        .eventSwiper .swiper-slide {
+            height: auto;
+        }
+
+
+    .eventSwiper {
+        overflow: hidden;
+    }
+
+    .eventSwiper .swiper-slide {
+        height: auto;
+    }
+
+    .swiper-button-disabled {
+        opacity: .3;
+        pointer-events: none;
+    }
     </style>
 @endpush
 
@@ -166,7 +197,7 @@ iframe[src*="youtu.be"] {
             <div id="toc-sidebar"
                 class="toc-sidebar fixed top-1/2 right-0 transform -translate-y-1/2 z-50 bg-white rounded-l-xl shadow-2xl border border-gray-200 p-4 w-64 max-h-96 overflow-y-auto hidden md:block">
                 <div class="flex items-center justify-between mb-4">
-                     <!-- Tombol KEMBALI (hanya muncul saat sidebar tertutup) -->
+                    <!-- Tombol KEMBALI (hanya muncul saat sidebar tertutup) -->
                     <button id="toc-restore" class="p-2 hover:bg-gray-100 rounded-full transition-colors hidden">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -175,7 +206,7 @@ iframe[src*="youtu.be"] {
                         </svg>
                     </button>
                     <h3 class="font-bold text-gray-800 text-sm">Navigation</h3>
-                    
+
                     <!-- Tombol TUTUP -->
                     <button id="toc-toggle" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
                         <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -185,7 +216,7 @@ iframe[src*="youtu.be"] {
                         </svg>
                     </button>
 
-                   
+
                 </div>
 
                 <div class="space-y-2">
@@ -294,59 +325,58 @@ iframe[src*="youtu.be"] {
             @endif
 
             @if ($ads || $customSettingAds)
-            <!-- Ads Modal -->
-            <div v-if="showAdsModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-                aria-modal="true">
-                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                    <!-- Background overlay (static, cannot close by clicking) -->
-                    <div style="opacity: .7" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                        aria-hidden="true"></div>
+                <!-- Ads Modal -->
+                <div v-if="showAdsModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
+                    role="dialog" aria-modal="true">
+                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <!-- Background overlay (static, cannot close by clicking) -->
+                        <div style="opacity: .7" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                            aria-hidden="true"></div>
 
-                    <!-- Modal panel -->
-                    <div
-                        class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-4">
-                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <div class="sm:flex sm:items-start">
-                                <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                                        @if ($ads)
-                                            {{ $ads->title }}
-                                        @else
-                                            {{ $customSettingAds?->title }}
-                                        @endif
-                                    </h3>
-                                    <div class="mt-2 flex justify-center">
-                                        <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
-                                            class="max-w-full h-auto rounded-lg" alt="Advertisement">
+                        <!-- Modal panel -->
+                        <div
+                            class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-4">
+                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div class="sm:flex sm:items-start">
+                                    <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                                            @if ($ads)
+                                                {{ $ads->title }}
+                                            @else
+                                                {{ $customSettingAds?->title }}
+                                            @endif
+                                        </h3>
+                                        <div class="mt-2 flex justify-center">
+                                            <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
+                                                class="max-w-full h-auto rounded-lg" alt="Advertisement">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="button" @click="closeAdsModal" :disabled="isLoadingAds"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
-                                :class="isLoadingAds ? 'bg-gray-400 cursor-not-allowed' :
-                                    'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
-                                <div v-if="isLoadingAds" class="flex items-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    @{{ timeAds }}s
-                                </div>
-                                <span v-else>Close</span>
-                            </button>
+                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button type="button" @click="closeAdsModal" :disabled="isLoadingAds"
+                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+                                    :class="isLoadingAds ? 'bg-gray-400 cursor-not-allowed' :
+                                        'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
+                                    <div v-if="isLoadingAds" class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        @{{ timeAds }}s
+                                    </div>
+                                    <span v-else>Close</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
             @endif
-            
+
             <!-- Main Content -->
             <div class="container mx-auto px-4 py-8" :class="{ 'pt-16': disabledAfter > 0 }">
                 <!-- Header -->
@@ -429,41 +459,121 @@ iframe[src*="youtu.be"] {
                     </div>
 
                     <!-- Content -->
-                    <div class="p-4 sm:p-6 prose prose-sm sm:prose-lg max-w-none" id="translatable-content" style="overflow-x:scroll">
+                    <div class="p-4 sm:p-6 prose prose-sm sm:prose-lg max-w-none" id="translatable-content"
+                        style="overflow-x:scroll">
                         {!! $place->content !!}
                     </div>
                 </div>
 
                 <!-- Events Section -->
-                @if ($event)
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 fade-in" id="events">
-                        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-4 sm:p-6">
-                            <h2 class="text-lg sm:text-xl font-bold mb-2">Upcoming Events</h2>
-                            <p class="opacity-90">Don't miss these exciting events</p>
+                @if ($event && count($event))
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 fade-in" id="events">
+                        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-5 sm:p-6">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-1">
+                                Upcoming Events
+                            </h2>
+                            <p class="opacity-90 text-sm sm:text-base">
+                                Don't miss these exciting events
+                            </p>
                         </div>
+
                         <div class="p-4 sm:p-6">
-                            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                @foreach ($event as $evnt)
+                            {{-- Navigation --}}
+                            <div
+                                class="event-swiper-prev hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full w-10 h-10 items-center justify-center cursor-pointer">
+
+                                < </div>
+
                                     <div
-                                        class="bg-gradient-to-br from-green-50 to-teal-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                        <h3 class="font-bold text-green-800 mb-2 text-sm sm:text-base">{{ $evnt->title }}
-                                        </h3>
-                                        <div class="flex items-center text-xs sm:text-sm text-gray-600 mb-2">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            {{ $evnt->date->format('M d, Y | H:i') }} WITA
-                                        </div>
-                                        <p class="text-xs sm:text-sm text-gray-700">{{ $evnt->description }}</p>
+                                        class="event-swiper-next hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full w-10 h-10 items-center justify-center cursor-pointer">
+
+                                        ›
                                     </div>
-                                @endforeach
+
+
+                                    <div class="swiper eventSwiper pb-2 overflow-hidden">
+                                        <div class="swiper-wrapper">
+
+                                            @foreach ($event as $evnt)
+                                                <div class="swiper-slide !w-[260px] sm:!w-[300px]">
+
+                                                    <div onclick="openEventDetail({{ $evnt->id }})"
+                                                        class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full cursor-pointer active:scale-[0.98]">
+
+                                                        {{-- Image --}}
+                                                        <div class="relative">
+
+                                                            @if ($evnt->images->count())
+                                                                <img src="{{ asset($evnt->images->first()->image_url) }}"
+                                                                    class="w-full h-40 sm:h-48 object-cover"
+                                                                    alt="{{ $evnt->title }}">
+                                                            @else
+                                                                <div
+                                                                    class="w-full h-40 sm:h-48 bg-gray-100 flex items-center justify-center">
+
+                                                                    <div class="text-center text-gray-400">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                            class="w-10 h-10 mx-auto mb-1" fill="none"
+                                                                            viewBox="0 0 24 24" stroke="currentColor">
+
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round" stroke-width="1.5"
+                                                                                d="M3 16l4-4a3 3 0 014 0l5 5m-1-1l1-1a3 3 0 014 0l1 1M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                                                                        </svg>
+
+                                                                        <p class="text-[11px]">
+                                                                            No Image
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+
+                                                            {{-- Badge --}}
+                                                            <div
+                                                                class="absolute top-2 left-2 bg-green-600 text-white text-[10px] px-2 py-1 rounded-lg shadow">
+
+                                                                @if ($evnt->end_date)
+                                                                    @if ($evnt->date->format('M Y') == $evnt->end_date->format('M Y'))
+                                                                        {{ $evnt->date->format('d') }}
+                                                                        -
+                                                                        {{ $evnt->end_date->format('d M Y') }}
+                                                                    @else
+                                                                        {{ $evnt->date->format('d M') }}
+                                                                        -
+                                                                        {{ $evnt->end_date->format('d M Y') }}
+                                                                    @endif
+                                                                @else
+                                                                    {{ $evnt->date->format('d M Y') }}
+                                                                @endif
+
+                                                            </div>
+
+                                                        </div>
+
+                                                        {{-- Content --}}
+                                                        <div class="p-3 flex flex-col flex-1">
+
+                                                            <h3
+                                                                class="font-semibold text-sm text-gray-900 line-clamp-2 min-h-[42px]">
+                                                                {{ $evnt->title }}
+                                                            </h3>
+
+                                                            <p class="text-xs text-gray-600 mt-3 line-clamp-3">
+                                                                {{ $evnt->description }}
+                                                            </p>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            @endforeach
+
+                                        </div>
+                                    </div>
                             </div>
                         </div>
-                    </div>
                 @endif
-
                 <!-- Comments Section -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden fade-in" id="comments">
                     <div class="bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-4 sm:p-6">
@@ -490,8 +600,11 @@ iframe[src*="youtu.be"] {
                                             experience:</label>
                                         <div class="flex gap-1">
                                             <span v-for="n in 5" :key="n"
-                                                :class="['star cursor-pointer text-xl sm:text-2xl', { 'text-yellow-400': n <=
-                                                        selectedRating, 'text-gray-300': n > selectedRating }]"
+                                                :class="['star cursor-pointer text-xl sm:text-2xl', {
+                                                    'text-yellow-400': n <=
+                                                        selectedRating,
+                                                    'text-gray-300': n > selectedRating
+                                                }]"
                                                 @click="setRating(n)" @mouseover="hoverRating(n)"
                                                 @mouseleave="resetHover">
                                                 ★
@@ -753,6 +866,68 @@ iframe[src*="youtu.be"] {
             </div>
         </div>
     </div>
+
+    {{-- Gallery Modal --}}
+    <div class="modal fade" id="eventGalleryModal" tabindex="-1" aria-hidden="true">
+
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-black border-0">
+
+                <div class="modal-body p-0 relative">
+
+                    {{-- Close --}}
+                    <button type="button"
+                        class="absolute top-4 right-4 z-50 text-white bg-black/50 rounded-full w-10 h-10"
+                        data-bs-dismiss="modal">
+                        ✕
+                    </button>
+
+                    <div id="eventGalleryCarousel" class="carousel slide h-full" data-bs-touch="true">
+
+                        <div class="carousel-inner h-screen" id="eventGalleryContent">
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#eventGalleryCarousel"
+                            data-bs-slide="prev">
+
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#eventGalleryCarousel"
+                            data-bs-slide="next">
+
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Event Detail Modal --}}
+    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+
+            <div class="modal-content border-0 rounded-3xl overflow-hidden">
+
+                {{-- Close --}}
+                <button type="button" class="absolute top-3 right-3 z-50 bg-black/50 text-white rounded-full w-9 h-9"
+                    data-bs-dismiss="modal">
+
+                    ✕
+                </button>
+
+                {{-- Content --}}
+                <div id="eventDetailContent">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 @endsection
 
 @push('script')
@@ -760,7 +935,160 @@ iframe[src*="youtu.be"] {
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
     <script>
+        // Swiper Events
+        document.addEventListener("DOMContentLoaded", function() {
+
+            new Swiper(".eventSwiper", {
+
+                slidesPerView: "auto",
+                spaceBetween: 16,
+
+                grabCursor: true,
+                simulateTouch: true,
+                allowTouchMove: true,
+
+                centeredSlides: false,
+
+                navigation: {
+                    nextEl: ".event-swiper-next",
+                    prevEl: ".event-swiper-prev",
+                },
+
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2.2,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                    }
+                }
+
+            });
+
+        });
+
+        // Event Data
+        const eventsData = {
+            @foreach ($event as $evnt)
+                {{ $evnt->id }}: {
+                    title: @json($evnt->title),
+                    description: @json($evnt->description),
+                    date: @json($evnt->date->format('d M Y | H:i')),
+                    end_date: @json($evnt->end_date ? $evnt->end_date->format('d M Y | H:i') : null),
+                    images: [
+                        @foreach ($evnt->images as $image)
+                            "{{ asset($image->image_url) }}",
+                        @endforeach
+                    ]
+                },
+            @endforeach
+        };
+
+        function openEventDetail(eventId) {
+
+            const ev = eventsData[eventId];
+
+            let carouselItems = '';
+
+            if (ev.images.length) {
+
+                ev.images.forEach((img, index) => {
+
+                    carouselItems += `
+                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                        <img src="${img}"
+                            class="w-full h-[220px] sm:h-[400px] object-cover">
+                    </div>
+                `;
+                });
+
+            } else {
+
+                carouselItems = `
+                <div class="w-full h-[220px] sm:h-[400px] bg-gray-100 flex items-center justify-center text-gray-400">
+                    No Image
+                </div>
+            `;
+            }
+
+            document.getElementById('eventDetailContent').innerHTML = `
+
+            <div>
+
+                <div id="eventDetailCarousel"
+                    class="carousel slide"
+                    data-bs-touch="true">
+
+                    <div class="carousel-inner">
+                        ${carouselItems}
+                    </div>
+
+                    ${ev.images.length > 1 ? `
+                                                                                                                                                                            <button class="carousel-control-prev"
+                                                                                                                                                                                type="button"
+                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                data-bs-slide="prev">
+
+                                                                                                                                                                                <span class="carousel-control-prev-icon"></span>
+                                                                                                                                                                            </button>
+
+                                                                                                                                                                            <button class="carousel-control-next"
+                                                                                                                                                                                type="button"
+                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                data-bs-slide="next">
+
+                                                                                                                                                                                <span class="carousel-control-next-icon"></span>
+                                                                                                                                                                            </button>
+                                                                                                                                                                        ` : ''}
+
+                </div>
+
+                <div class="p-4 sm:p-5">
+
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                        ${ev.title}
+                    </h2>
+
+                    <div class="mt-3 text-sm text-gray-600">
+
+                        <div>
+                            <span class="font-semibold">
+                                Start:
+                            </span>
+
+                            ${ev.date} WITA
+                        </div>
+
+                        ${ev.end_date ? `
+                                                                                                                                                                            <div class="mt-1">
+                                                                                                                                                                                <span class="font-semibold">
+                                                                                                                                                                                    Until:
+                                                                                                                                                                                </span>
+
+                                                                                                                                                                                ${ev.end_date} WITA
+                                                                                                                                                                            </div>
+                                                                                                                                                                        ` : ''}
+
+                    </div>
+
+                    <div class="mt-4 text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-line">
+                        ${ev.description}
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+            const modal = new bootstrap.Modal(document.getElementById(
+                'eventDetailModal'));
+
+            modal.show();
+        }
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
+
             // Mobile TOC functionality
             const mobileTocBtn = document.getElementById('mobile-toc-btn');
             const mobileTocModal = document.getElementById('mobile-toc-modal');
@@ -827,15 +1155,15 @@ iframe[src*="youtu.be"] {
             const sidebar = document.getElementById('toc-sidebar');
             const toggleBtn = document.getElementById('toc-toggle');
             const restoreBtn = document.getElementById('toc-restore');
-            
+
             if (toggleBtn && restoreBtn && sidebar) {
-                toggleBtn.onclick = function () {
+                toggleBtn.onclick = function() {
                     sidebar.classList.add('closed');
                     toggleBtn.classList.add('hidden');
                     restoreBtn.classList.remove('hidden');
                 };
-            
-                restoreBtn.onclick = function () {
+
+                restoreBtn.onclick = function() {
                     sidebar.classList.remove('closed');
                     restoreBtn.classList.add('hidden');
                     toggleBtn.classList.remove('hidden');

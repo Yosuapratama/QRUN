@@ -876,37 +876,131 @@ class PlaceController extends Controller
         if (!in_array($place_code, session('views'))) {
             session()->push('views', $place_code);
             $place->increment('views');
+            $userAgent = request()->userAgent();
+
+            $browserName = 'Unknown';
+            $browserVersion = null;
+            $platform = 'Unknown';
+            $deviceType = 'desktop';
+            $deviceName = null;
+
+            /*
+            |--------------------------------------------------------------------------
+            | PLATFORM
+            |--------------------------------------------------------------------------
+            */
+
+            if (preg_match('/windows/i', $userAgent)) {
+                $platform = 'Windows';
+            } elseif (preg_match('/macintosh|mac os x/i', $userAgent)) {
+                $platform = 'MacOS';
+            } elseif (preg_match('/iphone/i', $userAgent)) {
+                $platform = 'iOS';
+            } elseif (preg_match('/ipad/i', $userAgent)) {
+                $platform = 'iPadOS';
+            } elseif (preg_match('/android/i', $userAgent)) {
+                $platform = 'Android';
+            } elseif (preg_match('/linux/i', $userAgent)) {
+                $platform = 'Linux';
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | DEVICE TYPE
+            |--------------------------------------------------------------------------
+            */
+
+            if (preg_match('/mobile/i', $userAgent)) {
+                $deviceType = 'mobile';
+            }
+
+            if (preg_match('/tablet|ipad/i', $userAgent)) {
+                $deviceType = 'tablet';
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | BROWSER
+            |--------------------------------------------------------------------------
+            */
+
+            $browsers = [
+                'Edge' => 'Edg',
+                'Opera' => 'OPR',
+                'Chrome' => 'Chrome',
+                'Mozilla' => 'Mozilla',
+                'Safari' => 'Safari',
+                'Firefox' => 'Firefox',
+            ];
+
+            foreach ($browsers as $name => $pattern) {
+
+                if (preg_match("/{$pattern}\/([0-9\.]+)/i", $userAgent, $matches)) {
+
+                    $browserName = $name;
+                    $browserVersion = $matches[1];
+
+                    break;
+                }
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | DEVICE NAME
+            |--------------------------------------------------------------------------
+            */
+
+            if (preg_match('/iphone/i', $userAgent)) {
+                $deviceName = 'iPhone';
+            } elseif (preg_match('/ipad/i', $userAgent)) {
+                $deviceName = 'iPad';
+            } elseif (preg_match('/android/i', $userAgent)) {
+                $deviceName = 'Android Device';
+            } else {
+                $deviceName = 'Desktop';
+            }
+
             PlaceCheckpoint::create([
                 'place_id' => $place->id,
                 'place_code' => $place->place_code,
+
                 'user_id' => Auth::id(),
+
                 'session_id' => session()->getId(),
                 'ip_address' => request()->ip(),
                 'referrer' => request()->header('referer'),
+
+                'user_agent' => $userAgent,
+
+                'browser_name' => $browserName,
+                'browser_version' => $browserVersion,
+
+                'platform' => $platform,
+                'device_type' => $deviceType,
+                'device_name' => $deviceName,
+
+                'is_mobile' => $deviceType === 'mobile',
+
                 'checked_at' => now()
             ]);
         }
 
 
-        $ValidEvent = [];
+        $today = Carbon::now();
 
-        $event = Event::where('place_id', $place->id)->get();
-        foreach ($event as $evnt) {
-            $expirydate = \Carbon\Carbon::parse($evnt->date);
-            $today = \Carbon\Carbon::now();
-            $difference = $today->diffInDays($expirydate, false);
+        $event = Event::where('place_id', $place->id)
+            ->where(function ($query) use ($today) {
+                $query
+                    // Event yang sedang berlangsung
+                    ->where(function ($q) use ($today) {
+                        $q->whereDate('date', '<=', $today)
+                            ->whereDate('end_date', '>=', $today);
+                    })
+                    // Event upcoming
+                    ->orWhereDate('date', '>=', $today);
+            })
+            ->get();
 
-            if ($difference >= 0) {
-                $ValidEvent[] = $evnt;
-            }
-        }
-
-        if ($ValidEvent) {
-            $event = $ValidEvent;
-        } else {
-            $event = [];
-        }
-
+        
         $customSettingRunningText = CustomRunningTextSettings::first();
         $customSettingAds = CustomAdsSettings::where('is_active', true)->first();
         $ads = $place->advertises?->where('is_active', 1)->first();

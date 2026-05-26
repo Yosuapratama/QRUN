@@ -1,630 +1,873 @@
 @extends('TemplateLayout.AdminLayout')
 
 @section('content')
-    <!-- Main Content -->
+    @php
+        $isEdit = isset($Place);
+    @endphp
+
     @push('title')
-        <title>Create My Place Admin - QRUN Website</title>
+        <title>{{ $isEdit ? 'Edit' : 'Create' }} Place Admin - QRUN Website</title>
     @endpush
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
-        <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">@lang('messages.my-place.title_heading')</h1>
 
-        @if (session()->has('success'))
-            <div class="alert alert-success">
-                {{ session()->get('success') }}
-            </div>
-        @endif
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </div>
-        @endif
-        @if ($Place)
-            <a href="{{ $url }}" target="_blank" class="btn btn-primary m-2">@lang('messages.my-place.visit_preview')</a>
-            <a href="{{ $printUrl }}" target="_blank" class="btn btn-success m-2">@lang('messages.my-place.print_barcode')</a>
-        @endif
 
-        <!-- DataTales Example -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">@lang('messages.my-place.create_my_place')</h6>
-            </div>
-            <div class="card-body">
-                {{-- Create Place Form --}}
-                @if ($Place)
-                    <form method="POST" action="{{ route('place.update') }}">
-                    @else
-                        <form action="{{ route('place.store') }}" method="POST">
-                @endif
-                @csrf
-                <input type="hidden" value="{{ $Place ? $Place->id : '' }}">
-                <div class="mb-3">
-                    <label class="form-label" for="title">@lang('messages.my-place.title')<span class="text-danger">*</span></label>
-                    <input required class="form-control" value="{{ old('title', $Place ? $Place->title : '') }}"
-                        name="title" type="text" id="title" placeholder="Place Title...">
-                    @error('title')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="description">@lang('messages.my-place.description')<span class="text-danger">*</span></label>
-                    <input required value="{{ old('description', $Place ? $Place->description : '') }}" class="form-control"
-                        name="description" type="text" id="description" placeholder="Place Description...">
-                    @error('description')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="phoneNum">@lang('messages.my-place.contact_person')</label>
-                    <input value="{{ old('phone_num', $Place ? $Place->phone_num : '') }}" class="form-control"
-                        name="phone_num" type="number" id="phoneNum" placeholder="Phone Number References...">
-                    @error('phone_num')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                    @enderror
-                </div>
+    <div class="container-fluid py-4">
 
-                <div class="parent-container">
-                    <div class="d-flex flex-column flex-md-row mb-3 align-items-start">
-                        <div class="col-md-6 flex-grow-1 p-0">
-                            <label for="provinceDataSelect" class="me-2">Provinsi :
-                            </label>
-                            <select id="provinceDataSelect" name="reg_province" class="form-control select2">
-                                <option value="">Select Province</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 flex-grow-1 p-0">
-                            <label for="regencyDataSelect" class="me-2">Kota/Kab :
-                            </label>
-                            <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
-                                <option value="">Select Regency</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="d-flex flex-column flex-md-row mb-3 align-items-start">
-                        <div class="col-md-6 flex-grow-1 p-0">
-                            <label for="districtDataSelect" class="me-2">Kecamatan :
-                            </label>
-                            <select id="districtDataSelect" name="reg_district" class="form-control select2">
-                                <option value="">Select District</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 flex-grow-1 p-0">
-                            <label for="villagesDataSelect" class="me-2">Desa/Kel :
-                            </label>
-                            <select id="villagesDataSelect" name="reg_village" class="form-control select2">
-                                <option value="">Select Village</option>
-                            </select>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="mb-3">
-                    {{-- <textarea required class="form-control" name="content" id="summernote">{{ $Place ? $Place->content : '' }}</textarea> --}}
-                    <textarea class="form-control" name="content" id="summernote">{{ old('content', $Place ? $Place->content : '') }}</textarea>
-                    @error('content')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="slider-container mb-3">
-                    <label for="yesno-slider" class="slider-label">Turn on comment ? No / Yes</label>
-                    <input name="AllowComment"
-                        @if (isset($Place->is_comment)) @if ($Place->is_comment) checked @endif @endif type="checkbox" id="yesno-slider" class="slider">
-                </div>
-                @if ($Place)
-                    <button type="submit" class="btn btn-primary btn-md">Update Place</button>
-                @else
-                    <button type="submit" class="btn btn-success btn-md">Save Place</button>
-                @endif
-                </form>
+        {{-- Page Heading --}}
+        <div class="page-header-wrapper mb-3">
+            <div>
+                <h1 class="page-title mb-2">
+                    <i class="fas fa-map-pin text-primary mr-3"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }} / Object
+                </h1>
+                <p class="page-subtitle mb-0">
+                    {{ $isEdit ? 'Edit' : 'Create' }} a new location to the directory with detailed information, location details, and content editor.
+                </p>
             </div>
         </div>
+
+        {{-- Success Alert --}}
+        @if (session()->has('success'))
+            <div class="alert alert-success alert-success-custom shadow-sm border-0 mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <div>
+                        <strong>Success!</strong>
+                        <span class="d-block">{{ session()->get('success') }}</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Error Alert --}}
+        @if ($errors->any())
+            <div class="alert alert-danger alert-danger-custom shadow-sm border-0 mb-4" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
+                    <div>
+                        <strong>Please fix the following errors:</strong>
+                        <ul class="mb-0 mt-2 pl-3">
+                            @foreach ($errors->all() as $error)
+                                <li class="mb-1">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Main Form Card --}}
+
+        <form action="{{ $isEdit ? route('place.update') : route('place.store') }}" method="POST">
+            @csrf
+            @if ($isEdit)
+                <input type="hidden" name="id" value="{{ $Place->id }}">
+            @endif
+
+            <div class="card form-card shadow-lg border-0">
+                <div class="card-header bg-white py-4 border-bottom border-light">
+                    <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                        <span class="badge badge-primary-light badge-icon mr-3">1</span>
+                        <div>
+                            <div>Basic Information</div>
+                            <small class="section-description">Enter the name and description of the place</small>
+                        </div>
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {{-- Basic Information --}}
+                    <div class="form-section">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">
+                                    Title <span class="text-danger">*</span>
+                                </label>
+
+                                <input required class="form-control" name="title" type="text"
+                                    value="{{ old('title', $Place->title ?? '') }}" placeholder="Enter place title...">
+
+                                @error('title')
+                                    <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">
+                                    Contact Person
+                                </label>
+
+                                <input class="form-control" name="phone_num" type="number"
+                                    value="{{ old('phone_num', $Place->phone_num ?? '') }}"
+                                    placeholder="Enter contact phone number...">
+
+                                @error('phone_num')
+                                    <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <label class="form-label">
+                                    Description <span class="text-danger">*</span>
+                                </label>
+
+                                <textarea required class="form-control" rows="3" name="description"
+                                    placeholder="Short description about this place...">{{ old('description', $Place->description ?? '') }}</textarea>
+
+                                @error('description')
+                                    <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card form-card shadow-lg border-0">
+
+                <div class="card-header bg-white py-4 border-bottom border-light">
+                    <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                        <span class="badge badge-primary-light badge-icon mr-3">2</span>
+                        <div>
+                            <div>Location Information</div>
+                            <small class="section-description">Select the province, city, district, and village where
+                                the place is located</small>
+                        </div>
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    {{-- Location --}}
+                    <div class="card-body p-0">
+                        <div class="location-wrapper mb-0">
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">
+                                        Province
+                                    </label>
+
+                                    <select id="provinceDataSelect" name="reg_province" class="form-control select2">
+                                        <option value="">Select Province</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">
+                                        City / Regency
+                                    </label>
+
+                                    <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
+                                        <option value="">Select Regency</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">
+                                        District
+                                    </label>
+
+                                    <select id="districtDataSelect" name="reg_district" class="form-control select2">
+                                        <option value="">Select District</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label">
+                                        Village
+                                    </label>
+
+                                    <select id="villagesDataSelect" name="reg_village" class="form-control select2">
+                                        <option value="">Select Village</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card form-card shadow-lg border-0">
+                <div class="card-header bg-white py-4 border-bottom border-light">
+                    <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                        <span class="badge badge-primary-light badge-icon mr-3">3</span>
+                        <div>
+                            <div>Content Editor</div>
+                            <small class="section-description">Write detailed content about the place including text,
+                                images, and formatting</small>
+                        </div>
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    {{-- Content --}}
+                    <div class="card-body p-0">
+                        <div class="mb-4">
+
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-edit text-primary mr-2"></i>
+                                <h5 class="mb-0 font-weight-bold">
+                                    Content Editor
+                                </h5>
+                            </div>
+
+                            <textarea class="form-control" name="content" id="summernote">{{ old('content', $Place->content ?? '') }}</textarea>
+
+                            @error('content')
+                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card form-card shadow-lg border-0">
+                <div class="card-header bg-white py-4 border-bottom border-light">
+                    <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                        <span class="badge badge-primary-light badge-icon mr-3">4</span>
+                        <div>
+                            <div>Settings</div>
+                            <small class="section-description">Configure options for how visitors can interact with this
+                                place</small>
+                        </div>
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="comment-toggle">
+
+                        <div>
+                            <h6 class="font-weight-bold mb-2">
+                                <i class="fas fa-comments text-primary mr-2"></i>Enable Comments
+                            </h6>
+
+                            <small class="text-muted d-block">
+                                Allow visitors to leave comments and engage with this place.
+                            </small>
+                        </div>
+
+                        <label class="switch mb-0">
+                            <input type="checkbox" name="AllowComment"
+                                {{ old('AllowComment', $Place->is_comment ?? true) ? 'checked' : '' }}>
+                            <span class="slider-custom"></span>
+                        </label>
+
+                    </div>
+                    {{-- Submit Section --}}
+                    <div
+                        class="card-footer bg-white p-4 d-flex justify-content-between align-items-center border-top border-light">
+                        <small class="text-muted">
+                            <i class="fas fa-asterisk text-danger mr-1"></i> Required fields
+                        </small>
+                        <div class="d-flex gap-3">
+                            <button type="reset" class="btn btn-secondary btn-sm reset-btn">
+                                <i class="fas fa-redo mr-2"></i>Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary submit-btn shadow-sm">
+                                <i class="fas fa-save mr-2"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
 
     </div>
 
     @push('css')
-        <style>
-            .slider-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            /* Label styling */
-            .slider-label {
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
-
-            /* Slider styling */
-            .slider {
-                appearance: none;
-                width: 60px;
-                height: 24px;
-                border-radius: 50px;
-                background-color: #ccc;
-                outline: none;
-                transition: 0.4s;
-                position: relative;
-            }
-
-            /* Slider before (circle inside the slider) */
-            .slider::before {
-                content: "";
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                width: 18px;
-                height: 18px;
-                border-radius: 50%;
-                background-color: white;
-                transition: 0.4s;
-            }
-
-            /* When the slider is checked */
-            .slider:checked {
-                background-color: #4e73df;
-            }
-
-            /* Move the circle when checked */
-            .slider:checked::before {
-                transform: translateX(26px);
-            }
-
-            /* Optional: Color the label based on the slider state */
-            .slider:checked+.slider-label {
-                color: #4CAF50;
-            }
-        </style>
+        @include('Pages.Management.Master.place.components.style')
     @endpush
-
-    {{-- @push('script')
-        <script>
-            //Setup SummerNote (Content Textarea Box)
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                    tabsize: 2,
-                    height: 300
-                });
-            });
-        </script>
-    @endpush --}}
-
-    {{-- @push('script')
-        <script>
-            //Setup SummerNote (Content Textarea Box)
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                    tabsize: 2,
-                    height: 300
-                });
-            });
-        </script>
-    @endpush --}}
 
     @push('script')
         <script>
-            // $(document).ready(function() {
-            //     $('#summernote').summernote();
-            // });
+            let selectedProvince = "{{ old('reg_province', $Place->province_id ?? ($Place->reg_province ?? '')) }}";
+            let selectedRegency = "{{ old('reg_regency', $Place->regency_id ?? ($Place->reg_regency ?? '')) }}";
+            let selectedDistrict = "{{ old('reg_district', $Place->district_id ?? ($Place->reg_district ?? '')) }}";
+            let selectedVillage = "{{ old('reg_village', $Place->village_id ?? ($Place->reg_village ?? '')) }}";
 
-            $(document).ready(function() {
-                var isInitedProvince = false;
-                var isInitialLoad = true;
+            $(document).ready(async function() {
 
-                @if(isset($Place))
-                    let selectedProvince = "{{ $Place->province_id }}";
-                    let selectedRegency = "{{ $Place->regency_id }}";
-                    let selectedDistrict = "{{ $Place->district_id }}";
-                    let selectedVillage = "{{ $Place->village_id }}";
-                @else
-                    let selectedProvince = null;
-                    let selectedRegency = null;
-                    let selectedDistrict = null;
-                    let selectedVillage = null;
-                @endif
+                $(document).on('click', '.note-modal .close', function() {
+                    $(this).closest('.note-modal').modal('hide');
+                });
 
-                console.log("Selected Province: ", selectedProvince);
-                console.log("Selected Regency: ", selectedRegency);
-                console.log("Selected District: ", selectedDistrict);
-                console.log("Selected Village: ", selectedVillage);
+                $('form').on('reset', function() {
 
-                function fetchLocation(
-                    province_id = null,
-                    regency_id = null,
-                    district_id = null,
-                    isFromRegency = false,
-                    isFromDistrict = false,
-                    isFromVillage = false
-                ) {
-                    $.ajax({
-                        url: "{{ route('getLocation') }}",
-                        data: {
-                            province_id: province_id != null ? province_id : selectedProvince,
-                            regency_id: regency_id != null ? regency_id : selectedRegency,
-                            district_id: district_id != null ? district_id : selectedDistrict,
-                        },
-                        method: 'GET',
-                        success: function(data) {
+                    setTimeout(async () => {
 
-                            // Province
-                            if (!isInitedProvince) {
-                                let provinceSelect = $('#provinceDataSelect');
-                                provinceSelect.empty().append('<option value="">Select Province</option>');
+                        // =========================
+                        // TEXT INPUT / TEXTAREA
+                        // =========================
+                        $(this).find('input[type="text"], input[type="number"], textarea')
+                            .val('');
 
-                                data.province.forEach(function(province) {
-                                    provinceSelect.append(
-                                        $('<option>', {
-                                            value: province.id,
-                                            text: province.name
-                                        })
-                                    );
-                                });
+                        // =========================
+                        // SUMMERNOTE RESET
+                        // =========================
+                        $('#summernote').summernote('reset');
+                        $('#summernote').summernote('code', '');
 
-                                provinceSelect.select2({
-                                    placeholder: "Select a province",
-                                    allowClear: true,
-                                });
+                        // =========================
+                        // SELECT2 RESET
+                        // =========================
+                        $('#provinceDataSelect').val(null).trigger('change');
+                        $('#regencyDataSelect').empty()
+                            .append('<option value="">Select Regency</option>')
+                            .trigger('change');
 
-                                isInitedProvince = true;
-                            }
+                        $('#districtDataSelect').empty()
+                            .append('<option value="">Select District</option>')
+                            .trigger('change');
 
-                            // Regency
-                            if (!isFromRegency) {
-                                let regencySelect = $('#regencyDataSelect');
-                                regencySelect.empty().append('<option value="">Select Regency</option>');
+                        $('#villagesDataSelect').empty()
+                            .append('<option value="">Select Village</option>')
+                            .trigger('change');
 
-                                data.regency.forEach(function(regency) {
-                                    regencySelect.append(
-                                        $('<option>', {
-                                            value: regency.id,
-                                            text: regency.name
-                                        })
-                                    );
-                                });
+                        // =========================
+                        // CHECKBOX RESET
+                        // =========================
+                        $('input[name="AllowComment"]').prop('checked', true);
 
-                                regencySelect.select2({
-                                    placeholder: "Select a regency",
-                                    allowClear: true,
-                                });
-                            }
+                        // =========================
+                        // RELOAD PROVINCE
+                        // =========================
+                        let initialData = await fetchLocation();
 
-                            // District
-                            if (!isFromDistrict) {
-                                let districtSelect = $('#districtDataSelect');
-                                districtSelect.empty().append('<option value="">Select District</option>');
+                        fillSelect(
+                            '#provinceDataSelect',
+                            initialData.province,
+                            'Select Province'
+                        );
 
-                                data.districts.forEach(function(district) {
-                                    districtSelect.append(
-                                        $('<option>', {
-                                            value: district.id,
-                                            text: district.name
-                                        })
-                                    );
-                                });
+                        initSelect2(
+                            '#provinceDataSelect',
+                            'Select Province'
+                        );
 
-                                districtSelect.select2({
-                                    placeholder: "Select a district",
-                                    allowClear: true,
-                                });
-                            }
+                    }, 10);
+                });
 
-                            // Village
-                            if (!isFromVillage) {
-                                let villageSelect = $('#villagesDataSelect');
-                                villageSelect.empty().append('<option value="">Select Village</option>');
+                function makeIframeResponsive() {
 
-                                data.villages.forEach(function(village) {
-                                    villageSelect.append(
-                                        $('<option>', {
-                                            value: village.id,
-                                            text: village.name
-                                        })
-                                    );
-                                });
+                    $('.note-editable iframe').each(function() {
 
-                                villageSelect.select2({
-                                    placeholder: "Select a village",
-                                    allowClear: true,
-                                });
-                            }
+                        $(this).css({
+                            width: '100%',
+                            maxWidth: '100%',
+                            height: 'auto',
+                            minHeight: '220px',
+                            border: '0',
+                            borderRadius: '12px',
+                            display: 'block'
+                        });
 
-                            let isInitialLoadStep = 0; // 0: province, 1: regency, 2: district, 3: village
+                        // remove fixed size bawaan youtube embed
+                        $(this).removeAttr('width');
+                        $(this).removeAttr('height');
 
-                            // Auto-select default values on edit
-                            if (isInitialLoad) {
-                                if (selectedProvince) {
-                                    $('#provinceDataSelect').val(selectedProvince).trigger('change');
-                                }
-                                if (selectedRegency) {
-                                    $('#regencyDataSelect').val(selectedRegency).trigger('change');
-                                }
-                                if (selectedDistrict) {
-                                    $('#districtDataSelect').val(selectedDistrict).trigger('change');
-                                }
-                                if (selectedVillage) {
-                                    $('#villagesDataSelect').val(selectedVillage).trigger('change');
-                                }
-
-                                isInitialLoad = false; // prevent loop
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('AJAX Error:', error);
-                        }
+                        // ratio 16:9
+                        this.style.aspectRatio = '16 / 9';
                     });
                 }
+                // =========================
+                // SUMMERNOTE
+                // =========================
 
-                // Initial load
-                fetchLocation();
+                function sanitizePastedContent(html) {
 
-                // Province change
-                $("#provinceDataSelect").change(function() {
-                    if (!isInitialLoad) {
-                        console.log("Province changed, fetching regencies...");
-                        // isInitialLoad = true; // Reset initial load to prevent loop
-                        let provinceId = $(this).val();
-                        fetchLocation(provinceId);
-                    }
-                });
+                    let wrapper = $('<div>').html(html);
 
-                // Regency change
-                $("#regencyDataSelect").change(function() {
-                    if (!isInitialLoad) {
-                        let provinceId = $("#provinceDataSelect").val();
-                        let regencyId = $(this).val();
+                    // remove style/class/id
+                    wrapper.find('*').each(function() {
 
-                        console.log({
-                            regId: regencyId,
-                            provId: provinceId
-                        });
-                        fetchLocation(provinceId, regencyId, null, true);
-                    }
-                });
+                        $(this)
+                            .removeAttr('style')
+                            .removeAttr('class')
+                            .removeAttr('id')
+                            .removeAttr('width')
+                            .removeAttr('height');
 
-                // District change
-                $("#districtDataSelect").change(function() {
-                    if (!isInitialLoad) {
-                        let provinceId = $("#provinceDataSelect").val();
-                        let regencyId = $("#regencyDataSelect").val();
-                        let districtId = $(this).val();
-                        fetchLocation(provinceId, regencyId, districtId, true, true);
-                    }
-                });
+                        // convert h1-h6 ke p
+                        if (/^h[1-6]$/i.test(this.tagName)) {
+                            $(this).replaceWith(
+                                `<p>${$(this).html()}</p>`
+                            );
+                        }
 
+                        // buang empty paragraph
+                        if ($(this).html()?.trim() === '&nbsp;') {
+                            $(this).remove();
+                        }
+                    });
 
-                console.log("Initializing Summernote...");
-                $(document).on('click', '.note-modal .close', function() {
-                    // This will close the Summernote modal (if it's part of the Summernote plugin)
-                    $('.note-modal').modal('hide');
-                });
+                    // normalize break
+                    wrapper.find('br + br').remove();
 
-                // Initialize Summernote
+                    return wrapper.html();
+                }
+                
                 $('#summernote').summernote({
-                    height: 300, // Set height of the editor
+
+                    placeholder: 'Write detailed information about this place...',
+                    height: 500,
+
                     toolbar: [
-                        ['style'],
-                        ['insert', ['bold', 'underline', 'eraser']],
-                        // ['eraser'], 
-                        ['recentColor'],
-                        ['fontname'],
-                        ['color'],
-                        ['para', ['ul', 'ol', 'paragraph', 'height']],
-                        ['pdfButton'],
-                        ['table'],
+                        ['style', ['style']],
+                        ['font', ['bold', 'underline', 'italic', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['height', ['height']],
+                        ['table', ['table']],
+                        ['custom', ['pdfButton']],
                         ['insert', ['link', 'picture', 'video']],
-                        ['insert', ['fullscreen', 'codeview', 'help']],
+                        ['view', ['fullscreen', 'codeview', 'help']]
                     ],
-                    buttons: {
-                        eraser: function(context) {
-                            return $('<button />')
-                                .addClass('note-btn btn btn-light btn-sm note-btn-bold')
-                                .html('<i class="note-icon-eraser"/>')
-                                .click(function(event) {
-                                    // Prevent default form submission or page reload
-                                    event.preventDefault();
 
-                                    // Clear formatting (remove bold, underline, etc.)
-                                    context.invoke('removeFormat');
-                                });
+                    popover: {
+                        image: [
+                            ['resize', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+                            ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                            ['remove', ['removeMedia']]
+                        ]
+                    },
+
+                    callbacks: {
+
+                        onInit: function() {
+
+                            $('.note-editable').css({
+                                textAlign: 'left',
+                                minHeight: '320px'
+                            });
+
+                            $('.note-editor').addClass('shadow-sm');
+
+                            makeIframeResponsive();
                         },
-                        //     pdfButton: function(context) {
-                        //         var ui = $.summernote.ui;
-                        //         var button = ui.button({
-                        //             contents: '<i class="fas fa-file-alt text-black" style="font-weight:bold"></i> <span style="font-weight: bold;">PDF</span>',
-                        //             tooltip: 'Insert PDF',
-                        //             click: function() {
-                        //                 console.log("PDF button clicked...");
-                        //                 // Open file input dialog when button is clicked
-                        //                 var input = $(
-                        //                     '<input type="file" accept="application/pdf">');
-                        //                 input.on('change', function(e) {
-                        //                     var file = e.target.files[0];
-                        //                     if (file && file.type === 'application/pdf') {
-                        //                         var reader = new FileReader();
-                        //                         reader.onload = function(event) {
-                        //                             var pdfDataUrl = event.target
-                        //                             .result;
-                        //                             console.log(
-                        //                                 "PDF loaded, inserting into Summernote..."
-                        //                                 );
 
-                        //                             // Create the iframe element with the PDF data URL
-                        //                             var iframe = document.createElement(
-                        //                                 'iframe');
-                        //                             iframe.src = pdfDataUrl;
-                        //                             iframe.width = '95%';
-                        //                             iframe.height = '400px';
-                        //                             iframe.style.border = 'none';
+                        onMediaDelete: function() {
+                            makeIframeResponsive();
+                        },
 
-                        //                             // Insert the iframe into Summernote using insertNode
-                        //                             $('#summernote').summernote(
-                        //                                 'editor.insertNode', iframe);
+                        onPaste: function(e) {
 
-                        //                             // Force Summernote to refresh and re-render the content
-                        //                             setTimeout(function() {
-                        //                                 $('#summernote')
-                        //                                     .summernote('code',
-                        //                                         $('#summernote')
-                        //                                         .summernote(
-                        //                                             'code'));
-                        //                                 $('#summernote')
-                        //                             .focus(); // Focus the editor after insertion
-                        //                             }, 100);
+                            e.preventDefault();
 
-                        //                             // Optional: Log the inserted HTML to ensure it's being added
-                        //                             console.log("Inserted iframe: ",
-                        //                                 iframe);
-                        //                         };
-                        //                         reader.readAsDataURL(file);
-                        //                     } else {
-                        //                         alert('Please upload a valid PDF file');
-                        //                     }
-                        //                 });
-                        //                 input.trigger('click');
-                        //             }
-                        //         });
-                        //         return button.render();
-                        //     }
+                            let clipboardData =
+                                (e.originalEvent || e).clipboardData ||
+                                window.clipboardData;
+
+                            let text = clipboardData.getData('text/html');
+
+                            // fallback kalau bukan html
+                            if (!text) {
+                                text = clipboardData.getData('text/plain');
+                                document.execCommand('insertText', false, text);
+                                return;
+                            }
+
+                            // sanitize html
+                            let cleanHtml = sanitizePastedContent(text);
+
+                            $('#summernote').summernote(
+                                'pasteHTML',
+                                cleanHtml
+                            );
+                        }
+
+                    },
+
+                    buttons: {
+
                         pdfButton: function(context) {
-                            var ui = $.summernote.ui;
-                            var button = ui.button({
-                                contents: '<i class="fas fa-file-alt text-black" style="font-weight:bold"></i> <span style="font-weight: bold;">PDF</span>',
+
+                            let ui = $.summernote.ui;
+
+                            let button = ui.button({
+
+                                contents: `
+                    <i class="fas fa-file-pdf text-danger"></i>
+                    <span class="ml-1 font-weight-bold">PDF</span>
+                `,
+
                                 tooltip: 'Insert PDF',
+
                                 click: function() {
-                                    console.log("PDF button clicked...");
-                                    // Open file input dialog when button is clicked
-                                    var input = $(
+
+                                    let input = $(
                                         '<input type="file" accept="application/pdf">');
+
                                     input.on('change', function(e) {
-                                        var file = e.target.files[0];
-                                        if (file && file.type === 'application/pdf') {
-                                            var formData = new FormData();
+
+                                        let file = e.target.files[0];
+
+                                        if (file && file.type ===
+                                            'application/pdf') {
+
+                                            let formData = new FormData();
+
                                             formData.append('pdf', file);
+
                                             Swal.fire({
                                                 title: 'Uploading...',
-                                                text: 'Please wait while the file is being uploaded.',
+                                                text: 'Please wait...',
                                                 showConfirmButton: false,
-                                                allowOutsideClick: false, // Disable closing the alert by clicking outside
+                                                allowOutsideClick: false,
                                                 didOpen: () => {
-                                                    Swal
-                                                        .showLoading(); // Display the loading spinner
+                                                    Swal.showLoading();
                                                 }
                                             });
 
-                                            // Make the file upload request
                                             $.ajax({
-                                                url: "{{ route('file.upload') }}", // Change this to your server-side upload URL
+
+                                                url: "{{ route('file.upload') }}",
+
                                                 type: 'POST',
+
                                                 headers: {
                                                     'X-CSRF-TOKEN': $(
                                                         'meta[name="csrf-token"]'
                                                     ).attr('content')
                                                 },
+
                                                 data: formData,
-                                                contentType: false, // Don't set contentType for FormData
-                                                processData: false, // Don't process data (it's already in FormData format)
-                                                success: function(response) {
-                                                    var data = response;
-                                                    if (data.url) {
+
+                                                contentType: false,
+                                                processData: false,
+
+                                                success: function(
+                                                    response) {
+
+                                                    if (response.url) {
+
                                                         Swal.fire({
                                                             icon: 'success',
-                                                            title: 'Upload Complete!',
-                                                            text: 'The PDF was successfully uploaded.',
-                                                            showConfirmButton: true
+                                                            title: 'Upload Complete',
+                                                            text: 'PDF uploaded successfully.'
                                                         });
 
-                                                        // Create the iframe element with the URL of the uploaded PDF
-                                                        var iframe =
+                                                        let iframe =
                                                             document
                                                             .createElement(
-                                                                'iframe');
-                                                        iframe.src = data
-                                                            .url; // URL returned by the server
+                                                                'iframe'
+                                                            );
+
+                                                        iframe.src =
+                                                            response
+                                                            .url;
                                                         iframe.width =
                                                             '100%';
                                                         iframe.height =
-                                                            '400px';
+                                                            '500px';
+
                                                         iframe.style
                                                             .border =
                                                             'none';
+                                                        iframe.style
+                                                            .borderRadius =
+                                                            '12px';
 
-                                                        console.log(iframe);
-                                                        // Insert the iframe into Summernote using insertNode
                                                         $('#summernote')
                                                             .summernote(
                                                                 'editor.insertNode',
-                                                                iframe);
+                                                                iframe
+                                                            );
 
-                                                        // Force Summernote to refresh and re-render the content
-                                                        setTimeout(
-                                                            function() {
-                                                                $('#summernote')
-                                                                    .summernote(
-                                                                        'code',
-                                                                        $(
-                                                                            '#summernote'
-                                                                        )
-                                                                        .summernote(
-                                                                            'code'
-                                                                        )
-                                                                    );
-                                                                $('#summernote')
-                                                                    .focus(); // Focus the editor after insertion
-                                                            }, 100);
-
-                                                        console.log(
-                                                            "Inserted iframe: ",
-                                                            iframe);
                                                     } else {
+
                                                         Swal.fire({
                                                             icon: 'error',
                                                             title: 'Upload Failed',
-                                                            text: 'File upload failed: ' +
-                                                                (response
-                                                                    .error ||
-                                                                    'Unknown error'
-                                                                ),
-                                                            showConfirmButton: true
+                                                            text: response
+                                                                .error ||
+                                                                'Unknown error'
                                                         });
-                                                        // Swal.close();
                                                     }
                                                 },
+
                                                 error: function() {
+
                                                     Swal.fire({
                                                         icon: 'error',
                                                         title: 'Upload Failed',
-                                                        text: 'File upload failed: Server is during maintenance',
-                                                        showConfirmButton: true
+                                                        text: 'Server error.'
                                                     });
-                                                    // Swal.close();
                                                 }
                                             });
+
                                         } else {
+
                                             Swal.fire({
                                                 icon: 'error',
-                                                title: 'Upload Failed',
-                                                text: 'File upload failed: Please Upload A Valid PDF',
-                                                showConfirmButton: true
+                                                title: 'Invalid File',
+                                                text: 'Please upload a valid PDF.'
                                             });
-                                            // Swal.close();
                                         }
                                     });
+
                                     input.trigger('click');
                                 }
                             });
+
                             return button.render();
                         }
+                    }
+                });
 
+                let isInitedProvince = false;
+                let isAutoSelecting = true;
+
+                async function fetchLocation(
+                    province_id = null,
+                    regency_id = null,
+                    district_id = null
+                ) {
+
+                    return $.ajax({
+                        url: "{{ route('getLocation') }}",
+                        method: 'GET',
+                        data: {
+                            province_id: province_id,
+                            regency_id: regency_id,
+                            district_id: district_id
+                        }
+                    });
+                }
+
+                function initSelect2(el, placeholder) {
+
+                    if ($(el).hasClass("select2-hidden-accessible")) {
+                        $(el).select2('destroy');
                     }
 
+                    $(el).select2({
+                        placeholder: placeholder,
+                        allowClear: true,
+                        width: '100%'
+                    });
+                }
+
+                function fillSelect(el, data, placeholder) {
+
+                    $(el).empty();
+
+                    $(el).append(
+                        `<option value="">${placeholder}</option>`
+                    );
+
+                    data.forEach(function(item) {
+
+                        $(el).append(
+                            $('<option>', {
+                                value: item.id,
+                                text: item.name
+                            })
+                        );
+                    });
+                }
+
+                // =========================
+                // INITIAL LOAD
+                // =========================
+
+                let initialData = await fetchLocation();
+
+                // province
+                fillSelect(
+                    '#provinceDataSelect',
+                    initialData.province,
+                    'Select Province'
+                );
+
+                initSelect2(
+                    '#provinceDataSelect',
+                    'Select Province'
+                );
+
+                // auto province
+                if (selectedProvince) {
+
+                    $('#provinceDataSelect')
+                        .val(selectedProvince)
+                        .trigger('change.select2');
+
+                    // load regency
+                    let regencyData = await fetchLocation(
+                        selectedProvince
+                    );
+
+                    fillSelect(
+                        '#regencyDataSelect',
+                        regencyData.regency,
+                        'Select Regency'
+                    );
+
+                    initSelect2(
+                        '#regencyDataSelect',
+                        'Select Regency'
+                    );
+
+                    if (selectedRegency) {
+
+                        $('#regencyDataSelect')
+                            .val(selectedRegency)
+                            .trigger('change.select2');
+
+                        // load district
+                        let districtData = await fetchLocation(
+                            selectedProvince,
+                            selectedRegency
+                        );
+
+                        fillSelect(
+                            '#districtDataSelect',
+                            districtData.districts,
+                            'Select District'
+                        );
+
+                        initSelect2(
+                            '#districtDataSelect',
+                            'Select District'
+                        );
+
+                        if (selectedDistrict) {
+
+                            $('#districtDataSelect')
+                                .val(selectedDistrict)
+                                .trigger('change.select2');
+
+                            // load village
+                            let villageData = await fetchLocation(
+                                selectedProvince,
+                                selectedRegency,
+                                selectedDistrict
+                            );
+
+                            fillSelect(
+                                '#villagesDataSelect',
+                                villageData.villages,
+                                'Select Village'
+                            );
+
+                            initSelect2(
+                                '#villagesDataSelect',
+                                'Select Village'
+                            );
+
+                            if (selectedVillage) {
+
+                                $('#villagesDataSelect')
+                                    .val(selectedVillage)
+                                    .trigger('change.select2');
+                            }
+                        }
+                    }
+                }
+
+                isAutoSelecting = false;
+
+                // =========================
+                // PROVINCE CHANGE
+                // =========================
+
+                $('#provinceDataSelect').on('change', async function() {
+
+                    if (isAutoSelecting) return;
+
+                    let provinceId = $(this).val();
+
+                    fillSelect('#regencyDataSelect', [], 'Select Regency');
+                    fillSelect('#districtDataSelect', [], 'Select District');
+                    fillSelect('#villagesDataSelect', [], 'Select Village');
+
+                    if (!provinceId) return;
+
+                    let data = await fetchLocation(provinceId);
+
+                    fillSelect(
+                        '#regencyDataSelect',
+                        data.regency,
+                        'Select Regency'
+                    );
+
+                    initSelect2(
+                        '#regencyDataSelect',
+                        'Select Regency'
+                    );
                 });
+
+                // =========================
+                // REGENCY CHANGE
+                // =========================
+
+                $('#regencyDataSelect').on('change', async function() {
+
+                    if (isAutoSelecting) return;
+
+                    let provinceId = $('#provinceDataSelect').val();
+                    let regencyId = $(this).val();
+
+                    fillSelect('#districtDataSelect', [], 'Select District');
+                    fillSelect('#villagesDataSelect', [], 'Select Village');
+
+                    if (!regencyId) return;
+
+                    let data = await fetchLocation(
+                        provinceId,
+                        regencyId
+                    );
+
+                    fillSelect(
+                        '#districtDataSelect',
+                        data.districts,
+                        'Select District'
+                    );
+
+                    initSelect2(
+                        '#districtDataSelect',
+                        'Select District'
+                    );
+                });
+
+                // =========================
+                // DISTRICT CHANGE
+                // =========================
+
+                $('#districtDataSelect').on('change', async function() {
+
+                    if (isAutoSelecting) return;
+
+                    let provinceId = $('#provinceDataSelect').val();
+                    let regencyId = $('#regencyDataSelect').val();
+                    let districtId = $(this).val();
+
+                    fillSelect('#villagesDataSelect', [], 'Select Village');
+
+                    if (!districtId) return;
+
+                    let data = await fetchLocation(
+                        provinceId,
+                        regencyId,
+                        districtId
+                    );
+
+                    fillSelect(
+                        '#villagesDataSelect',
+                        data.villages,
+                        'Select Village'
+                    );
+
+                    initSelect2(
+                        '#villagesDataSelect',
+                        'Select Village'
+                    );
+                });
+
             });
         </script>
     @endpush
-    <!-- End of Main Content -->
 @endsection

@@ -38,17 +38,24 @@ Route::get('set-locale/{locale}', [DashboardController::class, 'setLocale'])->na
 
 Route::group(['prefix' => 'management'], function () {
     Route::group(['prefix' => 'master'], function () {
-        Route::get('/dashboard/map-data', [DashboardController::class, 'getMapData'])->name('dashboard.map-data');
-        Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats'])->name('dashboard.stats');
-        // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
-        Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
+        Route::middleware(['checkLogin'])->group(function () {
+            Route::get('/dashboard/map-data', [DashboardController::class, 'getMapData'])->name('dashboard.map-data');
+            Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats'])->name('dashboard.stats');
+            // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
 
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
+            Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
+            Route::get(
+                '/dashboard/running-scan-time',
+                [DashboardController::class, 'getRunningScanTimeNow']
+            )->name('dashboard.running-scan-time');
+            Route::post('/dashboard/send-recap-today', [DashboardController::class, 'sendRecapToday'])->name('dashboard.send-recap-today');
+            // This is administrator Menu to Manage Users of all 
+            Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
+        });
 
         // This is middleware/restricted access & checking is the user has role superadmin or not 
         Route::middleware(['IsSuperAdmin'])->group(function () {
-            // This is administrator Menu to Manage Users of all 
-            Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
             Route::get('/dashboard/data/user-growth/chart', [DashboardController::class, 'userGrowth'])->name('chart.userGrowth');
 
             Route::group(['prefix' => 'users'], function () {

@@ -19,8 +19,11 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Session;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Comments;
+use Yajra\DataTables\Facades\DataTables;
+
 use stdClass;
 
 class DashboardController extends Controller
@@ -35,6 +38,97 @@ class DashboardController extends Controller
     |  1. /dashboard, Func Name : index, Route Name : dashboard
     |
     */
+
+    public function sendRecapToday()
+    {
+        Artisan::call('checkpoint:summary 24');
+
+        return response()->json([
+            'message' => 'Recap sent successfully'
+        ]);
+    }
+
+    public function getRunningScanTimeNow(Request $request)
+    {
+        $query = PlaceCheckpoint::query()
+            ->select([
+                'id',
+                'place_id',
+                'place_code',
+                'user_id',
+                'checked_at',
+                'created_at',
+                'browser_name',
+                'platform',
+                'device_type'
+            ])
+            ->with([
+                'user:id,name,email',
+                'place:id,place_code,title'
+            ]);
+
+        if (!Auth::user()->hasRole('superadmin')) {
+            $placeIds = Place::where('creator_id', Auth::id())
+                ->pluck('id');
+
+            $query->whereIn('place_id', $placeIds);
+        }
+        /*
+    |--------------------------------------------------------------------------
+    | DATE FILTER
+    |--------------------------------------------------------------------------
+    */
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+
+            $startDate = Carbon::parse($request->start_date)
+                ->startOfDay();
+
+            $endDate = Carbon::parse($request->end_date)
+                ->endOfDay();
+
+            $query->whereBetween(
+                'created_at',
+                [$startDate, $endDate]
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | DEFAULT ORDER
+    |--------------------------------------------------------------------------
+    */
+
+        $query->latest('created_at');
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+
+            ->addColumn('user_name', function ($row) {
+                return $row->user?->name ?? 'Guest';
+            })
+
+            ->addColumn('place_name', function ($row) {
+                return $row->place?->title ?? $row->place_code;
+            })
+
+            ->editColumn('checked_at', function ($row) {
+                return Carbon::parse($row->checked_at)
+                    ->format('d M Y H:i:s');
+            })
+
+            ->editColumn('created_at', function ($row) {
+                return Carbon::parse($row->created_at)
+                    ->format('d M Y H:i:s');
+            })
+
+            ->rawColumns([
+                'user_name',
+                'place_name'
+            ])
+
+            ->make(true);
+    }
 
     function sync()
     {
@@ -456,7 +550,7 @@ class DashboardController extends Controller
             ->groupBy('village_id')
             ->pluck('total', 'village_id');
 
-        if(!Auth::user()->hasRole('superadmin')) {
+        if (!Auth::user()->hasRole('superadmin')) {
             $placeIds = Place::where('creator_id', Auth::id())
                 ->pluck('id');
 
@@ -650,11 +744,21 @@ class DashboardController extends Controller
             $q->whereDate('created_at', '<=', $endDate);
         });
 
-        $placeData = $query
-            ->select('id', 'title', 'views', 'place_code')
-            ->orderByDesc('views')
-            ->limit(5)
-            ->get();
+
+        if (!Auth::user()->hasRole('superadmin')) {
+            $placeData = $query
+                ->where('creator_id', Auth::id())
+                ->select('id', 'title', 'views', 'place_code')
+                ->orderByDesc('views')
+                ->limit(5)
+                ->get();
+        } else {
+            $placeData = $query
+                ->select('id', 'title', 'views', 'place_code')
+                ->orderByDesc('views')
+                ->limit(5)
+                ->get();
+        }
 
         $placeCodeArr = [];
         $arrViews = [];

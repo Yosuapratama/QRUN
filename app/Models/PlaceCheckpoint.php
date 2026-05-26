@@ -6,21 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PlaceCheckpoint extends Model
 {
-    protected $fillable = [
-        'place_id',
-        'place_code',
-        'user_id',
-        'session_id',
-        'ip_address',
-        'device_type',
-        'platform',
-        'browser',
-        'referer',
-        'country',
-        'city',
-        'checked_at'
-    ];
-
+    protected $guarded = ['id'];
     protected $casts = [
         'checked_at' => 'datetime'
     ];
