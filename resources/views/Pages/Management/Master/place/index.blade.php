@@ -255,7 +255,7 @@
                         <i class="fas fa-plus mr-1"></i>
                         @lang('messages.navigation_admin.manage_place.create_place')
                     </a> --}}
-                    <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">
+                    <div class="d-flex align-items-center gap-2 mt-3 mt-md-0 flex-wrap" style="gap:2px">
 
                         {{-- Download Excel --}}
                         <button id="download-excel-place" class="btn btn-success btn-sm shadow-sm mr-2">

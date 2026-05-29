@@ -197,6 +197,7 @@
                 </div>
 
                 <div class="modal-body">
+
                     <div class="mb-3">
                         <label for="detailTitle" class="form-label">@lang('messages.my-event.title')<span
                                 class="text-danger">*</span></label>
@@ -244,7 +245,8 @@
                     </small>
                 </div>
 
-                <button type="button" class="close shadow-none" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close shadow-none closeAddModal" data-dismiss="modal"
+                    aria-label="Close">
 
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -253,12 +255,14 @@
             <form id="addEventFormAdmin">
 
                 @csrf
-
-                <input type="hidden" name="place_id" value="{{ isset($Place) ? $Place->id : '' }}">
+                @if (isset($Place))
+                    <input type="hidden" name="place_id" value="{{ isset($Place) ? $Place->id : '' }}">
+                @endif
 
                 <div class="modal-body px-4 py-3">
 
                     <div class="row">
+
                         <div class="col-12 mb-4">
                             <label class="font-weight-bold">
                                 Event Schedule
@@ -272,7 +276,24 @@
                             <input type="hidden" name="datetime" id="eventStartDate">
                             <input type="hidden" name="end_date" id="eventEndDate">
                         </div>
-                        
+
+                        {{-- PLACE SELECT --}}
+                        <div class="col-12 mb-4" id="placeSelectWrapper" style="display:none;">
+                            <label class="font-weight-bold">
+                                Select Place
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <select class="form-control custom-input" id="placeSelectCode" name="place_code"
+                                style="width: 100%;">
+
+                                <option value="">Select Place</option>
+                            </select>
+
+                            <small class="text-muted d-block mt-2">
+                                Search and select place for this event.
+                            </small>
+                        </div>
 
                         {{-- Event Title --}}
                         <div class="col-12 mb-4">
@@ -295,6 +316,35 @@
                                 placeholder="Write event description..."></textarea>
                         </div>
 
+                        {{-- Event Active Status --}}
+                        <div class="col-12 mb-4">
+
+                            <label class="font-weight-bold d-flex align-items-center justify-content-between">
+
+                                <span>
+                                    Event Active
+                                </span>
+
+                                <span id="addEventStatusText" class="badge badge-success px-3 py-2">
+                                    Active
+                                </span>
+                            </label>
+
+                            <div class="custom-control custom-switch mt-2">
+
+                                <input type="checkbox" class="custom-control-input" id="addEventIsActive"
+                                    name="is_active" value="1" checked>
+
+                                <label class="custom-control-label" for="addEventIsActive">
+
+                                    Enable this event
+                                </label>
+                            </div>
+
+                            <small class="text-muted d-block mt-2">
+                                Inactive event will not be shown publicly.
+                            </small>
+                        </div>
                         {{-- Start Date --}}
                         <div class="col-12 mb-4">
                             {{-- Event Images --}}
@@ -311,14 +361,15 @@
 
                             <div id="eventImagesPreview" class="row mt-3"></div>
                         </div>
-                      
+
                     </div>
                 </div>
 
                 {{-- Footer --}}
                 <div class="modal-footer border-0 bg-light px-4 py-3">
 
-                    <button type="button" class="btn btn-light px-4 rounded-pill" data-dismiss="modal">
+                    <button type="button" class="closeAddModal btn btn-light px-4 rounded-pill"
+                        data-dismiss="modal">
 
                         Cancel
                     </button>
@@ -368,7 +419,7 @@
                 <div class="modal-body px-4 py-3">
 
                     <div class="row">
-                        
+
                         <div class="col-12 mb-4">
                             <label class="font-weight-bold">
                                 Event Schedule
@@ -401,6 +452,36 @@
                             <textarea class="form-control custom-input" rows="5" name="description" id="descriptionEventEdit"></textarea>
                         </div>
 
+                        {{-- Event Active Status --}}
+                        <div class="col-12 mb-4">
+
+                            <label class="font-weight-bold d-flex align-items-center justify-content-between">
+
+                                <span>
+                                    Event Active
+                                </span>
+
+                                <span id="editEventStatusText" class="badge badge-success px-3 py-2">
+                                    Active
+                                </span>
+                            </label>
+
+                            <div class="custom-control custom-switch mt-2">
+
+                                <input type="checkbox" class="custom-control-input" id="editEventIsActive"
+                                    name="is_active" value="1" checked>
+
+                                <label class="custom-control-label" for="editEventIsActive">
+
+                                    Enable this event
+                                </label>
+                            </div>
+
+                            <small class="text-muted d-block mt-2">
+                                Inactive event will not be shown publicly.
+                            </small>
+                        </div>
+                        
                         {{-- Event Images --}}
                         <div class="col-12 mb-4">
                             <label class="font-weight-bold">
@@ -451,36 +532,23 @@
                     Crop Image
                 </h5>
 
-                <button
-                    type="button"
-                    class="close cropModalCloseBtn"
-                >
+                <button type="button" class="close cropModalCloseBtn">
                     <span>&times;</span>
                 </button>
 
             </div>
 
             <div class="modal-body text-center">
-                <img
-                    id="cropperImage"
-                    style="max-width:100%;"
-                >
+                <img id="cropperImage" style="max-width:100%;">
             </div>
 
             <div class="modal-footer">
 
-                <button
-                    type="button"
-                    class="btn btn-light cropModalCloseBtn"
-                >
+                <button type="button" class="btn btn-light cropModalCloseBtn">
                     Cancel
                 </button>
 
-                <button
-                    type="button"
-                    id="saveCropBtn"
-                    class="btn btn-primary"
-                >
+                <button type="button" id="saveCropBtn" class="btn btn-primary">
                     Save Crop
                 </button>
 
@@ -592,8 +660,7 @@
                         </small>
                     </div>
 
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        aria-label="Close">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
                         X
                     </button>
                 </div>
@@ -668,8 +735,7 @@
                         </small>
                     </div>
 
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        aria-label="Close">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">
                         X
                     </button>
                 </div>

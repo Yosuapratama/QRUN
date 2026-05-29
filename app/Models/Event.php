@@ -29,7 +29,7 @@ class Event extends Model
     // }
     public function places()
     {
-        return $this->belongsTo(Place::class, 'place_id', 'id')->select('id', 'title', 'place_code', 'creator_id');
+        return $this->belongsTo(Place::class, 'place_id', 'id')->select('id', 'title', 'place_code', 'creator_id')->withTrashed();
     }
 
     public function images()

@@ -182,7 +182,6 @@ Route::group(['prefix' => 'management'], function () {
 
                 Route::get('/chart-data', [PlaceController::class, 'getPlaceChartData'])->name('place.chart-data');
 
-                Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
 
                 // AJAX Search endpoints for cascading location filters
                 Route::get('/search/provinces', [PlaceController::class, 'searchProvinces'])->name('place.search.provinces');
@@ -191,13 +190,16 @@ Route::group(['prefix' => 'management'], function () {
                 Route::get('/search/villages', [PlaceController::class, 'searchVillages'])->name('place.search.villages');
             });
 
+            
+        });
+        //Create Middleware For User Has Logged In
+        Route::middleware(['checkLogin'])->group(function () {
             Route::group(['prefix' => 'event'], function () {
                 Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
-        });
-        //Create Middleware For User Has Logged In
-        Route::middleware(['checkLogin'])->group(function () {
+            
+            Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
             Route::get('/print-barcode/{placeCode}', [PlaceController::class, 'print'])->name('place.print');
 
             Route::get('/my-place', [PlaceController::class, 'returnMyPlaceView'])->name('place.myplace');

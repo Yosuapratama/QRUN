@@ -1376,6 +1376,7 @@ class PlaceController extends Controller
         $today = Carbon::now();
 
         $event = Event::where('place_id', $place->id)
+            ->where('is_active', true)
             ->where(function ($query) use ($today) {
                 $query
                     // Event yang sedang berlangsung

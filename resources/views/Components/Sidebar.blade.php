@@ -264,18 +264,18 @@
                      <i class="fas fa-fw fa-map"></i>
                      <span>@lang('messages.navigation_admin.my_place')</span></a>
              </li>
-             <li class="nav-item">
-                 <a class="nav-link collapsed {{ Route::is('myevent.users') ? 'active' : '' }}" href="#"
+             <li class="nav-item {{ Route::is('event') ? 'active' : '' }}">
+                 <a class="nav-link collapsed {{ Route::is('event') ? 'active' : '' }}" href="#"
                      data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
                      aria-controls="collapsePages">
                      <i class="fas fa-fw fa-folder"></i>
                      <span>@lang('messages.navigation_admin.manage_event.manage_event')</span>
                  </a>
-                 <div id="collapsePages" class="collapse {{ Route::is('myevent.users') ? 'show' : '' }}"
+                 <div id="collapsePages" class="collapse {{ Route::is('event') ? 'show' : '' }}"
                      aria-labelledby="headingPages" data-parent="#accordionSidebar">
                      <div class="bg-white py-2 collapse-inner rounded">
-                         <a class="collapse-item {{ Route::is('myevent.users') ? 'active' : '' }}"
-                             href="{{ route('myevent.users') }}">@lang('messages.navigation_admin.manage_event.manage_event')</a>
+                         <a class="collapse-item {{ Route::is('event') ? 'active' : '' }}"
+                             href="{{ route('event') }}">@lang('messages.navigation_admin.manage_event.manage_event')</a>
                      </div>
                  </div>
              </li>

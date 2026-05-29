@@ -345,6 +345,7 @@
                                 <tr>
                                     <th>Event</th>
                                     <th>Schedule</th>
+                                    <th>Status</th>
                                     <th width="170" class="text-center">
                                         Action
                                     </th>
@@ -421,8 +422,8 @@
             }
 
             /* =========================
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           DISABLED FORM STYLE
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ========================= */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           DISABLED FORM STYLE
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ========================= */
 
             input[readonly],
             textarea[readonly],
@@ -480,8 +481,8 @@
             }
 
             /* =========================
-                                                                                   EVENT IMAGE PREVIEW
-                                                                                ========================= */
+                                                                                                   EVENT IMAGE PREVIEW
+                                                                                                ========================= */
 
             #eventImagesPreview,
             #eventImagesPreviewEdit {
@@ -527,8 +528,8 @@
             }
 
             /* ====================================
-                                                                           FORCE EVENT MODAL SCROLL
-                                                                        ==================================== */
+                                                                                           FORCE EVENT MODAL SCROLL
+                                                                                        ==================================== */
 
             #addEventModalAdminNew,
             #editEventModalAdminNew {
@@ -554,8 +555,8 @@
             }
 
             /* .cropper-container {
-                                                                        max-width: 100%;
-                                                                    } */
+                                                                                        max-width: 100%;
+                                                                                    } */
 
             #cropImageModal .modal-dialog {
                 max-width: 850px;
@@ -621,6 +622,46 @@
                     $.fn.modal.Constructor.prototype._enforceFocus =
                         function() {};
                 }
+
+                // ==================================
+                // ACTIVE SWITCH LABEL
+                // ==================================
+
+                function updateAddEventStatusLabel() {
+
+                    const checked = $('#addEventIsActive').is(':checked');
+
+                    $('#addEventStatusText')
+                        .text(checked ? 'Active' : 'Inactive')
+                        .removeClass('badge-success badge-secondary')
+                        .addClass(checked ? 'badge-success' : 'badge-secondary');
+                }
+
+                function updateEditEventStatusLabel() {
+
+                    const checked = $('#editEventIsActive').is(':checked');
+
+                    $('#editEventStatusText')
+                        .text(checked ? 'Active' : 'Inactive')
+                        .removeClass('badge-success badge-secondary')
+                        .addClass(checked ? 'badge-success' : 'badge-secondary');
+                }
+
+                // add modal
+                $(document).on('change', '#addEventIsActive', function() {
+
+                    updateAddEventStatusLabel();
+                });
+
+                // edit modal
+                $(document).on('change', '#editEventIsActive', function() {
+
+                    updateEditEventStatusLabel();
+                });
+
+                // init
+                updateAddEventStatusLabel();
+                updateEditEventStatusLabel();
                 // =========================
                 // IMAGE MANAGER
                 // =========================
@@ -1500,6 +1541,13 @@
                             $('#eventIdEdit').val(data.id);
                             $('#titleEventEdit').val(data.title);
                             $('#descriptionEventEdit').val(data.description);
+                            // set active
+                            $('#editEventIsActive').prop(
+                                'checked',
+                                data.is_active == 1
+                            );
+
+                            updateEditEventStatusLabel();
 
                             existingEditImages =
                                 data.images ?? [];
@@ -1694,6 +1742,10 @@
                         {
                             data: 'date',
                             name: 'date'
+                        },
+                        {
+                            data: 'status',
+                            name: 'status'
                         },
                         {
                             data: 'action',

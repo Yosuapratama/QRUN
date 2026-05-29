@@ -38,38 +38,86 @@ class EventController extends Controller
     function indexAdmin(Request $request)
     {
 
-        if (Auth::user()->hasRole('superadmin')) {
-            $arrData = Event::with('places')->orderBy('updated_at', 'DESC');
+        $query = Event::with('places')
+            ->orderBy('updated_at', 'DESC');
 
-            if ($request->place_id) {
-                $arrData->where('place_id', $request->place_id);
-            }
+        // =====================================
+        // FILTERS
+        // =====================================
 
-            $arrData = $arrData->get();
-        } else {
-            $arrData = [];
+        if ($request->place_id) {
+            $query->where('place_id', $request->place_id);
+        }
 
-            $query = Event::with('places')->orderBy('updated_at', 'DESC');
 
-            if ($request->place_id) {
-                $query->where('place_id', $request->place_id);
-            }
+        if ($request->title) {
+            $query->where('title', 'like', '%' . $request->title . '%');
+        }
 
-            $data = $query->get();
-
-            foreach ($data as $dt) {
-                if ($dt->places) {
-                    if ($dt->places->creator_id === Auth::user()->id) {
-                        $arrData[] = $dt;
-                    }
-                }
+        if ($request->status) {
+            if ($request->status == 'active') {
+                $query->where('is_active', true);
+            } else if ($request->status == 'inactive') {
+                $query->where('is_active', false);
+            } else if ($request->status == 'deleted') {
+                $query->onlyTrashed();
             }
         }
+
+
+        if ($request->place_code) {
+
+            $query->whereHas('places', function ($q) use ($request) {
+
+                $q->where(
+                    'place_code',
+                    'like',
+                    '%' . $request->place_code . '%'
+                );
+            });
+        }
+
+        if ($request->date) {
+            $query->whereDate('date', $request->date);
+        }
+
+        if ($request->end_date) {
+            $query->whereDate('end_date', $request->end_date);
+        }
+
+        // =====================================
+        // ROLE FILTER
+        // =====================================
+
+        if (!Auth::user()->hasRole('superadmin')) {
+
+            $query->whereHas('places', function ($q) {
+
+                $q->where(
+                    'creator_id',
+                    Auth::id()
+                );
+            });
+        }
+
+        // =====================================
+        // GET DATA
+        // =====================================
+
+        $arrData = $query->get();
+
 
         if ($request->ajax()) {
             return Datatables::of($arrData)
                 ->editColumn('deleted_at', function ($row) {
                     return $row->deleted_at ? 'Deleted' : 'Active';
+                })
+                ->addColumn('status', function ($row) {
+                    if ($row->is_active == false) {
+                        return '<span class="badge badge-danger">Inactive</span>';
+                    } else {
+                        return '<span class="badge badge-success">Active</span>';
+                    }
                 })
                 ->editColumn('place_code', function ($row) {
                     $place_code = $row->places->place_code ?? '-';
@@ -97,17 +145,60 @@ class EventController extends Controller
                         </div>
                     ';
                 })
+                ->editColumn('description', function ($row) {
+
+                    $fullText = strip_tags($row->description);
+
+                    $shortText = Str::limit($fullText, 200, '...');
+
+                    return '
+        <span title="' . e($fullText) . '">
+            ' . e($shortText) . '
+        </span>
+    ';
+                })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = "<div class='d-flex justify-content-center'>";
 
-                    $btn = $btn . "<button id='$row->id' class='editEventBtn btn btn-warning mr-1'>Edit</button>";
-                    $btn = $btn . "<button id='$row->id' class='deleteEventButtonNew btn btn-danger'>Delete</button>";
+                    $btn = "
+    <div class='dropdown'>
+    
+        <button 
+            class='btn btn-primary btn-sm dropdown-toggle'
+            type='button'
+            data-toggle='dropdown'
+            aria-expanded='false'
+        >
+            <i class='fas fa-cog'></i> Action
+        </button>
 
-                    $btn = $btn . "</div>";
+        <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+
+            <button 
+                id='$row->id'
+                class='dropdown-item editEventBtn'
+            >
+                <i class='fas fa-edit text-warning mr-2'></i>
+                Edit
+            </button>
+
+            <div class='dropdown-divider'></div>
+
+            <button 
+                id='$row->id'
+                class='dropdown-item text-danger deleteEventButtonNew'
+            >
+                <i class='fas fa-trash mr-2'></i>
+                Delete
+            </button>
+
+        </div>
+    </div>
+    ";
+
                     return $btn;
                 })
-                ->rawColumns(['action', 'place_code', 'date'])
+                ->rawColumns(['action', 'place_code', 'date', 'description', 'status'])
                 ->make(true);
         }
 
@@ -121,8 +212,9 @@ class EventController extends Controller
             'title' => 'required',
             'description' => 'required',
             'datetime' => 'required',
-            'placeCode' => 'required_without:place_id',
-            'place_id' => 'required_without:placeCode',
+            'placeCode' => 'nullable|required_without_all:place_code,place_id',
+            'place_code' => 'nullable|required_without_all:placeCode,place_id',
+            'place_id' => 'nullable|required_without_all:placeCode,place_code',
         ]);
 
         if ($Validator->fails()) {
@@ -135,7 +227,7 @@ class EventController extends Controller
         if ($request->place_id) {
             $Place = Place::select('id', 'creator_id')->where('id', $request->place_id)->first();
         } else {
-            $Place = Place::select('id', 'creator_id')->where('place_code', $request->placeCode)->first();
+            $Place = Place::select('id', 'creator_id')->where('place_code', $request->placeCode ?? $request->place_code ?? null)->first();
         }
 
         if (!$Place) {
@@ -156,7 +248,9 @@ class EventController extends Controller
             'place_id' => $Place->id,
             'title' => $request->title,
             'description' => $request->description,
-            'date' => $request->datetime
+            'date' => $request->datetime,
+            'end_date' => $request->end_date,
+            'is_active' => $request->has('is_active') ? true : false
         ]);
 
 
@@ -224,12 +318,33 @@ class EventController extends Controller
 
             if ($request->ajax()) {
                 if ($place) {
-                    $data = Event::where('place_id', $place->id)->latest()->get();
+                    $data = Event::where('place_id', $place->id);
+
+                    if ($request->has('search') && $request->search != null) {
+                        $data = $data->where('title', 'like', '%' . $request->search . '%');
+                    }
+
+                    if ($request->title) {
+                        $data = $data->where('title', 'like', '%' . $request->title . '%');
+                    }
+
+                    if ($request->place_code) {
+                        $data = $data->whereHas('places', function ($query) use ($request) {
+                            $query->where('place_code', 'like', '%' . $request->place_code . '%');
+                        });
+                    }
+
+                    if ($request->date) {
+                        $data = $data->whereDate('date', $request->date);
+                    }
+
+                    if ($request->end_date) {
+                        $data = $data->whereDate('end_date', $request->end_date);
+                    }
+
+                    $data = $data->orderBy('created_at', 'DESC')->get();
 
                     return Datatables::of($data)
-                        // ->editColumn('date', function ($row) {
-                        //     return \Carbon\Carbon::parse($row->date)->format('d-M-Y H:i:s') . ' Wita';
-                        // })
                         ->addIndexColumn()
                         ->addColumn('action', function ($row) {
                             $btn = "<div class='d-flex justify-content-center'>";
@@ -242,7 +357,6 @@ class EventController extends Controller
                             $start = \Carbon\Carbon::parse($row->date)
                                 ->format('d M Y H:i');
 
-                            // jika end_date null → samakan dengan start
                             $end = \Carbon\Carbon::parse(
                                 $row->end_date ?? $row->date
                             )->format('d M Y H:i');
@@ -278,7 +392,6 @@ class EventController extends Controller
                             $start = \Carbon\Carbon::parse($row->date)
                                 ->format('d M Y H:i');
 
-                            // jika end_date null → samakan dengan start
                             $end = \Carbon\Carbon::parse(
                                 $row->end_date ?? $row->date
                             )->format('d M Y H:i');
@@ -328,12 +441,14 @@ class EventController extends Controller
                 'errors' => 'You Must Upload Your Place First !'
             ], 422);
         }
+
         Event::create([
             'place_id' => $Place->id,
             'title' => $request->title,
             'description' => $request->description,
             'date' => $request->datetime,
-            'end_date' => $request->end_date
+            'end_date' => $request->end_date,
+            'is_active' => $request->has('is_active') ? true : false
         ]);
 
         LogActivities::create([
@@ -416,6 +531,12 @@ class EventController extends Controller
         $Event->title = $request->title;
         $Event->description = $request->description;
         $Event->date = $request->datetime;
+
+        if ($request->has('is_active')) {
+            $Event->is_active = true;
+        } else {
+            $Event->is_active = false; // default value jika tidak disediakan
+        }
 
         if ($request->end_date) {
             $Event->end_date = $request->end_date;
