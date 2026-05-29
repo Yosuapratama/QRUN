@@ -196,7 +196,7 @@
                         <option value="status">Status</option>
                     </select>
 
-                    <button class="btn btn-outline-secondary btn-sm" id="clear-filters">
+                    <button class="btn btn-outline-secondary btn-sm" id="clear-filters" style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
 
                         Clear Filters
                     </button>

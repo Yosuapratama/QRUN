@@ -6,199 +6,393 @@
         <title>Create Blog Admin - QRUN Website</title>
     @endpush
     <!-- Begin Page Content -->
-    <div class="container-fluid">
-        <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">@lang('messages.blog.title_heading')</h1>
 
+    <div class="container-fluid">
+
+        {{-- PAGE HEADER --}}
+        <div class="page-header">
+
+            <div>
+                <h1 class="page-title">
+                    {{ $blog ? 'Update Blog' : 'Create Blog' }}
+                </h1>
+
+                <div class="page-subtitle">
+                    Manage blog content, thumbnail, and publish settings.
+                </div>
+            </div>
+
+            <a href="{{ route('blog.index') }}" class="btn btn-outline-secondary btn-modern">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back
+            </a>
+
+        </div>
+
+        {{-- ALERT --}}
         @if (session()->has('success'))
-            <div class="alert alert-success">
+            <div class="alert alert-success shadow-sm">
                 {{ session()->get('success') }}
             </div>
         @endif
+
         @if ($errors->any())
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
+            <div class="alert alert-danger shadow-sm">
+                <ul class="mb-0 pl-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
-        <!-- DataTales Example -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">@lang('messages.blog.title_heading')</h6>
+        <div class="card modern-card mb-4">
+
+            <div class="card-header">
+
+                <div class="section-title">
+                    Blog Form
+                </div>
+
+                <div class="section-subtitle">
+                    Fill in the information below carefully.
+                </div>
+
             </div>
+
             <div class="card-body">
-                {{-- Create blog Form --}}
+
                 @if ($blog)
                     <form method="POST" action="{{ route('blog.update') }}" id="formDropzone">
                     @else
                         <form action="{{ route('blog.store') }}" method="POST" id="formDropzone">
                 @endif
+
                 @csrf
+
                 <input type="hidden" name="id" value="{{ $blog ? $blog->id : '' }}">
-                <div class="mb-3">
-                    <label class="form-label" for="title">@lang('messages.my-place.title')<span class="text-danger">*</span></label>
+
+                {{-- TITLE --}}
+                <div class="form-group-modern">
+
+                    <label class="form-label-modern">
+                        Blog Title
+                        <span class="text-danger">*</span>
+                    </label>
+
                     <input required class="form-control" value="{{ old('title', $blog ? $blog->title : '') }}"
-                        name="title" type="text" id="title" placeholder="Blog Title...">
+                        name="title" type="text" id="title" placeholder="Enter blog title...">
+
                     @error('title')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        <p class="text-danger mt-2 mb-0">{{ $message }}</p>
                     @enderror
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label" for="slug">Slug<span class="text-danger">*</span></label>
-                    <input required class="form-control" value="{{ old('slug', $blog ? $blog->slug : '') }}"
-                        name="slug" type="text" id="slug" placeholder="Blog slug...">
+
+                {{-- SLUG --}}
+                <div class="form-group-modern">
+
+                    <label class="form-label-modern">
+                        Slug
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input required class="form-control" value="{{ old('slug', $blog ? $blog->slug : '') }}" name="slug"
+                        type="text" id="slug" placeholder="example-blog-slug">
+
                     @error('slug')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        <p class="text-danger mt-2 mb-0">{{ $message }}</p>
                     @enderror
+
                 </div>
-                <div class="mb-3">
-                    <label class="form-label" for="description">@lang('messages.my-place.description')<span class="text-danger">*</span></label>
-                    <input required value="{{ old('description', $blog ? $blog->description : '') }}" class="form-control"
-                        name="description" type="text" id="description" placeholder="Blog Description...">
+
+                {{-- DESCRIPTION --}}
+                <div class="form-group-modern">
+
+                    <label class="form-label-modern">
+                        Short Description
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <textarea required class="form-control" rows="3" name="description" id="description"
+                        placeholder="Short description about this blog...">{{ old('description', $blog ? $blog->description : '') }}</textarea>
+
                     @error('description')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        <p class="text-danger mt-2 mb-0">{{ $message }}</p>
                     @enderror
+
                 </div>
 
-                <div class="mb-3">
-                    {{-- <textarea required class="form-control" name="content" id="summernote">{{ $blog ? $blog->content : '' }}</textarea> --}}
-                    <textarea class="form-control" name="content" id="summernote">{{ old('content', $blog ? $blog->content : '') }}</textarea>
+                {{-- CONTENT --}}
+                <div class="form-group-modern">
+
+                    <label class="form-label-modern">
+                        Blog Content
+                    </label>
+
+                    <textarea class="form-control" name="content" id="summernote">
+{{ old('content', $blog ? $blog->content : '') }}
+                </textarea>
+
                     @error('content')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        <p class="text-danger mt-2 mb-0">{{ $message }}</p>
                     @enderror
+
                 </div>
 
-                
-                <div class="mb-3">
-                    <label class="form-label text-muted opacity-75 fw-medium" for="formImage">Cover<span
-                            class="text-danger">*</span></label>
+                {{-- COVER --}}
+                <div class="form-group-modern">
+
+                    <label class="form-label-modern">
+                        Blog Cover
+                        <span class="text-danger">*</span>
+                    </label>
+
                     <div class="dropzone-drag-area" id="previews">
-                        <div class="dz-message text-muted opacity-50" data-dz-message>
-                            <span>Drag file here to upload</span>
+
+                        <div class="dz-message" data-dz-message>
+
+                            <i class="fas fa-cloud-upload-alt"></i>
+
+                            <div class="font-weight-bold">
+                                Drag & Drop image here
+                            </div>
+
+                            <small>
+                                PNG, JPG, JPEG up to 5MB
+                            </small>
+
                         </div>
+
                         <div class="d-none" id="dzPreviewContainer">
+
                             <div class="dz-preview dz-file-preview">
+
                                 <div class="dz-photo">
                                     <img class="dz-thumbnail" data-dz-thumbnail>
                                 </div>
-                                <button class="dz-delete border-0 p-0" type="button" data-dz-remove>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="times">
+
+                                <button class="dz-delete" type="button" data-dz-remove>
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+
                                         <path fill="#FFFFFF"
                                             d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z">
                                         </path>
+
                                     </svg>
+
                                 </button>
+
                             </div>
+
                         </div>
+
                     </div>
-                    <div class="invalid-feedback fw-bold">Please upload an image.</div>
+
+                    <input type="hidden" id="image_url" name="image_url">
+
                     @error('image_url')
-                        <p class="text-danger mt-2 mb-2">{{ $message }}</p>
+                        <p class="text-danger mt-2 mb-0">{{ $message }}</p>
                     @enderror
+
                 </div>
 
-                <input type="hidden" id="image_url" name="image_url">
-                <!-- Dropzone Form -->
+                {{-- PUBLISH --}}
+                <div class="publish-card mb-4">
 
-                <div class="slider-container mb-3">
-                    <label for="yesno-slider" class="slider-label">Publish? No / Yes</label>
-                    <input name="is_published"
-                        @if (isset($blog->is_publish)) @if ($blog->is_publish) checked @endif @endif type="checkbox" id="yesno-slider" class="slider">
+                    <div class="publish-wrapper">
+
+                        <div>
+
+                            <div class="publish-title">
+                                Publish Blog
+                            </div>
+
+                            <div class="publish-subtitle">
+                                Enable this if you want the blog visible publicly.
+                            </div>
+
+                        </div>
+
+                        <label class="switch">
+
+                            <input type="checkbox" name="is_published" @if (isset($blog->is_publish) && $blog->is_publish) checked @endif>
+
+                            <span class="slider-switch"></span>
+
+                        </label>
+
+                    </div>
+
                 </div>
-                @if ($blog)
-                    <button type="submit" class="btn btn-primary btn-md">Update blog</button>
-                @else
-                    <button type="submit" class="btn btn-success btn-md">Save blog</button>
-                @endif
+
+                {{-- BUTTON --}}
+                <div class="d-flex justify-content-end">
+
+                    @if ($blog)
+                        <button type="submit" class="btn btn-primary btn-modern">
+                            <i class="fas fa-save mr-2"></i>
+                            Update Blog
+                        </button>
+                    @else
+                        <button type="submit" class="btn btn-success btn-modern">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Publish Blog
+                        </button>
+                    @endif
+
+                </div>
+
                 </form>
+
             </div>
+
         </div>
 
     </div>
 
     @push('css')
         <style>
-            .slider-container {
+            .page-header {
                 display: flex;
-                flex-direction: column;
+                justify-content: space-between;
                 align-items: center;
+                gap: 16px;
+                flex-wrap: wrap;
+                margin-bottom: 1.5rem;
             }
 
-            /* Label styling */
-            .slider-label {
-                font-size: 18px;
-                margin-bottom: 10px;
+            .page-title {
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #2e384d;
+                margin: 0;
             }
 
-            /* Slider styling */
-            .slider {
-                appearance: none;
-                width: 60px;
-                height: 24px;
-                border-radius: 50px;
-                background-color: #ccc;
-                outline: none;
-                transition: 0.4s;
+            .page-subtitle {
+                color: #858796;
+                margin-top: 4px;
+                font-size: 14px;
+            }
+
+            .modern-card {
+                border: none;
+                border-radius: 18px;
+                overflow: hidden;
+                box-shadow:
+                    0 10px 25px rgba(0, 0, 0, .05),
+                    0 4px 10px rgba(0, 0, 0, .03);
+            }
+
+            .modern-card .card-header {
+                background: #fff;
+                border-bottom: 1px solid #eef1f7;
+                padding: 1.2rem 1.5rem;
+            }
+
+            .modern-card .card-body {
+                padding: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #4e73df;
+                margin-bottom: 4px;
+            }
+
+            .section-subtitle {
+                color: #858796;
+                font-size: 13px;
+            }
+
+            .form-group-modern {
+                margin-bottom: 1.5rem;
+            }
+
+            .form-label-modern {
+                font-size: 14px;
+                font-weight: 700;
+                color: #2f3640;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+            .form-control {
+                border-radius: 12px !important;
+                min-height: 48px;
+                border: 1px solid #e3e6f0;
+                padding: 12px 16px;
+                font-size: 14px;
+                transition: .2s ease;
+            }
+
+            .form-control:focus {
+                border-color: #4e73df;
+                box-shadow: 0 0 0 4px rgba(78, 115, 223, .10);
+            }
+
+            .note-editor.note-frame {
+                border-radius: 14px !important;
+                border: 1px solid #e3e6f0 !important;
+                overflow: hidden;
+            }
+
+            .note-toolbar {
+                background: #f8f9fc !important;
+                border-bottom: 1px solid #eef1f7 !important;
+            }
+
+            .note-editing-area {
+                min-height: 350px;
+            }
+
+            .dropzone-drag-area {
+                height: 320px;
+                border-radius: 16px;
+                border: 2px dashed #d9deea;
+                background: #fafbff;
+                transition: .2s ease;
                 position: relative;
+                overflow: hidden;
             }
 
-            /* Slider before (circle inside the slider) */
-            .slider::before {
-                content: "";
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                width: 18px;
-                height: 18px;
-                border-radius: 50%;
-                background-color: white;
-                transition: 0.4s;
+            .dropzone-drag-area:hover {
+                border-color: #4e73df;
+                background: #f5f7ff;
             }
 
-            /* When the slider is checked */
-            .slider:checked {
-                background-color: #4e73df;
+            .dz-message {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                gap: 12px;
+                color: #858796;
             }
 
-            /* Move the circle when checked */
-            .slider:checked::before {
-                transform: translateX(26px);
-            }
-
-            /* Optional: Color the label based on the slider state */
-            .slider:checked+.slider-label {
-                color: #4CAF50;
-            }
-
-                        .dropzone {
-                overflow-y: auto;
-                border: 0;
-                background: transparent;
+            .dz-message i {
+                font-size: 42px;
+                color: #4e73df;
             }
 
             .dz-preview {
                 width: 100%;
-                margin: 0 !important;
                 height: 100%;
-                padding: 15px;
+                margin: 0 !important;
                 position: absolute !important;
-                top: 0;
+                inset: 0;
+                padding: 18px;
             }
 
             .dz-photo {
-                height: 100%;
                 width: 100%;
+                height: 100%;
+                border-radius: 16px;
                 overflow: hidden;
-                border-radius: 12px;
-                background: #eae7e2;
-            }
-
-            .dz-drag-hover .dropzone-drag-area {
-                border-style: solid;
-                border-color: #86b7fe;
-                ;
+                background: #f2f4f9;
             }
 
             .dz-thumbnail {
@@ -207,93 +401,129 @@
                 object-fit: cover;
             }
 
-            .dz-image {
-                width: 90px !important;
-                height: 90px !important;
-                border-radius: 6px !important;
-            }
-
-            .dz-remove {
-                display: none !important;
-            }
-
             .dz-delete {
-                width: 24px;
-                height: 24px;
-                background: rgba(0, 0, 0, 0.57);
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                border: none;
+                background: rgba(0, 0, 0, .65);
                 position: absolute;
-                opacity: 0;
-                transition: all 0.2s ease;
-                top: 30px;
-                right: 30px;
-                border-radius: 100px;
-                z-index: 9999;
+                top: 28px;
+                right: 28px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                opacity: 0;
+                transition: .2s ease;
             }
 
-            .dz-delete>svg {
-                transform: scale(0.75);
-                cursor: pointer;
-            }
-
-            .dz-preview:hover .dz-delete,
-            .dz-preview:hover .dz-remove-image {
+            .dz-preview:hover .dz-delete {
                 opacity: 1;
             }
 
-            .dz-message {
-                height: 100%;
-                margin: 0 !important;
+            .dz-delete svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .publish-card {
+                background: linear-gradient(135deg, #f8f9ff 0%, #eef3ff 100%);
+                border: 1px solid #dfe7ff;
+                border-radius: 16px;
+                padding: 18px 20px;
+            }
+
+            .publish-wrapper {
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
-                justify-content: center;
+                gap: 20px;
             }
 
-            .dropzone-drag-area {
-                height: 300px;
+            .publish-title {
+                font-weight: 700;
+                color: #2f3640;
+                margin-bottom: 4px;
+            }
+
+            .publish-subtitle {
+                font-size: 13px;
+                color: #858796;
+            }
+
+            .switch {
                 position: relative;
-                padding: 0 !important;
-                border-radius: 10px;
-                border: 3px dashed #dbdeea;
+                display: inline-block;
+                width: 58px;
+                height: 30px;
             }
 
-            .was-validated .form-control:valid {
-                border-color: #dee2e6 !important;
-                background-image: none;
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider-switch {
+                position: absolute;
+                inset: 0;
+                cursor: pointer;
+                background-color: #d6d9e6;
+                transition: .3s;
+                border-radius: 999px;
+            }
+
+            .slider-switch:before {
+                position: absolute;
+                content: "";
+                width: 24px;
+                height: 24px;
+                left: 3px;
+                top: 3px;
+                background-color: white;
+                transition: .3s;
+                border-radius: 50%;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+            }
+
+            .switch input:checked+.slider-switch {
+                background-color: #4e73df;
+            }
+
+            .switch input:checked+.slider-switch:before {
+                transform: translateX(28px);
+            }
+
+            .btn-modern {
+                border-radius: 12px;
+                padding: 12px 22px;
+                font-weight: 600;
+                font-size: 14px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, .06);
+            }
+
+            .alert {
+                border: none;
+                border-radius: 14px;
+            }
+
+            @media(max-width:768px) {
+                .publish-wrapper {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .page-title {
+                    font-size: 1.5rem;
+                }
             }
         </style>
     @endpush
 
-    {{-- @push('script')
-        <script>
-            //Setup SummerNote (Content Textarea Box)
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                    tabsize: 2,
-                    height: 300
-                });
-            });
-        </script>
-    @endpush --}}
-
-    {{-- @push('script')
-        <script>
-            //Setup SummerNote (Content Textarea Box)
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                    tabsize: 2,
-                    height: 300
-                });
-            });
-        </script>
-    @endpush --}}
-
     @push('script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
         <script>
-              Dropzone.autoDiscover = false;
+            Dropzone.autoDiscover = false;
             var myDropzone = new Dropzone('#formDropzone', {
                 url: "{{ route('upload.blog') }}", // Ensure the URL is correct
                 previewTemplate: $('#dzPreviewContainer').html(),
