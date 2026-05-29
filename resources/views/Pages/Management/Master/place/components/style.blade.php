@@ -579,7 +579,7 @@
           .text-danger {
               color: #e74c3c !important;
               font-weight: 700;
-              font-size: 18px;
+              /* font-size: 18px; */
           }
 
           /* Error message styling */

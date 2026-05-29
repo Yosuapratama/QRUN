@@ -652,7 +652,7 @@
                                                             @if ($evnt->images->count())
                                                                 <img src="{{ asset($evnt->images->first()->image_url) }}"
                                                                     class="w-full h-40 sm:h-48 object-cover"
-                                                                    lazyload
+                                                                    loading='lazy'
                                                                     alt="{{ $evnt->title }}">
                                                             @else
                                                                 <div
