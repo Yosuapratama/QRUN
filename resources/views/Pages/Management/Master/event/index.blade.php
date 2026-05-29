@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <!-- Page Heading -->
         <h1 class="h3 text-gray-800 font-weight-bold m-2">Management All Event</h1>
-        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addEventModalAdmin">Add Event</button>
+        <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addEventModalAdminNew">Add Event</button>
         {{-- <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Place</button> --}}
         <!-- DataTales Example -->
         <div class="card shadow mb-4">

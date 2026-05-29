@@ -257,6 +257,11 @@
                     </a> --}}
                     <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">
 
+                        {{-- Download Excel --}}
+                        <button id="download-excel-place" class="btn btn-success btn-sm shadow-sm mr-2">
+                            <i class="fas fa-file-excel mr-1"></i>
+                            Download Excel
+                        </button>
                         {{-- Column Visibility --}}
                         <div class="dropdown">
                             <button class="mr-2 btn btn-outline-primary btn-sm dropdown-toggle" type="button"
@@ -856,6 +861,27 @@
                         dataTablePlace.order([]).draw();
                     }
                     dataTablePlace.ajax.reload();
+                });
+
+                $('#download-excel-place').on('click', function() {
+
+                    const params = new URLSearchParams({
+                        title: $('#filter-title').val() || '',
+                        place_code: $('#filter-place-code').val() || '',
+                        description: $('#filter-description').val() || '',
+                        creator: $('#filter-creator').val() || '',
+                        province: $('#filter-province').val() || '',
+                        regency: $('#filter-regency').val() || '',
+                        district: $('#filter-district').val() || '',
+                        village: $('#filter-village').val() || '',
+                        updated_at_start: updatedAtStart || '',
+                        updated_at_end: updatedAtEnd || '',
+                        sort_by: $('#sort-order').val() || ''
+                    });
+
+                    window.location.href =
+                        "{{ route('report.excel.place') }}?" +
+                        params.toString();
                 });
 
                 $('#clear-filters').on('click', function() {

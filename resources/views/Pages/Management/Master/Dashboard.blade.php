@@ -1406,7 +1406,7 @@
                             'bg' => 'primary',
                         ],
                         [
-                            'title' => 'Pending Users',
+                            'title' => 'Pending Approved',
                             'id' => 'stat-user-pending',
                             'value' => '0',
                             'icon' => 'fas fa-user-clock',

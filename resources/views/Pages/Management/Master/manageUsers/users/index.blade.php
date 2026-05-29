@@ -38,6 +38,10 @@
                 box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
             }
 
+            .custom-control-label::after {
+                left: -2.6rem !important;
+            }
+
             .custom-control-input:checked~.custom-control-label::before {
                 background-color: #4e73df;
             }
@@ -241,9 +245,25 @@
         <!-- FILTER CARD -->
         <div class="card shadow mb-3 filter-card">
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                @php
+                    $pendingUser = \App\Helpers\SidebarHelper::getPendingApprovedUser() ?? 0;
+                @endphp
+
                 <div>
-                    <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
-                    <small class="text-secondary">Refine the list by name, email, phone, status, and block status.</small>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Filters
+                        <small class="ml-1">
+                            (
+                            <span class="text-warning font-weight-bold">
+                                Pending Approvals: {{ $pendingUser }}
+                            </span>
+                            )
+                        </small>
+                    </h6>
+
+                    <small class="text-secondary">
+                        Refine the list by name, email, phone, status, and block status.
+                    </small>
                 </div>
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mt-3 mt-md-0">
                     <select class="form-control form-control-sm" id="sort-order" style="min-width: 220px;">
@@ -274,7 +294,7 @@
                             placeholder="Search Phone">
                     </div>
                     <div class="col-md-3">
-                        <label class="small font-weight-bold text-dark">Status</label>
+                        <label class="small font-weight-bold text-dark">Status Approval</label>
                         <select id="filter_status" class="form-control form-control-sm">
                             <option value="">All</option>
                             <option value="approved">Approved</option>

@@ -39,6 +39,17 @@ Route::get('set-locale/{locale}', [DashboardController::class, 'setLocale'])->na
 Route::group(['prefix' => 'management'], function () {
     Route::group(['prefix' => 'master'], function () {
         Route::middleware(['checkLogin'])->group(function () {
+
+            Route::get('/sync/migration', function () {
+                Artisan::call('migration:sync');
+                return back()->with('success', 'Migration status synced successfully!');
+            })->name('migration.sync');
+
+            Route::get(
+                '/report/excel/place',
+                [PlaceController::class, 'reportExcelPlace']
+            )->name('report.excel.place');
+
             Route::get('/dashboard/map-data', [DashboardController::class, 'getMapData'])->name('dashboard.map-data');
             Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats'])->name('dashboard.stats');
             // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
@@ -60,8 +71,8 @@ Route::group(['prefix' => 'management'], function () {
 
             Route::group(['prefix' => 'users'], function () {
                 Route::get('/', [UsersController::class, 'index'])->name('users');
-                Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
-                Route::get('/pending-approval', [UsersController::class, 'pendingApproval'])->name('users.pending');
+                // Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
+                // Route::get('/pending-approval', [UsersController::class, 'pendingApproval'])->name('users.pending');
 
                 Route::post('/store', [UsersController::class, 'store'])->name('users.store');
                 Route::put('/update', [UsersController::class, 'update'])->name('users.update');

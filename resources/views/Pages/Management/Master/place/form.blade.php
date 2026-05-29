@@ -174,40 +174,40 @@
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        Province
+                                        Province <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="provinceDataSelect" name="reg_province" class="form-control select2">
+                                    <select id="provinceDataSelect" name="reg_province" class="form-control select2" required>
                                         <option value="">Select Province</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        City / Regency
+                                        City / Regency <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
+                                    <select id="regencyDataSelect" name="reg_regency" class="form-control select2" required>
                                         <option value="">Select Regency</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        District
+                                        District <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="districtDataSelect" name="reg_district" class="form-control select2">
+                                    <select id="districtDataSelect" name="reg_district" class="form-control select2" required>
                                         <option value="">Select District</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        Village
+                                        Village <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="villagesDataSelect" name="reg_village" class="form-control select2">
+                                    <select id="villagesDataSelect" name="reg_village" class="form-control select2" required>
                                         <option value="">Select Village</option>
                                     </select>
                                 </div>

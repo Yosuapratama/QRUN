@@ -28,7 +28,7 @@
                  <span>@lang('messages.navigation_admin.manage_users.index')</span>
              </a>
              @php
-                 $pendingUser = \App\Helpers\SidebarHelper::getPendingUser();
+                 $pendingVerified = \App\Helpers\SidebarHelper::getPendingVerifiedUsers();
              @endphp
              <div id="collapseTwo"
                  class="collapse {{ Route::is('users') || Route::is('users.blocked') || Route::is('users.pending') || Route::is('users-limit.index') || Route::is('pending-verify.index') ? 'show' : '' }}"
@@ -36,15 +36,16 @@
                  <div class="bg-white py-2 collapse-inner rounded">
                      <a class="collapse-item {{ Route::is('users') ? 'active' : '' }}"
                          href="{{ route('users') }}">@lang('messages.navigation_admin.manage_users.all_users')</a>
-                     <a class="collapse-item {{ Route::is('users.blocked') ? 'active' : '' }}"
-                         href="{{ route('users.blocked') }}">@lang('messages.navigation_admin.manage_users.deleted_users')</a>
-                     <a class="collapse-item {{ Route::is('users.pending') ? 'active' : '' }}"
+                     {{-- <a class="collapse-item {{ Route::is('users.blocked') ? 'active' : '' }}"
+                         href="{{ route('users.blocked') }}">@lang('messages.navigation_admin.manage_users.deleted_users')</a> --}}
+                     {{-- <a class="collapse-item {{ Route::is('users.pending') ? 'active' : '' }}"
                          href="{{ route('users.pending') }}">@lang('messages.navigation_admin.manage_users.pending_approved') <b
-                             style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{ $pendingUser }}</b></a>
+                             style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{ $pendingUser }}</b></a> --}}
+                     <a class="collapse-item {{ Route::is('pending-verify.index') ? 'active' : '' }}"
+                         href="{{ route('pending-verify.index') }}">@lang('messages.navigation_admin.manage_users.pending_verify') <b
+                             style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{ $pendingVerified }}</b></a>
                      <a class="collapse-item {{ Route::is('users-limit.index') ? 'active' : '' }}"
                          href="{{ route('users-limit.index') }}">@lang('messages.navigation_admin.manage_users.users_limit')</a>
-                     <a class="collapse-item {{ Route::is('pending-verify.index') ? 'active' : '' }}"
-                         href="{{ route('pending-verify.index') }}">@lang('messages.navigation_admin.manage_users.pending_verify')</a>
                  </div>
              </div>
          </li>

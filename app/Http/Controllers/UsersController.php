@@ -47,7 +47,35 @@ class UsersController extends Controller
     function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::whereNotNull('email_verified_at')->latest()->get();
+            $data = User::whereNotNull('email_verified_at')->latest();
+
+            if ($request->name) {
+                $data = $data->where('name', 'like', '%' . $request->name . '%');
+            }
+
+            if ($request->email) {
+                $data = $data->where('email', 'like', '%' . $request->email . '%');
+            }
+
+            if ($request->phone) {
+                $data = $data->where('phone', 'like', '%' . $request->phone . '%');
+            }
+
+            if ($request->status) {
+                if ($request->status == 'approved') {
+                    $data = $data->whereNotNull('approved_at');
+                } else if ($request->status == 'pending') {
+                    $data = $data->whereNull('approved_at');
+                }
+            }
+
+            if ($request->block) {
+                if ($request->block == 'blocked') {
+                    $data = $data->whereNotNull('deleted_at')->withTrashed();
+                } else if ($request->block == 'active') {
+                    $data = $data->whereNull('deleted_at');
+                }
+            }
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -579,7 +607,41 @@ class UsersController extends Controller
     function pendingVerify(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::whereNull('email_verified_at')->latest()->get();
+            $data = User::whereNull('email_verified_at')->latest();
+
+            if ($request->name) {
+                $data = $data->where('name', 'like', '%' . $request->name . '%');
+            }
+
+            if ($request->email) {
+                $data = $data->where('email', 'like', '%' . $request->email . '%');
+            }
+
+            if ($request->phone) {
+                $data = $data->where('phone', 'like', '%' . $request->phone . '%');
+            }
+
+            if ($request->status) {
+                if ($request->status == 'approved') {
+                    $data = $data->whereNotNull('approved_at');
+                } else if ($request->status == 'pending') {
+                    $data = $data->whereNull('approved_at');
+                }
+            }
+
+            if ($request->address) {
+                $data = $data->where('address', 'like', '%' . $request->address . '%');
+            }
+
+            if ($request->block) {
+                if ($request->block == 'blocked') {
+                    $data = $data->whereNotNull('deleted_at')->withTrashed();
+                } else if ($request->block == 'active') {
+                    $data = $data->whereNull('deleted_at');
+                }
+            }
+
+            $data = $data->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
@@ -595,9 +657,50 @@ class UsersController extends Controller
 
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = "<div class='d-flex justify-content-center'>";
-                    $btn = $btn . "<button id='$row->id' class='verifyUser btn btn-success btn-sm mr-1'>Verify</button>";
-                    $btn = $btn . "</div>";
+
+                    $btn = "
+    <div class='dropdown'>
+        <button 
+            class='btn btn-primary btn-sm dropdown-toggle'
+            type='button'
+            data-toggle='dropdown'
+            aria-expanded='false'
+        >
+            <i class='fas fa-cog'></i> Action
+        </button>
+
+        <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+    ";
+
+                    // Verify User
+                    $btn .= "
+        <button
+            id='{$row->id}'
+            class='verifyUser dropdown-item text-success'
+        >
+            <i class='fas fa-check-circle mr-2'></i>
+            Verify Account
+        </button>
+    ";
+
+                    $btn .= "<div class='dropdown-divider'></div>";
+
+                    // Delete User
+                    $btn .= "
+        <button
+            id='{$row->id}'
+            class='deleteUser dropdown-item text-danger'
+        >
+            <i class='fas fa-trash-alt mr-2'></i>
+            Delete User
+        </button>
+    ";
+
+                    $btn .= "
+        </div>
+    </div>
+    ";
+
                     return $btn;
                 })
                 ->rawColumns(['action'])

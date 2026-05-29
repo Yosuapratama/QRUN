@@ -31,13 +31,13 @@
         /*  margin-right: auto;*/
         /*}*/
         #translatable-content audio,
-        canvas,
-        embed,
-        iframe,
-        img,
-        object,
-        svg,
-        video {
+        #translatable-content canvas,
+        #translatable-content embed,
+        #translatable-content iframe,
+        #translatable-content img,
+        #translatable-content object,
+        #translatable-content svg,
+        #translatable-content video {
             display: revert !important;
         }
 
@@ -57,10 +57,20 @@
         #translatable-content h6,
         #translatable-content p,
         #translatable-content a {
-            all: revert;
+            font-size: revert;
+            line-height: revert;
             margin-top: 1em;
-            margin-bottom: 0.5em;
+            margin-bottom: .5em;
             color: revert;
+        }
+
+        #translatable-content h1,
+        #translatable-content h2,
+        #translatable-content h3,
+        #translatable-content h4,
+        #translatable-content h5,
+        #translatable-content h6 {
+            font-weight: normal !important;
         }
 
         .star {
@@ -175,18 +185,98 @@
         }
 
 
-    .eventSwiper {
-        overflow: hidden;
-    }
+        .eventSwiper {
+            overflow: hidden;
+        }
 
-    .eventSwiper .swiper-slide {
-        height: auto;
-    }
+        .eventSwiper .swiper-slide {
+            height: auto;
+        }
 
-    .swiper-button-disabled {
-        opacity: .3;
-        pointer-events: none;
-    }
+        .swiper-button-disabled {
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        #translatable-content {
+            color: #000;
+            line-height: 1.7;
+        }
+
+        /* Normalisasi text editor */
+        #translatable-content h1,
+        #translatable-content h2,
+        #translatable-content h3,
+        #translatable-content h4,
+        #translatable-content h5,
+        #translatable-content h6,
+        #translatable-content p,
+        #translatable-content span,
+        #translatable-content div,
+        #translatable-content a,
+        #translatable-content li,
+        #translatable-content blockquote {
+            color: inherit !important;
+        }
+
+        /* Supaya black editor tetap black */
+        #translatable-content font[color="#000000"],
+        #translatable-content [style*="color: rgb(0, 0, 0)"],
+        #translatable-content [style*="color:#000"],
+        #translatable-content [style*="color: #000"] {
+            color: #000 !important;
+        }
+
+        /* Heading normal browser default */
+        #translatable-content h1 {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        #translatable-content h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        #translatable-content h3 {
+            font-size: 1.17em;
+            font-weight: bold;
+        }
+
+        #translatable-content h4 {
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        #translatable-content h5 {
+            font-size: .83em;
+            font-weight: bold;
+        }
+
+        #translatable-content h6 {
+            font-size: .67em;
+            font-weight: bold;
+        }
+
+        /* Link editor */
+        #translatable-content a {
+            text-decoration: underline;
+        }
+
+        /* Image */
+        #translatable-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* iframe responsive */
+        #translatable-content iframe {
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            min-height: 220px;
+            border-radius: 12px;
+        }
     </style>
 @endpush
 
@@ -229,7 +319,7 @@
                         </svg>
                         Content
                     </a>
-                    @if ($event)
+                    @if (isset($event) && $event->isEmpty() === false)
                         <a href="#events"
                             class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
                             <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -288,7 +378,7 @@
                             </svg>
                             Content
                         </a>
-                        @if ($event)
+                        @if (isset($event) && $event->isEmpty() === false)
                             <a href="#events"
                                 class="flex items-center px-4 py-3 text-gray-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors mobile-nav-link">
                                 <svg class="w-5 h-5 mr-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -380,22 +470,79 @@
             <!-- Main Content -->
             <div class="container mx-auto px-4 py-8" :class="{ 'pt-16': disabledAfter > 0 }">
                 <!-- Header -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 fade-in">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">{{ $place->title }}</h1>
+                <div class="rounded-[14px] overflow-hidden mb-8 fade-in">
+                    {{-- Hero --}}
+                    <div class="bg-gradient-to-br from-blue-600 via-purple-600/80 to-purple-600 relative">
+                        <div class="absolute inset-0 pointer-events-none"
+                            style="background: radial-gradient(ellipse 300px 200px at 90% 20%, rgba(255,255,255,0.08), transparent),
+                                radial-gradient(ellipse 200px 300px at 10% 80%, rgba(0,0,0,0.12), transparent)">
+                        </div>
+                        <div class="relative z-10 px-5 pt-7 pb-5 sm:px-6 flex items-center gap-3.5">
 
-                    <!-- Translation Controls -->
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-                        <div id="google_translate_element" class="flex-1 w-full sm:w-auto"></div>
+                            <div
+                                class="w-[38px] h-[38px] rounded-[10px] bg-white/[0.13] backdrop-blur flex items-center justify-center shrink-0">
+
+                                <svg class="w-[18px] h-[18px] text-white/90" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[13.5px] font-medium text-white/[0.55] tracking-wide mb-1">
+                                    Place
+                                </p>
+
+                                <h1 class="text-3xl font-bold text-white leading-tight -tracking-[0.01em]">
+                                    {{ $place->title }}
+                                </h1>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- Translate bar (gray) --}}
+                    {{-- Translate bar --}}
+                    <div class="bg-white border-t border-gray-100 px-5 py-3 sm:px-6 flex items-center gap-3">
+
+                        <div
+                            class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 border border-gray-100 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 0 1 6.5 9l2.5 5m-1.5 0h5m5.5 5 2-5h-5l2.5 5M18 19l-2-5" />
+                            </svg>
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[13px] font-medium text-gray-700 leading-none">
+                                Translate Page
+                            </p>
+                            <p class="text-[11px] text-gray-400 mt-1 hidden sm:block">
+                                Change language using Google Translate
+                            </p>
+                        </div>
+
+                        <div id="google_translate_element" class="flex-1 sm:flex-none sm:max-w-[190px]">
+                        </div>
+
                         <button @click="closeTranslate"
-                            class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors w-full sm:w-auto">
-                            <svg class="w-4 h-4 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                    clip-rule="evenodd"></path>
+                            class="w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-300 flex items-center justify-center shrink-0 transition-all duration-200 shadow-sm"
+                            aria-label="Reset language">
+
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
                             </svg>
                         </button>
                     </div>
-                    <p class="text-sm text-gray-500">Translate By Google Translate</p>
                 </div>
 
                 <!-- Place Details Card -->
@@ -459,8 +606,7 @@
                     </div>
 
                     <!-- Content -->
-                    <div class="p-4 sm:p-6 prose prose-sm sm:prose-lg max-w-none" id="translatable-content"
-                        style="overflow-x:scroll">
+                    <div class="p-4 sm:p-6 max-w-none" id="translatable-content" style="overflow-x:scroll">
                         {!! $place->content !!}
                     </div>
                 </div>
@@ -933,6 +1079,7 @@
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
         // Swiper Events
@@ -1024,22 +1171,22 @@
                     </div>
 
                     ${ev.images.length > 1 ? `
-                                                                                                                                                                            <button class="carousel-control-prev"
-                                                                                                                                                                                type="button"
-                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
-                                                                                                                                                                                data-bs-slide="prev">
+                                                                                                                                                                                                <button class="carousel-control-prev"
+                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                    data-bs-slide="prev">
 
-                                                                                                                                                                                <span class="carousel-control-prev-icon"></span>
-                                                                                                                                                                            </button>
+                                                                                                                                                                                                    <span class="carousel-control-prev-icon"></span>
+                                                                                                                                                                                                </button>
 
-                                                                                                                                                                            <button class="carousel-control-next"
-                                                                                                                                                                                type="button"
-                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
-                                                                                                                                                                                data-bs-slide="next">
+                                                                                                                                                                                                <button class="carousel-control-next"
+                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                    data-bs-slide="next">
 
-                                                                                                                                                                                <span class="carousel-control-next-icon"></span>
-                                                                                                                                                                            </button>
-                                                                                                                                                                        ` : ''}
+                                                                                                                                                                                                    <span class="carousel-control-next-icon"></span>
+                                                                                                                                                                                                </button>
+                                                                                                                                                                                            ` : ''}
 
                 </div>
 
@@ -1060,14 +1207,14 @@
                         </div>
 
                         ${ev.end_date ? `
-                                                                                                                                                                            <div class="mt-1">
-                                                                                                                                                                                <span class="font-semibold">
-                                                                                                                                                                                    Until:
-                                                                                                                                                                                </span>
+                                                                                                                                                                                                <div class="mt-1">
+                                                                                                                                                                                                    <span class="font-semibold">
+                                                                                                                                                                                                        Until:
+                                                                                                                                                                                                    </span>
 
-                                                                                                                                                                                ${ev.end_date} WITA
-                                                                                                                                                                            </div>
-                                                                                                                                                                        ` : ''}
+                                                                                                                                                                                                    ${ev.end_date} WITA
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                            ` : ''}
 
                     </div>
 
@@ -1231,9 +1378,31 @@
                         }
                     }, 1000);
                 },
+                // closeTranslate() {
+                //     document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+                //     window.location.reload();
+                // },
                 closeTranslate() {
-                    document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-                    window.location.reload();
+
+                    // clear google translate cookie
+                    document.cookie =
+                        "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+                    document.cookie =
+                        "googtrans=; domain=" + location.hostname +
+                        "; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+                    // reset select jika ada
+                    const select = document.querySelector('.goog-te-combo');
+
+                    if (select) {
+                        select.value = 'id';
+                        select.dispatchEvent(new Event('change'));
+                    }
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
                 },
                 setRating(rating) {
                     this.selectedRating = rating;
@@ -1432,12 +1601,59 @@
     <!-- Google Translate -->
     <script>
         function googleTranslateElementInit() {
+
             new google.translate.TranslateElement({
                 pageLanguage: 'id',
                 includedLanguages: 'id,en,es,fr,de,it,ja,zh-CN',
                 layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
+
+            setupGoogleTranslateAutoClose();
+        }
+
+        function setupGoogleTranslateAutoClose() {
+
+            let isClosing = false;
+
+            document.addEventListener('click', function(e) {
+
+                const languageItem = e.target.closest(
+                    '.VIpgJd-ZVi9od-vH1Gmf-ibnC6b'
+                );
+
+                if (!languageItem || isClosing) return;
+
+                isClosing = true;
+
+                // tunggu translate apply
+                setTimeout(() => {
+
+                    // trigger click outside popup
+                    document.body.dispatchEvent(
+                        new MouseEvent('mousedown', {
+                            bubbles: true
+                        })
+                    );
+
+                    document.body.dispatchEvent(
+                        new MouseEvent('click', {
+                            bubbles: true
+                        })
+                    );
+
+                    // remove focus
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                    }
+
+                    // reset lock supaya next click bisa lagi
+                    setTimeout(() => {
+                        isClosing = false;
+                    }, 1000);
+
+                }, 300);
+
+            }, true);
         }
     </script>
-    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 @endpush

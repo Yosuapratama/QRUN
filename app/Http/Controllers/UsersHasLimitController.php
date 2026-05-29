@@ -20,11 +20,27 @@ class UsersHasLimitController extends Controller
     public function index(Request $request)
     {
         // dd($data[0]);
-        
+
         if ($request->ajax()) {
-            $data = UserHasPlaceLimit::with('placeLimit', 'user')->get();
-            
+            $data = UserHasPlaceLimit::with('placeLimit', 'user');
+
+            if ($request->email) {
+                $data = $data->whereHas('user', function ($query) use ($request) {
+                    $query->where('email', 'like', '%' . $request->email . '%');
+                });
+            }
+
+            if ($request->place) {
+                $data = $data->whereHas('placeLimit', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->place . '%');
+                });
+            }
             return DataTables::of($data)
+                ->filterColumn('place_name', function ($query, $keyword) {
+                    $query->whereHas('placeLimit', function ($q) use ($keyword) {
+                        $q->where('name', 'like', "%$keyword%");
+                    });
+                })
                 ->editColumn('updated_at', function ($row) {
                     return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
                 })
@@ -34,29 +50,59 @@ class UsersHasLimitController extends Controller
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $editUrl = route('place-limit.edit', $row->id);
 
-                    $btn = "<div class='d-flex'>";
-                    $btn = $btn . "<button id='$row->id' class='edit btn btn-secondary btn-sm mr-1'>Edit</button>";
-                    $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
-                    $btn = $btn . "</div>";
+                    $btn = "
+<div class='dropdown'>
+    <button 
+        class='btn btn-primary btn-sm dropdown-toggle'
+        type='button'
+        data-toggle='dropdown'
+        aria-expanded='false'
+    >
+        <i class='fas fa-cog mr-1'></i> Action
+    </button>
+
+    <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+
+        <button 
+            type='button'
+            id='$row->id'
+            class='dropdown-item edit'
+        >
+            <i class='fas fa-edit text-primary mr-2'></i>
+            Edit
+        </button>
+        <hr>
+        <button 
+            type='button'
+            id='$row->id'
+            class='dropdown-item delete'
+        >
+            <i class='fas fa-trash text-danger mr-2'></i>
+            Delete
+        </button>
+
+    </div>
+</div>
+";
+
                     return $btn;
-                })
-                ->rawColumns(['action'])
+                })->rawColumns(['action'])
                 ->make(true);
         }
 
         return view('Pages.Management.Master.manageUsers.users-limit.index');
     }
 
-    public function getUserHasLimit(Request $request){
-        if(Auth::user()->hasRole('superadmin')){
+    public function getUserHasLimit(Request $request)
+    {
+        if (Auth::user()->hasRole('superadmin')) {
             return response()->json([
                 'users' => User::whereNotNull('approved_at')
-                ->whereNotIn('id', UserHasPlaceLimit::pluck('user_id')) // Use pluck to get an array of IDs
-                ->select('email')
-                ->get(),
-                'place_limit' => PlaceLimit::select('id','name')->get()
+                    ->whereNotIn('id', UserHasPlaceLimit::pluck('user_id')) // Use pluck to get an array of IDs
+                    ->select('email')
+                    ->get(),
+                'place_limit' => PlaceLimit::select('id', 'name')->get()
             ]);
         }
 
@@ -71,15 +117,16 @@ class UsersHasLimitController extends Controller
         //
     }
 
-    public function fetchData($id){
+    public function fetchData($id)
+    {
         $data = UserHasPlaceLimit::with('user')->find($id);
-        if(!$data){
+        if (!$data) {
             return abort(404);
         }
 
         return response()->json([
             'data' => $data,
-            'place_limit' => PlaceLimit::select('id','name')->get()
+            'place_limit' => PlaceLimit::select('id', 'name')->get()
         ]);
     }
 
@@ -99,14 +146,14 @@ class UsersHasLimitController extends Controller
             'place_limit.exists' => "Place must exist in the users table"
         ]);
 
-        if($Validator->fails()){
+        if ($Validator->fails()) {
             return response()->json([
                 'errors' => 'Invalid fields !'
             ]);
         }
 
         $checkIsExists = UserHasPlaceLimit::where('user_id', User::where('email', $request->user)->first()->id)->first();
-        if($checkIsExists){
+        if ($checkIsExists) {
             return response()->json([
                 'errors' => 'Users already have a place limit !'
             ]);
@@ -121,14 +168,13 @@ class UsersHasLimitController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User created user place limit at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User created user place limit at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_CREATE_USER_LIMIT
         ]);
 
         return response()->json([
             'success' => 'Data successfully added !'
         ]);
-
     }
 
     /**
@@ -166,7 +212,7 @@ class UsersHasLimitController extends Controller
             'place_limit.exists' => "Place must exist in the users table"
         ]);
 
-        if($Validator->fails()){
+        if ($Validator->fails()) {
             return response()->json([
                 'errors' => 'Invalid fields !'
             ]);
@@ -181,14 +227,13 @@ class UsersHasLimitController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User updated user place limit with id : ".$request->id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User updated user place limit with id : " . $request->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_UPDATE_USER_LIMIT
         ]);
 
         return response()->json([
             'success' => 'Data successfully updated !'
         ]);
-
     }
 
     /**
@@ -197,8 +242,8 @@ class UsersHasLimitController extends Controller
     public function delete(string $id)
     {
         $UserHasLimitPlace = UserHasPlaceLimit::find($id);
-    
-        if(!$UserHasLimitPlace){
+
+        if (!$UserHasLimitPlace) {
             return response()->json([
                 'errors' => 'Place limit not found !'
             ]);
@@ -210,7 +255,7 @@ class UsersHasLimitController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User deleted user place limit with id : ".$id." at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User deleted user place limit with id : " . $id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_DELETE_USER_LIMIT
         ]);
 
@@ -218,6 +263,5 @@ class UsersHasLimitController extends Controller
         return response()->json([
             'success' => 'Data successfully deleted !'
         ]);
-
     }
 }

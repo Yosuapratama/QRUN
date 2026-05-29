@@ -19,7 +19,8 @@
                     <i class="fas fa-map-pin text-primary mr-3"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }} / Object
                 </h1>
                 <p class="page-subtitle mb-0">
-                    {{ $isEdit ? 'Edit' : 'Create' }} a new location to the directory with detailed information, location details, and content editor.
+                    {{ $isEdit ? 'Edit' : 'Create' }} a new location to the directory with detailed information, location
+                    details, and content editor.
                 </p>
             </div>
         </div>
@@ -71,6 +72,22 @@
                             <small class="section-description">Enter the name and description of the place</small>
                         </div>
                     </h5>
+
+                    @if(isset($Place))
+                    <div class="d-flex align-items-center ml-auto mt-3 mt-md-0">
+                        <a href="{{ route('place.detail', $Place->place_code) }}" target="_blank"
+                            class="btn btn-outline-primary btn-sm mr-2">
+                            <i class="fas fa-external-link-alt mr-1"></i>
+                            Live Preview
+                        </a>
+
+                        <a href="{{ route('place.print', $Place->place_code) }}" target="_blank"
+                            class="btn btn-primary btn-sm">
+                            <i class="fas fa-qrcode mr-1"></i>
+                            Print QR Code
+                        </a>
+                    </div>
+                    @endif
                 </div>
                 <div class="card-body p-4">
                     {{-- Basic Information --}}
@@ -145,40 +162,40 @@
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        Province
+                                        Province <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="provinceDataSelect" name="reg_province" class="form-control select2">
+                                    <select id="provinceDataSelect" name="reg_province" class="form-control select2" required>
                                         <option value="">Select Province</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        City / Regency
+                                        City / Regency <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
+                                    <select id="regencyDataSelect" name="reg_regency" class="form-control select2" required>
                                         <option value="">Select Regency</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        District
+                                        District <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="districtDataSelect" name="reg_district" class="form-control select2">
+                                    <select id="districtDataSelect" name="reg_district" class="form-control select2" required>
                                         <option value="">Select District</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label">
-                                        Village
+                                        Village <span class="text-danger">*</span>
                                     </label>
 
-                                    <select id="villagesDataSelect" name="reg_village" class="form-control select2">
+                                    <select id="villagesDataSelect" name="reg_village" class="form-control select2" required>
                                         <option value="">Select Village</option>
                                     </select>
                                 </div>
@@ -407,7 +424,7 @@
 
                     return wrapper.html();
                 }
-                
+
                 $('#summernote').summernote({
 
                     placeholder: 'Write detailed information about this place...',

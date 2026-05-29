@@ -574,35 +574,71 @@
         </div>
     </div>
 </div>
-{{-- Add User has limit modal --}}
+{{-- Add User Place Limit Modal --}}
 <div class="modal fade" id="addUserhasLimitModal" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="addUserHasPlaceLimit">
+
                 <div class="modal-header">
-                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Create User
-                        has Place Limit
-                    </h4>
+                    <div>
+                        <h4 style="color:#24396f;" class="fs-5 m-0 font-weight-bold">
+                            Create User Place Limit Access
+                        </h4>
+
+                        <small class="text-secondary">
+                            Assign a custom place creation limit for a specific user.
+                        </small>
+                    </div>
+
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        aria-label="Close">X</button>
+                        aria-label="Close">
+                        X
+                    </button>
                 </div>
 
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="placeSelectCode" class="form-label">Select User</label>
-                        <select name="user" id="find-user" class="form-select" style="width:100%"></select>
+
+                    <div class="alert alert-info small">
+                        This configuration determines how many places a registered user is allowed to create.
                     </div>
+
                     <div class="mb-3">
-                        <label for="placeSelectCode" class="form-label">Select Place Limit</label>
+                        <label for="placeSelectCode" class="form-label font-weight-bold">
+                            Select User
+                        </label>
+
+                        <select name="user" id="find-user" class="form-select" style="width:100%"></select>
+
+                        <small class="text-secondary">
+                            Choose the user who will receive the custom place limit.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="placeSelectCode" class="form-label font-weight-bold">
+                            Select Place Limit
+                        </label>
+
                         <select name="place_limit" id="find_place_limit" class="form-select"
                             style="width:100%"></select>
+
+                        <small class="text-secondary">
+                            Define the maximum number of places this user can create.
+                        </small>
                     </div>
 
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Create</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        Create Limit Access
+                    </button>
                 </div>
 
             </form>
@@ -610,36 +646,77 @@
     </div>
 </div>
 
-{{-- Edit User has limit modal --}}
+{{-- Edit User Place Limit Modal --}}
 <div class="modal fade" id="editUserhasLimitModal" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
+
             <form id="editUserHasPlaceLimit">
+
                 <input type="hidden" name="id" id="editUserHasLimitiD">
+
                 <div class="modal-header">
-                    <h4 style="color:#24396f;" class="fs-6 m-3 font-weight-bold" id="exampleModalLabel">Edit User has
-                        Place Limit
-                    </h4>
+
+                    <div>
+                        <h4 style="color:#24396f;" class="fs-5 m-0 font-weight-bold">
+                            Update User Place Limit Access
+                        </h4>
+
+                        <small class="text-secondary">
+                            Modify the custom place creation limit assigned to a user.
+                        </small>
+                    </div>
+
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        aria-label="Close">X</button>
+                        aria-label="Close">
+                        X
+                    </button>
                 </div>
 
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="placeSelectCode" class="form-label">Select User</label>
-                        <select name="user" id="find-user-edit" class="form-select" style="width:100%"></select>
+
+                    <div class="alert alert-warning small">
+                        Updating this setting will change how many places the selected user can create.
                     </div>
+
                     <div class="mb-3">
-                        <label for="placeSelectCode" class="form-label">Select Place Limit</label>
+                        <label for="placeSelectCode" class="form-label font-weight-bold">
+                            Select User
+                        </label>
+
+                        <select name="user" id="find-user-edit" class="form-select" style="width:100%"></select>
+
+                        <small class="text-secondary">
+                            Select the user whose limit access will be updated.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="placeSelectCode" class="form-label font-weight-bold">
+                            Select Place Limit
+                        </label>
+
                         <select name="place_limit" id="find_place_limit_edit" class="form-select"
                             style="width:100%"></select>
+
+                        <small class="text-secondary">
+                            Choose the new maximum number of places allowed.
+                        </small>
                     </div>
 
                 </div>
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Update</button>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                    <button type="submit" class="btn btn-success">
+                        Update Limit Access
+                    </button>
+
                 </div>
 
             </form>

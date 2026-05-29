@@ -19,6 +19,8 @@ use DOMDocument;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Exports\PlaceReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PlaceController extends Controller
 {
@@ -216,6 +218,21 @@ class PlaceController extends Controller
         }
 
         return view('Pages.Management.Master.place.show', compact('Place'));
+    }
+
+    public function reportExcelPlace(Request $request)
+    {
+        $search = $request->search
+            ? ' | Search: ' . $request->search
+            : '';
+
+        $filename =
+            "Report Place QRUN - {$search}.xlsx";
+
+        return Excel::download(
+            new PlaceReportExport($request),
+            $filename
+        );
     }
 
     // (2) This Func For Superadmin to edit users place
@@ -480,50 +497,235 @@ class PlaceController extends Controller
 
     public function sanitizeHtml($html)
     {
-        // 1. Hapus tag berbahaya (kecuali iframe)
-        $dangerousTags = ['script', 'object', 'embed', 'style', 'link', 'meta', 'base'];
-        foreach ($dangerousTags as $tag) {
-            $html = preg_replace("#<\s*{$tag}[^>]*>.*?<\s*/\s*{$tag}>#is", '', $html);
-            $html = preg_replace("#<\s*{$tag}[^>]*\s*/?>#is", '', $html);
-        }
+        libxml_use_internal_errors(true);
 
-        // 2. Izinkan hanya tag tertentu (termasuk iframe sekarang)
-        $allowedTags = '<p><br><b><strong><i><em><u><ul><ol><li><a><img><blockquote><h1><h2><h3><h4><h5><h6><iframe>';
-        $html = strip_tags($html, $allowedTags);
+        $dom = new \DOMDocument();
 
-        // 3. Hapus event handler berbahaya (onerror, onclick, dll)
-        $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*"[^"]*")/i', '$1', $html);
-        $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*\'[^\']*\')/i', '$1', $html);
-        $html = preg_replace('/(<[^>]+)(on\w+\s*=\s*[^\s>]*)/i', '$1', $html);
+        $html = mb_convert_encoding(
+            $html,
+            'HTML-ENTITIES',
+            'UTF-8'
+        );
 
-        // 4. Hapus href/src yang mengandung javascript:
-        $html = preg_replace('/href\s*=\s*["\']?javascript:[^"\']*["\']?/i', '', $html);
-        $html = preg_replace('/src\s*=\s*["\']?javascript:[^"\']*["\']?/i', '', $html);
+        $dom->loadHTML(
+            '<div id="wrapper">' . $html . '</div>',
+            LIBXML_HTML_NOIMPLIED |
+                LIBXML_HTML_NODEFDTD
+        );
 
-        // 5. Filter atribut iframe (izinkan hanya src, width, height, frameborder, allow, allowfullscreen)
-        $html = preg_replace_callback('/<iframe([^>]*)>/i', function ($matches) {
-            $allowedAttrs = ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'];
-            $attrs = $matches[1];
+        libxml_clear_errors();
 
-            preg_match_all('/(\w+)\s*=\s*([\'"])(.*?)\2/', $attrs, $attrMatches, PREG_SET_ORDER);
+        // Tag yang diizinkan
+        $allowedTags = [
+            'p',
+            'br',
+            'b',
+            'strong',
+            'i',
+            'em',
+            'u',
+            's',
+            'span',
+            'div',
+            'ul',
+            'ol',
+            'li',
+            'a',
+            'img',
+            'blockquote',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6',
+            'iframe',
+            'font',
+            'hr',
+            'table',
+            'thead',
+            'tbody',
+            'tr',
+            'td',
+            'th'
+        ];
 
-            $cleanAttrs = '';
-            foreach ($attrMatches as $attr) {
-                $name = strtolower($attr[1]);
-                $value = $attr[3];
-                if (in_array($name, $allowedAttrs)) {
-                    // Cegah javascript: di src
-                    if ($name === 'src' && stripos($value, 'javascript:') === 0) {
+        // Attribute yang diizinkan
+        $allowedAttributes = [
+            'href',
+            'src',
+            'style',
+            'class',
+            'target',
+            'rel',
+            'width',
+            'height',
+            'frameborder',
+            'allow',
+            'allowfullscreen',
+            'align',
+            'color',
+            'id',
+            'alt',
+            'title',
+            'data-filename',
+            'loading',
+            'referrerpolicy',
+            'sandbox',
+            'spellcheck',
+            'contenteditable',
+            'role',
+            'aria-multiline'
+        ];
+
+        // Hanya domain iframe terpercaya
+        $allowedIframeDomains = [
+            // YouTube
+            'youtube.com',
+            'www.youtube.com',
+            'm.youtube.com',
+            'youtu.be',
+            'youtube-nocookie.com',
+            'www.youtube-nocookie.com',
+
+            // Google Drive
+            'drive.google.com',
+
+            // Vimeo
+            'vimeo.com',
+            'player.vimeo.com',
+
+            // Vine (legacy)
+            'vine.co',
+
+            // Instagram
+            'instagram.com',
+            'www.instagram.com',
+
+            // DailyMotion
+            'dailymotion.com',
+            'www.dailymotion.com',
+            'dai.ly',
+
+            // Youku
+            'youku.com',
+            'player.youku.com',
+
+            // PeerTube
+            'peertube.tv',
+        ];
+
+        $xpath = new \DOMXPath($dom);
+
+        foreach ($xpath->query('//*') as $node) {
+
+            $tagName = strtolower($node->nodeName);
+
+            // Hapus tag berbahaya
+            if (!in_array($tagName, $allowedTags)) {
+                $node->parentNode?->removeChild($node);
+                continue;
+            }
+
+            // Remove event handler berbahaya
+            if ($node->hasAttributes()) {
+
+                $attributes = [];
+
+                foreach ($node->attributes as $attr) {
+                    $attributes[] = $attr->nodeName;
+                }
+
+                foreach ($attributes as $attrName) {
+
+                    $attrLower = strtolower($attrName);
+
+                    // Hapus onclick, onerror, dll
+                    if (str_starts_with($attrLower, 'on')) {
+                        $node->removeAttribute($attrName);
                         continue;
                     }
-                    $cleanAttrs .= " {$name}=\"{$value}\"";
+
+                    // Hapus attribute tidak diizinkan
+                    if (!in_array($attrLower, $allowedAttributes)) {
+                        $node->removeAttribute($attrName);
+                        continue;
+                    }
+
+                    $value = $node->getAttribute($attrName);
+
+                    // Anti javascript:
+                    if (
+                        in_array($attrLower, ['href', 'src']) &&
+                        preg_match('/^\s*javascript:/i', $value)
+                    ) {
+                        $node->removeAttribute($attrName);
+                    }
                 }
             }
 
-            return "<iframe{$cleanAttrs}></iframe>";
-        }, $html);
+            // Khusus iframe
+            if ($tagName === 'iframe') {
 
-        return $html;
+                $src = $node->getAttribute('src');
+
+                if (!$src) {
+                    $node->parentNode?->removeChild($node);
+                    continue;
+                }
+
+                $host = parse_url($src, PHP_URL_HOST);
+
+                if (
+                    !$host ||
+                    !in_array($host, $allowedIframeDomains)
+                ) {
+                    $node->parentNode?->removeChild($node);
+                    continue;
+                }
+
+                // default keamanan iframe
+                $node->setAttribute(
+                    'allowfullscreen',
+                    'true'
+                );
+
+                $node->setAttribute(
+                    'loading',
+                    'lazy'
+                );
+            }
+
+            // Hyperlink aman
+            if ($tagName === 'a') {
+
+                $href = $node->getAttribute('href');
+
+                if ($href) {
+                    $node->setAttribute(
+                        'target',
+                        '_blank'
+                    );
+
+                    $node->setAttribute(
+                        'rel',
+                        'noopener noreferrer nofollow'
+                    );
+                }
+            }
+        }
+
+        $wrapper = $dom->getElementById('wrapper');
+
+        $cleanHtml = '';
+
+        if ($wrapper) {
+            foreach ($wrapper->childNodes as $child) {
+                $cleanHtml .= $dom->saveHTML($child);
+            }
+        }
+
+        return $cleanHtml;
     }
 
 
@@ -560,40 +762,25 @@ class PlaceController extends Controller
             $Place = Place::where('creator_id', Auth::user()->id)->latest()->first();
         }
 
-        // $GetCurrentImage = Image::where('place_id', $Place->id)->get();
-        // if ($GetCurrentImage) {
-        //     foreach ($GetCurrentImage as $key => $img) {
-        //         $image = $GetCurrentImage[$key]->src;
-        //         $updatedImages = str_replace('/storage/', '', $image);
+        $content = $this->sanitizeHtml(
+            $request->content
+        );
 
-        //         if (Storage::disk('public')->exists($updatedImages)) {
-        //             Storage::disk('public')->delete($updatedImages);
-        //         }
-
-        //         $GetCurrentImage[$key]->delete();
-        //     }
-        // }
-
-        // libxml_use_internal_errors(true);
+        libxml_use_internal_errors(true);
         $dom = new DOMDocument();
-        $content = $request->content;
+        $content = mb_convert_encoding(
+            $request->content,
+            'HTML-ENTITIES',
+            'UTF-8'
+        );
 
-        $dom->loadHtml($content, 9);
+        $dom->loadHTML(
+            $content,
+            LIBXML_HTML_NOIMPLIED |
+                LIBXML_HTML_NODEFDTD
+        );
 
-        // libxml_clear_errors();
-
-        //new
-        // libxml_use_internal_errors(true);
-
-        // $cleanContent = $this->sanitizeHtml($request->content);
-        // $content = preg_replace('/<o:p[^>]*>.*?<\/o:p>/i', '', $cleanContent);
-        //  $content = $this->sanitizeHtml($request->content);
-
-        // $dom = new DOMDocument();
-        // $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        // libxml_clear_errors();
-        //end
-
+        libxml_clear_errors();
         $images = $dom->getElementsByTagName('img');
         $imageData = [];
 
@@ -681,160 +868,361 @@ class PlaceController extends Controller
     }
 
     // (8) This function Is used to store data while user/admin create new place data
-    function store(Request $request)
+    public function store(Request $request)
     {
         // Check Authentication
         if (!Auth::user()->approved_at) {
-            return back()->withErrors('Your Account Need Approval First !');
+            return back()->withErrors(
+                'Your Account Need Approval First !'
+            );
         }
+
+        // Check limit
         if (!Auth::user()->hasRole('superadmin')) {
-            $checkTheLimitOfUserPlace = UserHasPlaceLimit::where('user_id', Auth::user()->id)->with('placeLimit')->first();
+
+            $checkTheLimitOfUserPlace =
+                UserHasPlaceLimit::where(
+                    'user_id',
+                    Auth::id()
+                )
+                ->with('placeLimit')
+                ->first();
+
             if ($checkTheLimitOfUserPlace) {
-                if (Place::where('creator_id', Auth::user()->id)->count() >= $checkTheLimitOfUserPlace->placeLimit->total_limit) {
-                    return back()->withErrors('Your account place has entered the limit !');
+
+                if (
+                    Place::where(
+                        'creator_id',
+                        Auth::id()
+                    )->count()
+                    >=
+                    $checkTheLimitOfUserPlace
+                    ->placeLimit
+                    ->total_limit
+                ) {
+                    return back()->withErrors(
+                        'Your account place has entered the limit !'
+                    );
                 }
             } else {
-                $Place = Place::where('creator_id', Auth::user()->id)->first();
-                if ($Place) {
-                    return back()->withErrors('You have created place !');
+
+                $place = Place::where(
+                    'creator_id',
+                    Auth::id()
+                )->exists();
+
+                if ($place) {
+                    return back()->withErrors(
+                        'You have created place !'
+                    );
                 }
             }
         }
 
-        $Validate = $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'content' => 'required',
-            "reg_province" => "nullable|exists:reg_provinces,id",
-            "reg_regency" => "nullable|exists:reg_regencies,id",
-            "reg_district" => "nullable|exists:reg_districts,id",
-            "reg_village" => "nullable|exists:reg_villages,id",
-        ], [
-            'title.required' => 'Title Fields is required',
-            'description.required' => 'Description is required',
-            'content.required' => 'Content is required',
-        ]);
+        // Validation
+        $request->validate(
+            [
+                'title' => 'required',
+                'description' => 'required',
+                'content' => 'required',
 
-        $getPlaceData = Place::latest()->first() !== null ? Place::select('id')->latest()->first()->id + 1 : 1;
-        $convertedCode = sprintf('%05d', $getPlaceData);
+                'reg_province' =>
+                'nullable|exists:reg_provinces,id',
 
-        // Start Setup images
+                'reg_regency' =>
+                'nullable|exists:reg_regencies,id',
+
+                'reg_district' =>
+                'nullable|exists:reg_districts,id',
+
+                'reg_village' =>
+                'nullable|exists:reg_villages,id',
+            ],
+            [
+                'title.required' =>
+                'Title Fields is required',
+
+                'description.required' =>
+                'Description is required',
+
+                'content.required' =>
+                'Content is required',
+            ]
+        );
+
+        $getPlaceData = Place::max('id') + 1;
+        $convertedCode = sprintf(
+            '%05d',
+            $getPlaceData ?: 1
+        );
+
+        // SANITIZE HTML
+        $content = $this->sanitizeHtml(
+            $request->content
+        );
+
+        libxml_use_internal_errors(true);
+
         $dom = new DOMDocument();
-        $content = $request->content;
 
-        $dom->loadHtml($content, 9);
+        $dom->loadHTML(
+            mb_convert_encoding(
+                '<div>' . $content . '</div>',
+                'HTML-ENTITIES',
+                'UTF-8'
+            ),
+            LIBXML_HTML_NOIMPLIED |
+                LIBXML_HTML_NODEFDTD
+        );
 
-        //START HERE
-
-        // libxml_use_internal_errors(true);
-        // dd($request->content);
-        // $content = $this->sanitizeHtml($request->content);
-        // // $content = preg_replace('/<o:p[^>]*>.*?<\/o:p>/i', '', $cleanContent);
-        // dd($content);
-        // $dom = new DOMDocument();
-        // $dom->loadHTML($content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        // libxml_clear_errors();
-        //end
-
+        libxml_clear_errors();
 
         $images = $dom->getElementsByTagName('img');
+
         $imageData = [];
 
-        $user_id = Auth::user()->id;
+        // temporary folder
+        $tempFolder =
+            'temp_' .
+            Auth::id() .
+            '_' .
+            time();
 
-        $Place_id = Place::latest()->first()->id + 1;
+        // PROCESS BASE64 IMAGE
+        foreach ($images as $key => $img) {
 
-        // Setup Images
-        if ($images) {
-            foreach ($images as $key => $img) {
-                $data = $img->getAttribute('src');
+            $src = $img->getAttribute('src');
 
-                if (strpos($data, 'data') !== false) {
-                    list($type, $data) = array_pad(explode(';', $data), 2, null);
-                    list(, $data) = array_pad(explode(',', $data), 2, null);
-                    $dataConvert = base64_decode($data);
+            if (
+                !$src ||
+                !str_contains(
+                    $src,
+                    'data:image'
+                )
+            ) {
+                continue;
+            }
 
-                    $str = $img->getAttribute('src');
-                    $trim = Str::after($str, 'image/');
-                    $trim2 = Str::before($trim, ';');
+            try {
 
-                    // Generate a unique image name
-                    $image_name = time() . '-' . $key . Str::random(10) . '.' . $trim2;
+                [
+                    $type,
+                    $data
+                ] = explode(';', $src);
 
-                    // Store the image in the storage path
-                    // $path = "public/UploadImage/PlaceImage/{$Place_id}/" . $image_name;
+                [, $data] = explode(
+                    ',',
+                    $data
+                );
 
-                    // Store the file
-                    // Storage::put($path, $dataConvert);
+                $dataConvert =
+                    base64_decode($data);
 
-                    // // Generate the public URL for the image
-                    // $publicUrl = Storage::url($path);
+                $extension =
+                    Str::before(
+                        Str::after(
+                            $type,
+                            'image/'
+                        ),
+                        ';'
+                    );
 
-                    $directory = public_path() . "/storage/UploadImage/PlaceImage/{$Place_id}/";
-                    if (!file_exists($directory)) {
-                        mkdir($directory, 0755, true);
-                    }
-
-                    $path = $directory . $image_name; // Full path to the file
-
-                    // Store the file using file_put_contents
-                    $menu = file_put_contents($path, $dataConvert);
-                    if ($menu === false) {
-                        throw new Exception('Failed to save the image.');
-                    }
-
-                    // Generate the public URL for the image
-                    $publicUrl = asset("/storage/UploadImage/PlaceImage/{$Place_id}/" . $image_name);
-
-
-
-                    // Update the image src
-                    $img->removeAttribute('src');
-                    $img->setAttribute('src', $publicUrl);
-
-                    $imageData[] = $publicUrl; // Store the public URL instead of the path
+                if (!$extension) {
+                    $extension = 'png';
                 }
+
+                $imageName =
+                    time()
+                    . '-'
+                    . $key
+                    . '-'
+                    . Str::random(10)
+                    . '.'
+                    . $extension;
+
+                $directory =
+                    public_path(
+                        "storage/UploadImage/PlaceImage/{$tempFolder}/"
+                    );
+
+                if (
+                    !file_exists(
+                        $directory
+                    )
+                ) {
+                    mkdir(
+                        $directory,
+                        0755,
+                        true
+                    );
+                }
+
+                $path =
+                    $directory .
+                    $imageName;
+
+                file_put_contents(
+                    $path,
+                    $dataConvert
+                );
+
+                $publicUrl = asset(
+                    "storage/UploadImage/PlaceImage/{$tempFolder}/{$imageName}"
+                );
+
+                $img->setAttribute(
+                    'src',
+                    $publicUrl
+                );
+
+                $imageData[] = [
+                    'temp_url' =>
+                    $publicUrl,
+                    'file_name' =>
+                    $imageName
+                ];
+            } catch (\Exception $e) {
+                continue;
             }
         }
 
-
         $content = $dom->saveHTML();
-        // dd($request->reg_province);
-        // $content = $this->sanitizeHtml($content);
 
-        $Place = Place::create([
-            'place_code' => time() . $convertedCode,
-            'title' => $request->title,
-            'description' => $request->description,
-            'creator_id' => $user_id,
-            'content' => $content,
+        // CREATE PLACE
+        $place = Place::create([
+            'place_code' =>
+            time()
+                . $convertedCode,
+
+            'title' =>
+            $request->title,
+
+            'description' =>
+            $request->description,
+
+            'creator_id' =>
+            Auth::id(),
+
+            'content' =>
+            $content,
+
             'views' => 0,
-            'is_comment' => $request->AllowComment == 'on' ? 1 : 0,
-            'province_id' => $request->reg_province ? $request->reg_province : null,
-            'regency_id' => $request->reg_regency ? $request->reg_regency : null,
-            'district_id' => $request->reg_district ? $request->reg_district : null,
-            'village_id' => $request->reg_village ? $request->reg_village : null
+
+            'is_comment' =>
+            $request->AllowComment
+                == 'on'
+                ? 1
+                : 0,
+
+            'province_id' =>
+            $request->reg_province,
+
+            'regency_id' =>
+            $request->reg_regency,
+
+            'district_id' =>
+            $request->reg_district,
+
+            'village_id' =>
+            $request->reg_village
         ]);
 
-
-
-        LogActivities::create([
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->header('User-Agent'),
-            'user_id' => Auth::user()->id,
-            'activities' => "User Created Place Data with Place id : " . $Place->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
-            "type" => LogActivities::TYPE_CREATE_PLACE
-        ]);
-
+        // MOVE IMAGE TO FINAL FOLDER
         foreach ($imageData as $img) {
+
+            $oldPath = public_path(
+                'storage/UploadImage/PlaceImage/'
+                    . $tempFolder
+                    . '/'
+                    . $img['file_name']
+            );
+
+            $newDirectory =
+                public_path(
+                    "storage/UploadImage/PlaceImage/{$place->id}/"
+                );
+
+            if (
+                !file_exists(
+                    $newDirectory
+                )
+            ) {
+                mkdir(
+                    $newDirectory,
+                    0755,
+                    true
+                );
+            }
+
+            $newPath =
+                $newDirectory .
+                $img['file_name'];
+
+            if (
+                file_exists(
+                    $oldPath
+                )
+            ) {
+                rename(
+                    $oldPath,
+                    $newPath
+                );
+            }
+
+            $newUrl = asset(
+                "storage/UploadImage/PlaceImage/{$place->id}/"
+                    . $img['file_name']
+            );
+
+            // update content image src
+            $content = str_replace(
+                $img['temp_url'],
+                $newUrl,
+                $content
+            );
+
             Image::create([
                 'description' => '-',
-                'place_id' => $Place->id,
-                'src' => $img
+                'place_id' =>
+                $place->id,
+                'src' =>
+                $newUrl
             ]);
         }
 
-        return back()->with('success', 'Data SuccesFully Created !');
+        // UPDATE FINAL CONTENT
+        $place->update([
+            'content' => $content
+        ]);
+
+        LogActivities::create([
+            'ip_address' =>
+            request()->ip(),
+
+            'user_agent' =>
+            request()->header(
+                'User-Agent'
+            ),
+
+            'user_id' =>
+            Auth::id(),
+
+            'activities' =>
+            "User Created Place Data with Place id : "
+                . $place->id
+                . " at "
+                . now()->format(
+                    'Y-m-d H:i:s'
+                ),
+
+            'type' =>
+            LogActivities::TYPE_CREATE_PLACE
+        ]);
+
+        return back()->with(
+            'success',
+            'Data Successfully Created !'
+        );
     }
     // (9) This function is to get JsonFileData From Place selected
     function getDetailPlaceData($place_code)
@@ -1000,7 +1388,7 @@ class PlaceController extends Controller
             })
             ->get();
 
-        
+
         $customSettingRunningText = CustomRunningTextSettings::first();
         $customSettingAds = CustomAdsSettings::where('is_active', true)->first();
         $ads = $place->advertises?->where('is_active', 1)->first();
