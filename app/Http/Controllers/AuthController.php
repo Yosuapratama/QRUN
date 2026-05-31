@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Place;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
@@ -56,25 +57,20 @@ class AuthController extends Controller
     {
         $Validate = $request->validate([
             'email' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'remember' => 'nullable'
         ], [
             'email.required' => 'Email is required',
             'password.required' => 'Password is required'
         ]);
 
+        $remember = $request->remember === 'on' ? true : false;
 
-        if (Auth::attempt($request->only(['email', 'password']))) {
+        if (Auth::attempt($request->only(['email', 'password']), $remember)) {
             if (!Auth::user()->email_verified_at) {
                 $this->logout($request);
                 return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
             }
-            // Log::info([
-            //     'status' => 'User Logged in',
-            //     'time' => Date::now(),
-            //     'user_id' => Auth::user()->id,
-            //     'email' => Auth::user()->email,
-            //     'ip_address' => request()->ip()
-            // ]);
 
             LogActivities::create([
                 'ip_address' => request()->ip(),
@@ -317,8 +313,10 @@ class AuthController extends Controller
         );
 
         if ($status == Password::RESET_THROTTLED) {
+            $seconds = config('auth.passwords.users.throttle');
+
             return back()->withErrors([
-                'throttled' => "Too many attempts. Please try again in a few minutes."
+                'email' => "Please wait {$seconds} seconds before requesting another reset link."
             ]);
         }
 
@@ -331,12 +329,51 @@ class AuthController extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 
-    public function resetPassView()
-    {
-        if (Auth::check()) {
-            Auth::logout();
+    private function validateResetToken(
+        string $email,
+        string $token
+    ): bool {
+
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $email)
+            ->first();
+
+        if (!$record) {
+            return false;
         }
-        return view('Pages.auth.ResetPassword');
+
+        if (!Hash::check($token, $record->token)) {
+            return false;
+        }
+
+        $expires = config('auth.passwords.users.expire');
+
+        if (
+            now()->diffInMinutes($record->created_at) >
+            $expires
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function resetPassView(Request $request, string $token)
+    {
+        $email = $request->email;
+
+        if (!$this->validateResetToken($email, $token)) {
+            return redirect()
+                ->route('password.request')
+                ->withErrors([
+                    'email' => 'This reset password link is invalid or has expired.'
+                ]);
+        }
+
+        return view('Pages.auth.ResetPassword', compact(
+            'token',
+            'email'
+        ));
     }
 
     public function updatePassword(Request $request)

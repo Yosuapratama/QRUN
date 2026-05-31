@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Notifications\CustomResetPasswordNotification;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,7 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
-    
+
     public function saveWithCheck(): array
     {
         $isNew = !$this->exists;
@@ -53,4 +54,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return [$this, $isNew];
     }
 
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(
+            new CustomResetPasswordNotification($token)
+        );
+    }
 }
