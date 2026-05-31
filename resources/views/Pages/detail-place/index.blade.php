@@ -436,30 +436,135 @@
                                                 {{ $customSettingAds?->title }}
                                             @endif
                                         </h3>
-                                        <div class="mt-2 flex justify-center">
+                                        {{-- <div class="mt-2 flex justify-center">
                                             <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
                                                 class="max-w-full h-auto rounded-lg" alt="Advertisement">
+                                        </div> --}}
+                                        <div class="mt-4">
+
+                                            @if ($ads && $ads->images->count())
+                                                <div class="relative rounded-2xl overflow-hidden bg-black">
+
+                                                    {{-- SLIDER --}}
+                                                    <div class="flex transition-all duration-500 ease-in-out"
+                                                        :style="{
+                                                            transform: `translateX(-${currentAdsImage * 100}%)`
+                                                        }">
+
+                                                        @foreach ($ads->images as $image)
+                                                            <div class="min-w-full">
+
+                                                                <div class="w-full h-[420px]">
+
+                                                                    <img src="{{ asset($image->image_url) }}"
+                                                                        class="w-full h-full object-cover"
+                                                                        alt="Advertisement">
+
+                                                                </div>
+
+                                                            </div>
+                                                        @endforeach
+
+                                                    </div>
+
+                                                    {{-- LEFT --}}
+                                                    <button type="button" @click="prevAdsImage"
+                                                        class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur hover:bg-black/70 transition">
+
+                                                        <i class="fas fa-chevron-left"></i>
+
+                                                    </button>
+
+                                                    {{-- RIGHT --}}
+                                                    <button type="button" @click="nextAdsImage"
+                                                        class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur hover:bg-black/70 transition">
+
+                                                        <i class="fas fa-chevron-right"></i>
+
+                                                    </button>
+
+                                                    {{-- PLAY / PAUSE --}}
+                                                    <button type="button" @click="toggleAdsSlider"
+                                                        class="absolute top-3 right-3 z-20 px-3 py-2 rounded-xl bg-black/50 text-white text-sm backdrop-blur hover:bg-black/70 transition">
+
+                                                        <span v-if="adsPaused">
+                                                            <i class="fas fa-play mr-1"></i>
+                                                            Play
+                                                        </span>
+
+                                                        <span v-else>
+                                                            <i class="fas fa-pause mr-1"></i>
+                                                            Pause
+                                                        </span>
+
+                                                    </button>
+
+                                                    {{-- INDICATOR --}}
+                                                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+
+                                                        @foreach ($ads->images as $index => $image)
+                                                            <button type="button"
+                                                                @click="goToAdsImage({{ $index }})"
+                                                                class="w-3 h-3 rounded-full transition-all duration-300"
+                                                                :class="currentAdsImage === {{ $index }} ?
+                                                                    'bg-white w-8' :
+                                                                    'bg-white/50'">
+                                                            </button>
+                                                        @endforeach
+
+                                                    </div>
+
+                                                </div>
+                                            @else
+                                                <div class="w-full h-[420px] bg-gray-100 rounded-2xl overflow-hidden">
+
+                                                    <img src="{{ asset($customSettingAds?->image_url) }}"
+                                                        class="w-full h-full object-cover" alt="Advertisement">
+
+                                                </div>
+                                            @endif
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button type="button" @click="closeAdsModal" :disabled="isLoadingAds"
-                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
-                                    :class="isLoadingAds ? 'bg-gray-400 cursor-not-allowed' :
+                                @php
+                                    $isBlockedAds = $ads?->is_block ? 'true' : 'false';
+                                @endphp
+
+                                <button type="button" @click="closeAdsModal"
+                                    :disabled="{{ $isBlockedAds }} ? isLoadingAds : false"
+                                    class="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-300"
+                                    :class="{{ $isBlockedAds }} && isLoadingAds ?
+                                        'bg-gray-400 cursor-not-allowed opacity-70' :
                                         'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
-                                    <div v-if="isLoadingAds" class="flex items-center">
+
+                                    <div v-if="
+            {{ $ads?->is_block ? 'isLoadingAds' : 'false' }}
+        "
+                                        class="flex items-center">
+
                                         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                                 stroke="currentColor" stroke-width="4"></circle>
+
                                             <path class="opacity-75" fill="currentColor"
                                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                             </path>
                                         </svg>
+
                                         @{{ timeAds }}s
+
                                     </div>
-                                    <span v-else>Close</span>
+
+                                    <span v-else>
+
+                                        Close
+
+                                    </span>
+
                                 </button>
                             </div>
                         </div>
@@ -652,8 +757,7 @@
                                                             @if ($evnt->images->count())
                                                                 <img src="{{ asset($evnt->images->first()->image_url) }}"
                                                                     class="w-full h-40 sm:h-48 object-cover"
-                                                                    loading='lazy'
-                                                                    alt="{{ $evnt->title }}">
+                                                                    loading='lazy' alt="{{ $evnt->title }}">
                                                             @else
                                                                 <div
                                                                     class="w-full h-40 sm:h-48 bg-gray-100 flex items-center justify-center">
@@ -1172,22 +1276,22 @@
                     </div>
 
                     ${ev.images.length > 1 ? `
-                                                                                                                                                                                                <button class="carousel-control-prev"
-                                                                                                                                                                                                    type="button"
-                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
-                                                                                                                                                                                                    data-bs-slide="prev">
+                                                                                                                                                                                                            <button class="carousel-control-prev"
+                                                                                                                                                                                                                type="button"
+                                                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                                data-bs-slide="prev">
 
-                                                                                                                                                                                                    <span class="carousel-control-prev-icon"></span>
-                                                                                                                                                                                                </button>
+                                                                                                                                                                                                                <span class="carousel-control-prev-icon"></span>
+                                                                                                                                                                                                            </button>
 
-                                                                                                                                                                                                <button class="carousel-control-next"
-                                                                                                                                                                                                    type="button"
-                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
-                                                                                                                                                                                                    data-bs-slide="next">
+                                                                                                                                                                                                            <button class="carousel-control-next"
+                                                                                                                                                                                                                type="button"
+                                                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                                data-bs-slide="next">
 
-                                                                                                                                                                                                    <span class="carousel-control-next-icon"></span>
-                                                                                                                                                                                                </button>
-                                                                                                                                                                                            ` : ''}
+                                                                                                                                                                                                                <span class="carousel-control-next-icon"></span>
+                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                        ` : ''}
 
                 </div>
 
@@ -1208,14 +1312,14 @@
                         </div>
 
                         ${ev.end_date ? `
-                                                                                                                                                                                                <div class="mt-1">
-                                                                                                                                                                                                    <span class="font-semibold">
-                                                                                                                                                                                                        Until:
-                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                            <div class="mt-1">
+                                                                                                                                                                                                                <span class="font-semibold">
+                                                                                                                                                                                                                    Until:
+                                                                                                                                                                                                                </span>
 
-                                                                                                                                                                                                    ${ev.end_date} WITA
-                                                                                                                                                                                                </div>
-                                                                                                                                                                                            ` : ''}
+                                                                                                                                                                                                                ${ev.end_date} WITA
+                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        ` : ''}
 
                     </div>
 
@@ -1340,6 +1444,10 @@
             data() {
                 return {
                     comments: [],
+                    currentAdsImage: 0,
+                    adsImagesCount: "{{ $ads?->images?->count() ?? 0 }}",
+                    adsInterval: null,
+                    adsPaused: false,
                     selectedRating: 0,
                     hoveredRating: 0,
                     isLoadingComment: true,
@@ -1378,6 +1486,59 @@
                             clearInterval(intervalId);
                         }
                     }, 1000);
+                },
+                startAdsSlider() {
+
+                    this.stopAdsSlider();
+
+                    this.adsInterval = setInterval(() => {
+
+                        if (!this.adsPaused) {
+                            this.nextAdsImage();
+                        }
+
+                    }, 3000);
+
+                },
+
+                stopAdsSlider() {
+
+                    if (this.adsInterval) {
+                        clearInterval(this.adsInterval);
+                    }
+
+                },
+
+                nextAdsImage() {
+
+                    this.currentAdsImage++;
+
+                    if (this.currentAdsImage >= this.adsImagesCount) {
+                        this.currentAdsImage = 0;
+                    }
+
+                },
+
+                prevAdsImage() {
+
+                    this.currentAdsImage--;
+
+                    if (this.currentAdsImage < 0) {
+                        this.currentAdsImage = this.adsImagesCount - 1;
+                    }
+
+                },
+
+                goToAdsImage(index) {
+
+                    this.currentAdsImage = index;
+
+                },
+
+                toggleAdsSlider() {
+
+                    this.adsPaused = !this.adsPaused;
+
                 },
                 // closeTranslate() {
                 //     document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
@@ -1574,9 +1735,13 @@
                 },
                 showModal() {
                     this.showAdsModal = true;
+                    this.startAdsSlider();
                 },
                 hideModal() {
                     this.showAdsModal = false;
+                    if (this.adsInterval) {
+                        clearInterval(this.adsInterval);
+                    }
                 }
             },
             async mounted() {
@@ -1601,6 +1766,7 @@
 
     <!-- Google Translate -->
     <script>
+        console.log('Google Translate script loaded');
         function googleTranslateElementInit() {
 
             new google.translate.TranslateElement({
@@ -1656,5 +1822,7 @@
 
             }, true);
         }
+
+        googleTranslateElementInit();
     </script>
 @endpush

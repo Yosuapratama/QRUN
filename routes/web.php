@@ -45,6 +45,11 @@ Route::group(['prefix' => 'management'], function () {
                 return back()->with('success', 'Migration status synced successfully!');
             })->name('migration.sync');
 
+            Route::get('/sync/advertise', function () {
+                Artisan::call('advertise:sync-images');
+                return back()->with('success', 'Advertise images synced successfully!');
+            })->name('advertise.sync');
+
             Route::get(
                 '/report/excel/place',
                 [PlaceController::class, 'reportExcelPlace']
