@@ -568,6 +568,7 @@
                     processing: true,
                     serverSide: true,
                     order: [],
+                    dom: '<"top"<"dataTables_length"l><"dataTables_filter"f>><"table-responsive-wrapper"rt><"bottom"<"dataTables_info"i><"dataTables_paginate"p>>',
                     ajax: {
                         url: "{{ route('users') }}",
                         data: function(d) {

@@ -29,9 +29,9 @@
                 @endif
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label" for="title">Title/Name</label>
+                        <label class="form-label" for="title">Title/Name <span class="text-danger">*</span></label>
                         <input class="form-control" value="{{$data->name ?? ''}}" name="name" type="text" id="title"
-                            placeholder="Place Title...">
+                            placeholder="Limit Title...">
                         @error('name')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror
@@ -39,9 +39,9 @@
 
 
                     <div class="mb-3">
-                        <label class="form-label" for="total_limit">Total Limit</label>
+                        <label class="form-label" for="total_limit">Total Limit <span class="text-danger">*</span></label>
                         <input class="form-control" value="{{$data->total_limit ?? ''}}" name="total_limit" type="number" id="total_limit"
-                            placeholder="Place Description...">
+                            placeholder="Total Limit...">
                         @error('total_limit')
                             <p class="text-danger mt-2 mb-2">{{ $message }}</p>
                         @enderror

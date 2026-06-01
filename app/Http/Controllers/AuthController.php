@@ -91,7 +91,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 
-        return redirect()->route('login')->withErrors('Login Failed Email or Password Are Incorrect !');
+        return back()->withErrors('Login Failed Email or Password Are Incorrect !')->withInput();;
     }
 
     // (3) Register View For Users

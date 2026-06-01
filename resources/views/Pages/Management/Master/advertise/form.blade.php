@@ -1,29 +1,62 @@
 @extends('TemplateLayout.AdminLayout')
 
 @section('content')
-
     @push('title')
         <title>Form Advertise - QRUN Website</title>
+
+        {{-- TOASTR CSS --}}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+        {{-- JQUERY --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+        {{-- TOASTR JS --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <style>
+            .toast-success {
+                background-color: #28a745 !important;
+            }
+
+            .toast-error {
+                background-color: #dc3545 !important;
+            }
+
+            .toast-info {
+                background-color: #17a2b8 !important;
+            }
+
+            .toast-warning {
+                background-color: #ffc107 !important;
+                color: #000 !important;
+            }
+
+            .toast {
+                opacity: 1 !important;
+            }
+        </style>
+
+        <script>
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                newestOnTop: true,
+                positionClass: "toast-top-right",
+
+                timeOut: 8000,
+                extendedTimeOut: 8000,
+
+                showDuration: 300,
+                hideDuration: 300,
+
+                preventDuplicates: true,
+            };
+        </script>
     @endpush
 
     <div class="container-fluid">
 
-        {{-- ALERT --}}
-        @if (session()->has('success'))
-            <div class="alert alert-success shadow-sm border-0 rounded-lg">
-                {{ session()->get('success') }}
-            </div>
-        @endif
 
-        @if ($errors->any())
-            <div class="alert alert-danger shadow-sm border-0 rounded-lg">
-                <ul class="mb-0 pl-3">
-                    @foreach ($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
 
         {{-- PAGE HEADER --}}
         <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
@@ -47,6 +80,41 @@
             </a>
 
         </div>
+
+        {{-- VALIDATION ERRORS --}}
+        @if ($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    @foreach ($errors->all() as $error)
+                        toastr.error(@json($error), 'Error');
+                    @endforeach
+
+                });
+            </script>
+        @endif
+
+        {{-- STATUS SUCCESS --}}
+        @if (session()->has('status'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('status')), 'Success');
+
+                });
+            </script>
+        @endif
+
+        {{-- SUCCESS --}}
+        @if (session()->has('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('success')), 'Success');
+
+                });
+            </script>
+        @endif
 
         {{-- FORM --}}
         <form action="{{ route('advertise.storeOrUpdate') }}" method="POST" id="advertiseForm">
@@ -81,11 +149,12 @@
                             <div class="form-group mb-4">
 
                                 <label class="form-label font-weight-semibold">
-                                    Ads Title
+                                    Ads Title <span class="text-danger">*</span>
                                 </label>
 
-                                <input type="text" class="form-control custom-input" name="title"
-                                    value="{{ $adsSettings->title ?? '' }}" placeholder="Example: Summer Promo Banner">
+                                <input required type="text" class="form-control custom-input" name="title"
+                                    value="{{ $adsSettings->title ?? (old('title') ?? '') }}"
+                                    placeholder="Example: Summer Promo Banner">
 
                             </div>
 
@@ -93,11 +162,11 @@
                             <div class="form-group mb-4">
 
                                 <label class="form-label font-weight-semibold">
-                                    Display Duration (Seconds)
+                                    Display Duration (Seconds) <span class="text-danger">*</span>
                                 </label>
 
-                                <input type="number" class="form-control custom-input" name="time"
-                                    value="{{ $adsSettings->time ?? '' }}" placeholder="Example: 10">
+                                <input required type="number" class="form-control custom-input" name="time"
+                                    value="{{ $adsSettings->time ?? (old('time') ?? '') }}" placeholder="Example: 10">
 
                             </div>
 
@@ -105,22 +174,22 @@
                             <div class="form-group">
 
                                 <label class="form-label font-weight-semibold">
-                                    Place Target
+                                    Place Target <span class="text-danger">*</span>
                                 </label>
 
-                                <select class="form-control" id="place_id" name="places[]" multiple>
-
+                                @php
+                                    $selectedPlaces = old(
+                                        'places',
+                                        $adsSettings ? $adsSettings->places->pluck('id')->toArray() : [],
+                                    );
+                                @endphp
+                                <select required class="form-control" id="place_id" name="places[]" multiple>
                                     @foreach ($placeId as $place)
                                         <option value="{{ $place->id }}"
-                                            @if ($adsSettings && in_array($place->id, $adsSettings->places->pluck('id')->toArray())) selected @endif>
-
-                                            {{ $place->place_code }}
-                                            —
-                                            {{ $place->title }}
-
+                                            {{ in_array($place->id, $selectedPlaces) ? 'selected' : '' }}>
+                                            {{ $place->place_code }} — {{ $place->title }}
                                         </option>
                                     @endforeach
-
                                 </select>
 
                                 <small class="text-muted">
@@ -139,7 +208,7 @@
                         <div class="card-header bg-white border-0 pt-4 pb-0">
 
                             <h4 class="font-weight-bold text-dark mb-1">
-                                Advertise Gallery
+                                Advertise Gallery <span class="text-danger">*</span>
                             </h4>
 
                             <p class="text-muted small mb-0">
@@ -615,5 +684,4 @@
             }
         </script>
     @endpush
-
 @endsection

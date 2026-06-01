@@ -1,9 +1,57 @@
 @extends('TemplateLayout.AdminLayout')
 
 @section('content')
-
     @push('title')
         <title>Form Gallery - QRUN Website</title>
+
+        {{-- TOASTR CSS --}}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+        {{-- JQUERY --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+        {{-- TOASTR JS --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <style>
+            .toast-success {
+                background-color: #28a745 !important;
+            }
+
+            .toast-error {
+                background-color: #dc3545 !important;
+            }
+
+            .toast-info {
+                background-color: #17a2b8 !important;
+            }
+
+            .toast-warning {
+                background-color: #ffc107 !important;
+                color: #000 !important;
+            }
+
+            .toast {
+                opacity: 1 !important;
+            }
+        </style>
+
+        <script>
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                newestOnTop: true,
+                positionClass: "toast-top-right",
+
+                timeOut: 8000,
+                extendedTimeOut: 8000,
+
+                showDuration: 300,
+                hideDuration: 300,
+
+                preventDuplicates: true,
+            };
+        </script>
     @endpush
 
     <div class="container-fluid py-4">
@@ -21,49 +69,57 @@
                 </p>
             </div>
 
-            <a href="{{ route('gallery.index') }}"
-                class="btn btn-light btn-back shadow-sm">
+            <a href="{{ route('gallery.index') }}" class="btn btn-light btn-back shadow-sm">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Back
             </a>
 
         </div>
 
-        {{-- Alert --}}
-        @if (session()->has('success'))
-            <div class="alert alert-success border-0 shadow-sm rounded-lg">
-                {{ session()->get('success') }}
-            </div>
+        {{-- VALIDATION ERRORS --}}
+        @if ($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    @foreach ($errors->all() as $error)
+                        toastr.error(@json($error), 'Error');
+                    @endforeach
+
+                });
+            </script>
         @endif
 
-        @if ($errors->any())
-            <div class="alert alert-danger border-0 shadow-sm rounded-lg">
-                <ul class="mb-0 pl-3">
-                    @foreach ($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        {{-- STATUS SUCCESS --}}
+        @if (session()->has('status'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('status')), 'Success');
+
+                });
+            </script>
+        @endif
+
+        {{-- SUCCESS --}}
+        @if (session()->has('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('success')), 'Success');
+
+                });
+            </script>
         @endif
 
         {{-- Form --}}
-        <form action="{{ route('gallery.storeOrUpdate') }}"
-            method="POST"
-            class="custom-card"
-            id="formDropzone"
-            enctype="multipart/form-data"
-            novalidate>
+        <form action="{{ route('gallery.storeOrUpdate') }}" method="POST" class="custom-card" id="formDropzone"
+            enctype="multipart/form-data" novalidate>
 
             @csrf
 
-            <input type="hidden"
-                name="id"
-                value="{{ $gallery->id ?? '' }}">
+            <input type="hidden" name="id" value="{{ $gallery->id ?? '' }}">
 
-            <input type="hidden"
-                id="image_url"
-                name="image_url"
-                value="{{ $gallery->image_url ?? '' }}">
+            <input type="hidden" id="image_url" name="image_url" value="{{ $gallery->image_url ?? '' }}">
 
             {{-- Card Header --}}
             <div class="card-header">
@@ -97,12 +153,8 @@
                         <span class="text-danger">*</span>
                     </label>
 
-                    <input type="text"
-                        name="title"
-                        value="{{ old('title', $gallery->title ?? '') }}"
-                        class="form-control"
-                        placeholder="Enter gallery title..."
-                        required>
+                    <input required type="text" name="title" value="{{ old('title', $gallery->title ?? '') }}"
+                        class="form-control" placeholder="Enter gallery title..." required>
 
                     @error('title')
                         <p class="text-danger small mt-2 mb-0">
@@ -120,12 +172,10 @@
                         <span class="text-danger">*</span>
                     </label>
 
-                    <div class="dropzone-drag-area"
-                        id="previews">
+                    <div class="dropzone-drag-area" id="previews">
 
                         {{-- Upload Message --}}
-                        <div class="dz-message"
-                            data-dz-message>
+                        <div class="dz-message" data-dz-message>
 
                             <div class="upload-icon-wrapper">
                                 <i class="fas fa-cloud-upload-alt"></i>
@@ -144,22 +194,17 @@
                         </div>
 
                         {{-- Preview Template --}}
-                        <div class="d-none"
-                            id="dzPreviewContainer">
+                        <div class="d-none" id="dzPreviewContainer">
 
                             <div class="dz-preview dz-file-preview">
 
                                 <div class="dz-photo">
-                                    <img class="dz-thumbnail"
-                                        data-dz-thumbnail>
+                                    <img class="dz-thumbnail" data-dz-thumbnail>
                                 </div>
 
-                                <button class="dz-delete border-0 p-0"
-                                    type="button"
-                                    data-dz-remove>
+                                <button class="dz-delete border-0 p-0" type="button" data-dz-remove>
 
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                         <path fill="#FFFFFF"
                                             d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z" />
                                     </svg>
@@ -189,8 +234,7 @@
             {{-- Card Footer --}}
             <div class="card-footer text-right">
 
-                <button type="submit"
-                    class="btn btn-save btn-primary shadow-sm">
+                <button type="submit" class="btn btn-save btn-primary shadow-sm">
 
                     <i class="fas fa-save mr-2"></i>
                     Save Gallery
@@ -204,12 +248,9 @@
     </div>
 
     @push('css')
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/dropzone.min.css">
 
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/dropzone.min.css">
-
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
         <style>
             body {
@@ -422,11 +463,9 @@
                 }
             }
         </style>
-
     @endpush
 
     @push('script')
-
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
 
         <script>
@@ -486,7 +525,6 @@
                         dz.emit("complete", existingThumb);
 
                         dz.files.push(existingThumb);
-
                     @endif
 
                     this.on("sending", function(file, xhr, formData) {
@@ -553,7 +591,5 @@
 
             });
         </script>
-
     @endpush
-
 @endsection

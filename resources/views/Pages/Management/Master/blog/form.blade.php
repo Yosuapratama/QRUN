@@ -4,6 +4,55 @@
     <!-- Main Content -->
     @push('title')
         <title>Create Blog Admin - QRUN Website</title>
+
+        {{-- TOASTR CSS --}}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+        {{-- JQUERY --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+        {{-- TOASTR JS --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <style>
+            .toast-success {
+                background-color: #28a745 !important;
+            }
+
+            .toast-error {
+                background-color: #dc3545 !important;
+            }
+
+            .toast-info {
+                background-color: #17a2b8 !important;
+            }
+
+            .toast-warning {
+                background-color: #ffc107 !important;
+                color: #000 !important;
+            }
+
+            .toast {
+                opacity: 1 !important;
+            }
+        </style>
+
+        <script>
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                newestOnTop: true,
+                positionClass: "toast-top-right",
+
+                timeOut: 8000,
+                extendedTimeOut: 8000,
+
+                showDuration: 300,
+                hideDuration: 300,
+
+                preventDuplicates: true,
+            };
+        </script>
     @endpush
     <!-- Begin Page Content -->
 
@@ -29,21 +78,39 @@
 
         </div>
 
-        {{-- ALERT --}}
-        @if (session()->has('success'))
-            <div class="alert alert-success shadow-sm">
-                {{ session()->get('success') }}
-            </div>
+        {{-- VALIDATION ERRORS --}}
+        @if ($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    @foreach ($errors->all() as $error)
+                        toastr.error(@json($error), 'Error');
+                    @endforeach
+
+                });
+            </script>
         @endif
 
-        @if ($errors->any())
-            <div class="alert alert-danger shadow-sm">
-                <ul class="mb-0 pl-3">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+        {{-- STATUS SUCCESS --}}
+        @if (session()->has('status'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('status')), 'Success');
+
+                });
+            </script>
+        @endif
+
+        {{-- SUCCESS --}}
+        @if (session()->has('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('success')), 'Success');
+
+                });
+            </script>
         @endif
 
         <div class="card modern-card mb-4">
@@ -127,7 +194,7 @@
                 <div class="form-group-modern">
 
                     <label class="form-label-modern">
-                        Blog Content
+                        Blog Content <span class="text-danger">*</span>
                     </label>
 
                     <textarea class="form-control" name="content" id="summernote">

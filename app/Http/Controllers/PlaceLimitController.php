@@ -26,12 +26,44 @@ class PlaceLimitController extends Controller
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
+
                     $editUrl = route('place-limit.edit', $row->id);
 
-                    $btn = "<div class='d-flex'>";
-                    $btn = $btn . "<a href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
-                    $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
-                    $btn = $btn . "</div>";
+                    $btn = "
+    <div class='dropdown'>
+        <button 
+            class='btn btn-primary btn-sm dropdown-toggle' 
+            type='button' 
+            data-toggle='dropdown' 
+            aria-expanded='false'
+        >
+            <i class='fas fa-cog'></i> Action
+        </button>
+
+        <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+
+            <a 
+                href='$editUrl'
+                class='dropdown-item'
+            >
+                <i class='fas fa-edit text-secondary mr-2'></i>
+                Edit
+            </a>
+
+            <div class='dropdown-divider'></div>
+
+            <button 
+                id='$row->id' 
+                class='delete dropdown-item text-danger'
+            >
+                <i class='fas fa-trash mr-2'></i>
+                Delete
+            </button>
+
+        </div>
+    </div>
+    ";
+
                     return $btn;
                 })
                 ->rawColumns(['action'])
@@ -67,7 +99,7 @@ class PlaceLimitController extends Controller
             'total_limit.required' => 'Total of limit is required',
             'total_limit.numeric' => 'Total of limit type must be of number',
             'total_limit.min' => 'Total of limit need minimum 1 total',
-            
+
         ]);
 
         PlaceLimit::create([
@@ -79,12 +111,11 @@ class PlaceLimitController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User Created Place Limit at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User Created Place Limit at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_CREATE_PLACE_LIMIT
         ]);
 
-        return redirect()->route('place-limit.index')->with('success','Place limit successfully created !');
-
+        return redirect()->route('place-limit.index')->with('success', 'Place limit successfully created !');
     }
 
     /**
@@ -117,11 +148,11 @@ class PlaceLimitController extends Controller
             'total_limit.required' => 'Total of limit is required',
             'total_limit.numeric' => 'Total of limit type must be of number',
             'total_limit.min' => 'Total of limit need minimum 1 total',
-            
+
         ]);
 
         $placeLimit = PlaceLimit::find($id);
-        if(!$placeLimit){
+        if (!$placeLimit) {
             return back()->withErrors('Place Limit not found !');
         }
 
@@ -134,13 +165,11 @@ class PlaceLimitController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User Updated Place Limit with id " . $placeLimit->id. " at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User Updated Place Limit with id " . $placeLimit->id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_UPDATE_PLACE_LIMIT
         ]);
 
         return redirect()->route('place-limit.index')->with('success', 'Place Limit updated successfully !');
-
-
     }
 
     /**
@@ -149,13 +178,13 @@ class PlaceLimitController extends Controller
     public function destroy(string $id)
     {
         $placeLimit = PlaceLimit::find($id);
-        if(!$placeLimit){
+        if (!$placeLimit) {
             return abort(404);
         }
 
         $placeLimit->delete();
         $userHasPlaceLimit = UserHasPlaceLimit::where('place_limit_id', $id)->get();
-        foreach($userHasPlaceLimit as $key => $item){
+        foreach ($userHasPlaceLimit as $key => $item) {
             $userHasPlaceLimit[$key]->delete();
         }
 
@@ -163,7 +192,7 @@ class PlaceLimitController extends Controller
             'ip_address' => request()->ip(),
             'user_agent' => request()->header('User-Agent'),
             'user_id' => Auth::user()->id,
-            'activities' => "User Deleted Place Limit with id " . $id. " at ".Carbon::now()->format('Y-m-d H:i:s'),
+            'activities' => "User Deleted Place Limit with id " . $id . " at " . Carbon::now()->format('Y-m-d H:i:s'),
             "type" => LogActivities::TYPE_DELETE_PLACE_LIMIT
         ]);
 
