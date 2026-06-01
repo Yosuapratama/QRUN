@@ -575,7 +575,7 @@
             <!-- Main Content -->
             <div class="container mx-auto px-4 py-8" :class="{ 'pt-16': disabledAfter > 0 }">
                 <!-- Header -->
-                <div class="rounded-[14px] overflow-hidden mb-8 fade-in">
+                <div id="headerContainerRunningText" class="rounded-[14px] overflow-hidden mb-8 fade-in {{ $customSettingRunningText->is_active == 1 ? 'mt-4' : ''}}">
                     {{-- Hero --}}
                     <div class="bg-gradient-to-br from-blue-600 via-purple-600/80 to-purple-600 relative">
                         <div class="absolute inset-0 pointer-events-none"
@@ -1482,8 +1482,15 @@
                 setCountdownRunningText() {
                     const intervalId = setInterval(() => {
                         this.disabledAfter--;
+
                         if (this.disabledAfter <= 0) {
                             clearInterval(intervalId);
+
+                            const header = document.getElementById('headerContainerRunningText');
+
+                            if (header) {
+                                header.classList.remove('mt-4');
+                            }
                         }
                     }, 1000);
                 },

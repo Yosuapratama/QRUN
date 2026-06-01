@@ -158,6 +158,7 @@ class AuthController extends Controller
             'email.unique' => 'This email is already registered',
             'password.required' => 'Password is required',
             'password.min' => 'Password length must be more than 8 characters',
+            'password2.min' => 'Confirm Password length must be more than 8 characters',
             'password2.required' => 'Confirm Password Required',
             'password2.same' => 'Confirm Password is wrong !'
         ]);
@@ -193,7 +194,7 @@ class AuthController extends Controller
         $user->assignRole('localadmin');
 
         //Mail::to(config('mail.to.address'))->send(new NewUserRegistered($user));
-        Mail::to(env('MAIL_TO_ADDRESS', 'qrunonline@gmail.com'))->send(new NewUserRegistered($user));
+        // Mail::to(env('MAIL_TO_ADDRESS', 'qrunonline@gmail.com'))->send(new NewUserRegistered($user));
         event(new Registered($user));
 
         return redirect()->route('login')->with('success', 'Register Success, Check Your Email for verification !');

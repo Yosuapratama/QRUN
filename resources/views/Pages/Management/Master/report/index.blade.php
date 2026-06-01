@@ -130,19 +130,52 @@
                         </div>
                     </div>
                     <div class="mt-4 lg:mt-0 flex space-x-3">
-                        <a href="{{ route('report.pdf') }}?start_date=" id="exportPdfBtn"
-                            onclick="event.preventDefault(); 
-                                var start = document.getElementById('start_date').value; 
-                                var end = document.getElementById('end_date').value; 
-                                var url = '{{ route('report.pdf') }}?start_date=' + encodeURIComponent(start) + '&end_date=' + encodeURIComponent(end); 
-                                window.open(url, '_blank');"
+                        <!-- Export PDF -->
+                        <a href="#"
+                            onclick="event.preventDefault();
+
+        var start = document.getElementById('start_date').value;
+        var end = document.getElementById('end_date').value;
+
+        var url = '{{ route('report.pdf') }}'
+            + '?type=download'
+            + '&start_date=' + encodeURIComponent(start)
+            + '&end_date=' + encodeURIComponent(end);
+
+        window.open(url, '_blank');"
                             class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                 </path>
                             </svg>
-                            <span>Export PDF</span>
+
+                            <span>Download PDF</span>
+                        </a>
+
+                        <!-- Send Telegram -->
+                        <a href="#"
+                            onclick="event.preventDefault();
+
+        var start = document.getElementById('start_date').value;
+        var end = document.getElementById('end_date').value;
+
+        var url = '{{ route('report.pdf') }}'
+            + '?type=telegram'
+            + '&start_date=' + encodeURIComponent(start)
+            + '&end_date=' + encodeURIComponent(end);
+
+        window.open(url, '_blank');"
+                            class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M21.5 2.5L2.8 9.7c-1.3.5-1.3 1.3-.2 1.7l4.8 1.5 1.9 5.8c.2.6.1.8.8.8.5 0 .8-.2 1-.4l2.7-2.6 5.6 4.1c1 .6 1.8.3 2.1-.9L23.8 4c.4-1.7-.6-2.4-2.3-1.5z">
+                                </path>
+                            </svg>
+
+                            <span>Send to Telegram</span>
                         </a>
                         {{-- <button
                             class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
@@ -921,8 +954,10 @@
                     if (data.status === 'success') {
                         // document.getElementById('total-places')?.textContent = (data.meta && typeof data.meta.total !== 'undefined') ? data.meta.total : '';
                         // document.getElementById('total-views')?.textContent = (data.meta && typeof data.meta.total_views !== 'undefined') ? data.meta.total_views : '';
-                        document.getElementById('total-places').textContent = (data.meta && typeof data.meta.total !== 'undefined') ? data.meta.total : '0';
-                        document.getElementById('total-views').textContent = (data.meta && typeof data.meta.total_views !== 'undefined') ? data.meta.total_views : '0';
+                        document.getElementById('total-places').textContent = (data.meta && typeof data.meta
+                            .total !== 'undefined') ? data.meta.total : '0';
+                        document.getElementById('total-views').textContent = (data.meta && typeof data.meta
+                            .total_views !== 'undefined') ? data.meta.total_views : '0';
 
                         tableBody.innerHTML = data.data.map(renderPlaceRow).join('');
 

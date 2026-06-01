@@ -2,16 +2,59 @@
 
 @push('title')
     <title>Login | Qrun Online</title>
-    <meta name="description" content="Secure login page for accessing your account. Enter your credentials to continue.">
+
+    <meta name="description"
+        content="Login ke Qrun Online untuk mengelola prasasti digital, QR Code, konten lokasi, event, dan informasi tempat Anda.">
+
     <meta name="keywords"
-        content="qrun online, login qrun, login qrun online, sign in qrun, sign in qrun online, register qrun online,register qrun">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Login to Your Account">
-    <meta property="og:description" content="Access your account by logging in.">
-    <meta property="og:url" content="https://qrun.online/auth/login">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Login to Your Account">
-    <meta name="twitter:description" content="Securely log in to your account.">
+        content="qrun login, login qrun online, masuk qrun online, qrun account login, platform prasasti digital">
+
+    <meta name="robots" content="index, follow">
+
+    <meta name="author" content="Qrun Online">
+
+    <link rel="canonical" href="https://www.qrun.online/login">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+
+    <meta property="og:site_name" content="Qrun Online">
+
+    <meta property="og:title" content="Login | Qrun Online">
+
+    <meta property="og:description"
+        content="Masuk ke akun Qrun Online untuk mengelola QR Code dan prasasti digital lokasi Anda.">
+
+    <meta property="og:url" content="https://www.qrun.online/login">
+
+    <meta property="og:image" content="https://www.qrun.online/home.jpg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title" content="Login | Qrun Online">
+
+    <meta name="twitter:description"
+        content="Masuk ke akun Qrun Online untuk mengelola QR Code dan prasasti digital lokasi Anda.">
+
+    <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
+
+    <meta name="theme-color" content="#2d4373">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Login | Qrun Online",
+        "url": "https://www.qrun.online/login",
+        "description": "Masuk ke akun Qrun Online untuk mengelola prasasti digital, QR Code, dan informasi lokasi Anda.",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Qrun Online",
+            "url": "https://www.qrun.online"
+        }
+    }
+    </script>
 
     {{-- TOASTR CSS --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">

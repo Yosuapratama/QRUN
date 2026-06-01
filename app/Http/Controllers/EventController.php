@@ -37,7 +37,10 @@ class EventController extends Controller
     // (1) This detail of index event of admin
     function indexAdmin(Request $request)
     {
-
+        if(Auth::user()->approved_at == null){
+            return back()->withErrors('You Must Approved By Admin First !');
+        }
+        
         $query = Event::with('places')
             ->orderBy('updated_at', 'DESC');
 

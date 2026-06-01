@@ -222,7 +222,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                Full Name
+                                                Full Name <span class="text-danger">*</span>
                                             </label>
 
                                             <div class="input-group">
@@ -247,7 +247,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                Phone Number
+                                                Phone Number  <span class="text-danger">*</span>
                                             </label>
 
                                             <div class="input-group">
@@ -273,7 +273,7 @@
 
                                 <div class="form-group">
                                     <label class="font-weight-semibold">
-                                        Address
+                                        Address  <span class="text-danger">*</span>
                                     </label>
 
                                     <textarea name="address" rows="4" class="form-control custom-input" placeholder="Enter your address">{{ old('address', $User->address) }}</textarea>
@@ -287,7 +287,7 @@
 
                                 <div class="form-group">
                                     <label class="font-weight-semibold">
-                                        Email Address
+                                        Email Address  <span class="text-danger">*</span>
                                     </label>
 
                                     <div class="input-group">

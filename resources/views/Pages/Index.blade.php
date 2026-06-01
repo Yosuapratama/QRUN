@@ -4,15 +4,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage | Qrun Website</title>
+
+    <title>Qrun Online | Scan QR Code untuk Mengakses Sejarah dan Informasi Tempat</title>
+
+    <meta name="description"
+        content="Qrun Online adalah platform prasasti digital berbasis QR Code yang memungkinkan pengunjung mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif hanya dengan sekali scan.">
+
+    <meta name="keywords"
+        content="qrun online, qrun, qr code sejarah, prasasti digital, digital heritage, qr code wisata, qr code pura, qr code candi, qr code museum, informasi tempat, sejarah digital, budaya digital, smart tourism, qr code edukasi">
+
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <meta name="author" content="Qrun Online">
+
+    <link rel="canonical" href="https://www.qrun.online">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Qrun Online">
+    <meta property="og:title" content="Qrun Online | Scan QR Code untuk Mengakses Sejarah dan Informasi Tempat">
+
+    <meta property="og:description"
+        content="Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.">
+
+    <meta property="og:url" content="https://www.qrun.online">
+
+    <meta property="og:image" content="https://www.qrun.online/home.jpg">
+
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title" content="Qrun Online | Scan QR Code untuk Mengakses Sejarah dan Informasi Tempat">
+
+    <meta name="twitter:description"
+        content="Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.">
+
+    <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
+
+    <meta name="theme-color" content="#2d4373">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Qrun Online",
+        "url": "https://www.qrun.online",
+        "description": "Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Qrun Online"
+        }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <meta name="description"
-        content="QRUN aims to display detailed information when QR codes placed in various locations are scanned.">
-    <meta name="keywords"
-        content="qrun,qrun online, login qrun, login qrun online, sign in qrun, sign in qrun online, register qrun online,register qrun">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    {{-- TOASTR CSS --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    {{-- JQUERY --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    {{-- TOASTR JS --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <style>
+
+        <style>
+        .toast-success {
+            background-color: #28a745 !important;
+        }
+
+        .toast-error {
+            background-color: #dc3545 !important;
+        }
+
+        .toast-info {
+            background-color: #17a2b8 !important;
+        }
+
+        .toast-warning {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        .toast {
+            opacity: 1 !important;
+        }
+        
         .carousel-container {
             overflow: hidden;
         }
@@ -42,6 +127,42 @@
 
 <body class="bg-gray-50">
     @include('Components.Navbar')
+
+
+    {{-- VALIDATION ERRORS --}}
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+                @foreach ($errors->all() as $error)
+                    toastr.error(@json($error), 'Error');
+                @endforeach
+
+            });
+        </script>
+    @endif
+
+    {{-- STATUS SUCCESS --}}
+    @if (session()->has('status'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+                toastr.success(@json(session('status')), 'Success');
+
+            });
+        </script>
+    @endif
+
+    {{-- SUCCESS --}}
+    @if (session()->has('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+                toastr.success(@json(session('success')), 'Success');
+
+            });
+        </script>
+    @endif
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-blue-50 to-indigo-100 py-12 lg:py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -196,7 +317,8 @@
                         $eventCount = \App\Helpers\SidebarHelper::getEventCount();
                     @endphp
 
-                    <div class="text-3xl lg:text-4xl font-bold text-white mb-2" id="totalEventSemua">{{ $eventCount }}
+                    <div class="text-3xl lg:text-4xl font-bold text-white mb-2" id="totalEventSemua">
+                        {{ $eventCount }}
                     </div>
                     <div class="text-blue-100 font-medium">Total Event</div>
                 </div>
