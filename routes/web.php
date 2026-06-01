@@ -249,7 +249,7 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 // This is Public Route For Anonym Users
-Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detail');
+Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detailPublic');
 Route::get('/detail-place/{place_code}/comments', [CommentController::class, 'index'])->name('comments.index');
 Route::post('/detail-place/{place_code}/comments/store', [CommentController::class, 'store'])->name('comments.storeco');
 Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentController::class, 'deleteCommentsByUser'])->middleware('checkLogin');
