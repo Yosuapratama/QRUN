@@ -262,6 +262,7 @@
                 // Initialize Select2 for provinces
                 $('#filter-province').select2({
                     allowClear: true,
+                    width: '100%',
                     placeholder: 'Search province...',
                     ajax: {
                         url: "{{ route('place.search.provinces') }}",
@@ -283,6 +284,7 @@
                 // Initialize Select2 for regencies
                 $('#filter-regency').select2({
                     allowClear: true,
+                    width: '100%',
                     placeholder: 'Search regency...',
                     ajax: {
                         url: "{{ route('place.search.regencies') }}",
@@ -305,6 +307,7 @@
                 // Initialize Select2 for districts
                 $('#filter-district').select2({
                     allowClear: true,
+                    width: '100%',
                     placeholder: 'Search district...',
                     ajax: {
                         url: "{{ route('place.search.districts') }}",
@@ -327,6 +330,7 @@
                 // Initialize Select2 for villages
                 $('#filter-village').select2({
                     allowClear: true,
+                    width: '100%',
                     placeholder: 'Search village...',
                     ajax: {
                         url: "{{ route('place.search.villages') }}",
