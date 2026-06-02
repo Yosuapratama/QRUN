@@ -87,7 +87,7 @@
 
                         @if (isset($Place))
                             <div class="d-flex align-items-center ml-auto mt-3 mt-md-0">
-                                <a href="{{ route('place.detail', $Place->place_code) }}" target="_blank"
+                                <a href="{{ route('place.detailGlobal', $Place->place_code) }}" target="_blank"
                                     class="btn btn-outline-primary btn-sm mr-2">
                                     <i class="fas fa-external-link-alt mr-1"></i>
                                     Live Preview

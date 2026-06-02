@@ -227,6 +227,23 @@
             color: #000 !important;
         }
 
+
+        #translatable-content ul {
+            list-style-type: disc !important;
+            padding-left: 2rem !important;
+            margin: 1rem 0 !important;
+        }
+
+        #translatable-content ol {
+            list-style-type: decimal !important;
+            padding-left: 2rem !important;
+            margin: 1rem 0 !important;
+        }
+
+        #translatable-content li {
+            display: list-item !important;
+            margin-bottom: 0.5rem;
+        }
         /* Heading normal browser default */
         #translatable-content h1 {
             font-size: 2em;
