@@ -4,15 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - Qrun Website</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <meta name="description"
-        content="Contact QRUN for support, inquiries, or more information about our QR code services. We're here to help.">
-    <meta name="keywords"
-        content="contact QRUN, QRUN support, QRUN help, get in touch with QRUN, QRUN customer service, QRUN inquiries, qrun">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Contact Qrun Online | Hubungi Kami</title>
+
+    <meta name="description"
+        content="Hubungi Qrun Online untuk pertanyaan, dukungan, kerja sama, atau informasi tentang platform prasasti digital berbasis QR Code untuk sejarah, budaya, dan tempat wisata.">
+
+    <meta name="keywords"
+        content="kontak qrun online, hubungi qrun, support qrun, bantuan qrun, qrun bali, qr code sejarah, prasasti digital, smart tourism, digital heritage">
+
+    <meta name="author" content="Qrun Online">
+
+    <meta name="robots"
+        content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <link rel="canonical" href="https://www.qrun.online/contact">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Qrun Online">
+
+    <meta property="og:title"
+        content="Contact Qrun Online | Hubungi Kami">
+
+    <meta property="og:description"
+        content="Hubungi tim Qrun Online untuk dukungan, pertanyaan, atau kerja sama terkait platform QR Code untuk sejarah, budaya, dan informasi tempat.">
+
+    <meta property="og:url"
+        content="https://www.qrun.online/contact">
+
+    <meta property="og:image"
+        content="https://www.qrun.online/home.jpg">
+
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title"
+        content="Contact Qrun Online | Hubungi Kami">
+
+    <meta name="twitter:description"
+        content="Butuh bantuan atau ingin bekerja sama dengan Qrun Online? Hubungi tim kami di sini.">
+
+    <meta name="twitter:image"
+        content="https://www.qrun.online/home.jpg">
+
+    <meta name="theme-color" content="#2d4373">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "name": "Contact Qrun Online",
+        "url": "https://www.qrun.online/contact",
+        "description": "Halaman kontak resmi Qrun Online untuk dukungan dan pertanyaan.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Qrun Online",
+            "url": "https://www.qrun.online"
+        }
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body class="bg-gray-50">

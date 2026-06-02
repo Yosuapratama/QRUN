@@ -4,17 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $data->title }} - Qrun Website</title>
+
+    <title>{{ $data->meta_title ?? $data->title }} | Blog Qrun Online</title>
+
+    <meta name="description" content="{{ Str::limit(strip_tags($data->description ?? $data->title), 160) }}">
+
+    <meta name="keywords"
+        content="{{ $data->meta_keywords ?? $data->title . ', qrun online, blog qrun, sejarah, budaya, wisata, qr code, digital heritage' }}">
+
+    <meta name="author" content="Qrun Online">
+
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+
+    <meta property="og:site_name" content="Qrun Online">
+
+    <meta property="og:title" content="{{ $data->meta_title ?? $data->title }} | Blog Qrun Online">
+
+    <meta property="og:description" content="{{ Str::limit(strip_tags($data->description ?? $data->title), 200) }}">
+
+    <meta property="og:image" content="{{ asset($data->image_url ?? 'home.jpg') }}">
+
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta property="og:url" content="{{ url()->current() }}">
+
+    @if (!empty($data->created_at))
+        <meta property="article:published_time"
+            content="{{ \Carbon\Carbon::parse($data->created_at)->toIso8601String() }}">
+    @endif
+
+    @if (!empty($data->updated_at))
+        <meta property="article:modified_time"
+            content="{{ \Carbon\Carbon::parse($data->updated_at)->toIso8601String() }}">
+    @endif
+
+    <meta property="article:author" content="Qrun Online">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title" content="{{ $data->meta_title ?? $data->title }} | Blog Qrun Online">
+
+    <meta name="twitter:description" content="{{ Str::limit(strip_tags($data->description ?? $data->title), 200) }}">
+
+    <meta name="twitter:image" content="{{ asset($data->image_url ?? 'home.jpg') }}">
+
+    <meta name="theme-color" content="#2d4373">
+
+    <!-- Structured Data (SEO Article) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": @json($data->title),
+        "description": @json(strip_tags($data->description ?? $data->title)),
+        "image": "{{ asset($data->image_url ?? 'home.jpg') }}",
+        "author": {
+            "@type": "Organization",
+            "name": "Qrun Online"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Qrun Online",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ asset('transparent-logo.png') }}"
+            }
+        },
+        "datePublished": "{{ !empty($data->created_at) ? \Carbon\Carbon::parse($data->created_at)->toIso8601String() : '' }}",
+        "dateModified": "{{ !empty($data->updated_at) ? \Carbon\Carbon::parse($data->updated_at)->toIso8601String() : '' }}",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ url()->current() }}"
+        }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <meta name="description" content="{{ $data->description ?? $data->title }}">
-    <meta name="keywords" content="blog, tips, pemula, tutorial, qrun, artikel, {{ $data->title }}">
-    <meta property="og:title" content="{{ $data->title }} - Qrun Website">
-    <meta property="og:description" content="{{ $data->description ?? $data->title }}">
-    <meta property="og:image" content="{{ asset($data->image_url) }}">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta name="author" content="Admin">
 </head>
 
 <body class="bg-gray-50">
@@ -149,7 +222,8 @@
                     @forelse ($blogs as $blog)
                         <article
                             class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                            <img src="{{ asset($blog->image_url) }}" alt="Blog Post 1" class="w-full h-48 object-cover">
+                            <img src="{{ asset($blog->image_url) }}" alt="Blog Post 1"
+                                class="w-full h-48 object-cover">
                             <div class="p-6">
                                 <div class="flex items-center text-sm text-gray-500 mb-3">
                                     <i class="fas fa-calendar-alt mr-2"></i>

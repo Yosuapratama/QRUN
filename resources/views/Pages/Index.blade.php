@@ -1,17 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Qrun Online | Scan QR Code untuk Mengakses Sejarah dan Informasi Tempat</title>
+    <title>Qrun Online - Platform QR Code Sejarah & Informasi Tempat</title>
 
     <meta name="description"
         content="Qrun Online adalah platform prasasti digital berbasis QR Code yang memungkinkan pengunjung mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif hanya dengan sekali scan.">
-
     <meta name="keywords"
-        content="qrun online, qrun, qr code sejarah, prasasti digital, digital heritage, qr code wisata, qr code pura, qr code candi, qr code museum, informasi tempat, sejarah digital, budaya digital, smart tourism, qr code edukasi">
+        content="
+        qrun,
+        qrun online,
+        login qrun,
+        register qrun,
+        sign in qrun,
+        qr code sejarah,
+        prasasti digital,
+        digital heritage,
+        smart tourism
+        ">
 
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
@@ -19,9 +28,17 @@
 
     <link rel="canonical" href="https://www.qrun.online">
 
+    <meta name="theme-color" content="#2d4373">
+
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ asset('transparent-logo.png') }}">
+
     <!-- Open Graph -->
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
+
     <meta property="og:site_name" content="Qrun Online">
+
     <meta property="og:title" content="Qrun Online | Scan QR Code untuk Mengakses Sejarah dan Informasi Tempat">
 
     <meta property="og:description"
@@ -32,7 +49,10 @@
     <meta property="og:image" content="https://www.qrun.online/home.jpg">
 
     <meta property="og:image:width" content="1200">
+
     <meta property="og:image:height" content="630">
+
+    <meta property="og:image:alt" content="Qrun Online - Platform QR Code Sejarah dan Informasi Tempat">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -44,22 +64,33 @@
 
     <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
 
-    <meta name="theme-color" content="#2d4373">
-    {{-- Favicon --}}
-    <link rel="icon" type="image/png" href="{{ asset('transparent-logo.png') }}">
-
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Qrun Online",
-        "url": "https://www.qrun.online",
-        "description": "Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.",
-        "publisher": {
-            "@type": "Organization",
-            "name": "Qrun Online"
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.qrun.online/#organization",
+          "name": "Qrun Online",
+          "url": "https://www.qrun.online",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.qrun.online/transparent-logo.png"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.qrun.online/#website",
+          "url": "https://www.qrun.online",
+          "name": "Qrun Online",
+          "description": "Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.",
+          "publisher": {
+            "@id": "https://www.qrun.online/#organization"
+          },
+          "inLanguage": "id-ID"
         }
+      ]
     }
     </script>
 
@@ -77,8 +108,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <style>
-
-        <style>
         .toast-success {
             background-color: #28a745 !important;
         }
@@ -99,7 +128,7 @@
         .toast {
             opacity: 1 !important;
         }
-        
+
         .carousel-container {
             overflow: hidden;
         }

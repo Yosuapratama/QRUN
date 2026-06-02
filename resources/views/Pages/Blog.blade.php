@@ -4,13 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Qrun Website</title>
+
+    <title>Blog Qrun Online | Artikel Sejarah, Budaya, Wisata & QR Digital</title>
+
     <meta name="description"
-        content="Baca artikel terbaru dari QRUN tentang teknologi QR code, penerapan inovatif, tips, dan pembaruan platform di blog kami.">
+        content="Jelajahi artikel terbaru dari Qrun Online tentang sejarah, budaya, wisata, teknologi QR Code, digital heritage, dan informasi tempat secara interaktif.">
+
     <meta name="keywords"
-        content="QRUN blog, artikel QR code, teknologi QR code, qrun.online, blog QRUN, update QRUN, info QR code">
-    <meta name="author" content="QRUN Team">
-    <meta name="robots" content="index, follow">
+        content="blog qrun online, artikel sejarah, budaya indonesia, wisata bali, qr code sejarah, prasasti digital, digital heritage, smart tourism, qr code wisata, informasi tempat, sejarah pura, sejarah candi, teknologi qr code">
+
+    <meta name="author" content="Qrun Online">
+
+    <meta name="robots"
+        content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+    <link rel="canonical" href="https://www.qrun.online/blog">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Qrun Online">
+
+    <meta property="og:title"
+        content="Blog Qrun Online | Artikel Sejarah, Budaya, Wisata & QR Digital">
+
+    <meta property="og:description"
+        content="Baca artikel tentang sejarah, budaya, wisata, teknologi QR Code, dan informasi tempat dari Qrun Online.">
+
+    <meta property="og:url"
+        content="https://www.qrun.online/blog">
+
+    <meta property="og:image"
+        content="https://www.qrun.online/home.jpg">
+
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="twitter:title"
+        content="Blog Qrun Online | Artikel Sejarah, Budaya, Wisata & QR Digital">
+
+    <meta name="twitter:description"
+        content="Temukan artikel sejarah, budaya, wisata, dan teknologi QR Code dari Qrun Online.">
+
+    <meta name="twitter:image"
+        content="https://www.qrun.online/home.jpg">
+
+    <meta name="theme-color" content="#2d4373">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Qrun Online Blog",
+        "url": "https://www.qrun.online/blog",
+        "description": "Blog resmi Qrun Online tentang sejarah, budaya, wisata, teknologi QR Code, dan digital heritage.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Qrun Online",
+            "url": "https://www.qrun.online"
+        }
+    }
+    </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
