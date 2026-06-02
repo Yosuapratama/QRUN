@@ -581,6 +581,13 @@ class PlaceController extends Controller
         // Hanya domain iframe terpercaya
         $allowedIframeDomains = [
             // YouTube
+            'qrun.online',
+            '127.0.0.1',
+            'www.qrun.online',
+            'https://qrun.online',
+            'http://qrun.online',
+            'https://www.qrun.online',
+            'http://www.qrun.online',
             'youtube.com',
             'www.youtube.com',
             'm.youtube.com',
@@ -961,6 +968,7 @@ class PlaceController extends Controller
             $request->content
         );
 
+        
         libxml_use_internal_errors(true);
 
         $dom = new DOMDocument();
@@ -1391,10 +1399,74 @@ class PlaceController extends Controller
 
 
         $customSettingRunningText = CustomRunningTextSettings::first();
-        $customSettingAds = CustomAdsSettings::where('is_active', true)->first();
+
+        $customSettingAds = CustomAdsSettings::with('images')
+            ->where('is_active', true)
+            ->first();
+
         $ads = $place->advertises?->where('is_active', 1)->first();
 
-        return view('Pages.detail-place.index', compact('place', 'event', 'customSettingRunningText', 'customSettingAds', 'ads'));
+        $modalAds = null;
+        $modalAdsImages = collect();
+
+        if ($customSettingAds) {
+
+            // pakai setting global
+            $modalAds = (object)[
+                'title' => $customSettingAds->title,
+                'time' => $customSettingAds->time,
+                'is_active' => $customSettingAds->is_active,
+                'is_block' => $customSettingAds->is_blocking,
+            ];
+
+            // priority custom images
+            $modalAdsImages = $customSettingAds->images
+                ->map(fn($img) => [
+                    'image_url' => $img->image_url,
+                    'source' => 'custom'
+                ]);
+
+            // merge advertise
+            if (
+                $customSettingAds->merge_with_advertise_users &&
+                $ads &&
+                $ads->images?->count()
+            ) {
+                $advertiseImages = $ads->images->map(fn($img) => [
+                    'image_url' => $img->image_url,
+                    'source' => 'advertise'
+                ]);
+
+                $modalAdsImages = $modalAdsImages->concat($advertiseImages);
+            }
+        } elseif ($ads) {
+
+            // fallback advertise
+            $modalAds = (object)[
+                'title' => $ads->title,
+                'time' => $ads->time,
+                'is_active' => $ads->is_active,
+                'is_block' => $ads->is_block,
+            ];
+
+            $modalAdsImages = $ads->images->map(fn($img) => [
+                'image_url' => $img->image_url,
+                'source' => 'advertise'
+            ]);
+        }
+
+        return view(
+            'Pages.detail-place.index',
+            compact(
+                'place',
+                'event',
+                'customSettingRunningText',
+                'customSettingAds',
+                'ads',
+                'modalAds',
+                'modalAdsImages'
+            )
+        );
     }
 
 

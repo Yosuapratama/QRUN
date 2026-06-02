@@ -158,12 +158,12 @@ Route::group(['prefix' => 'management'], function () {
                 Route::get('/general/artisan/optimize', function () {
                     Artisan::call('optimize');
 
-                    return back();
+                    return back()->withSuccess('Application optimized successfully.');
                 })->name('artisan.optimize');
                 Route::get('/general/artisan/queue', function () {
                     Artisan::call('queue:restart');
 
-                    return back();
+                    return back()->withSuccess('Queue restarted successfully.');
                 })->name('artisan.queue');
 
                 Route::get('/log-activity', [LogActivitiesController::class, 'index'])->name('settings.log-activity');
@@ -173,6 +173,7 @@ Route::group(['prefix' => 'management'], function () {
             Route::post('/file/upload/gallery', [FileController::class, 'uploadImageGallery'])->name('upload.gallery');
             Route::post('/file/upload/blog', [FileController::class, 'uploadImageBlog'])->name('upload.blog');
             Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace'])->name('upload.place.ads');
+            Route::post('/file/upload/ads/bulk', [FileController::class, 'bulkUploadImageAds'])->name('upload.ads.bulk');
         });
 
         Route::middleware(['checkUserLimitPermissions'])->group(function () {
@@ -249,7 +250,7 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 // This is Public Route For Anonym Users
-Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detailPublic');
+Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detailGlobal');
 Route::get('/detail-place/{place_code}/comments', [CommentController::class, 'index'])->name('comments.index');
 Route::post('/detail-place/{place_code}/comments/store', [CommentController::class, 'store'])->name('comments.storeco');
 Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentController::class, 'deleteCommentsByUser'])->middleware('checkLogin');

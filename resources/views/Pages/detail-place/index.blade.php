@@ -414,7 +414,7 @@
                 </div>
             @endif
 
-            @if ($ads || $customSettingAds)
+            @if ($modalAds)
                 <!-- Ads Modal -->
                 <div v-if="showAdsModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
                     role="dialog" aria-modal="true">
@@ -430,11 +430,7 @@
                                 <div class="sm:flex sm:items-start">
                                     <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
                                         <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                                            @if ($ads)
-                                                {{ $ads->title }}
-                                            @else
-                                                {{ $customSettingAds?->title }}
-                                            @endif
+                                            {{ $modalAds->title }}
                                         </h3>
                                         {{-- <div class="mt-2 flex justify-center">
                                             <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
@@ -442,7 +438,7 @@
                                         </div> --}}
                                         <div class="mt-4">
 
-                                            @if ($ads && $ads->images->count())
+                                            @if ($modalAdsImages->count())
                                                 <div class="relative rounded-2xl overflow-hidden bg-black">
 
                                                     {{-- SLIDER --}}
@@ -451,17 +447,13 @@
                                                             transform: `translateX(-${currentAdsImage * 100}%)`
                                                         }">
 
-                                                        @foreach ($ads->images as $image)
+                                                        @foreach ($modalAdsImages as $image)
                                                             <div class="min-w-full">
-
                                                                 <div class="w-full h-[420px]">
-
-                                                                    <img src="{{ asset($image->image_url) }}"
+                                                                    <img src="{{ asset($image['image_url']) }}"
                                                                         class="w-full h-full object-cover"
                                                                         alt="Advertisement">
-
                                                                 </div>
-
                                                             </div>
                                                         @endforeach
 
@@ -470,17 +462,13 @@
                                                     {{-- LEFT --}}
                                                     <button type="button" @click="prevAdsImage"
                                                         class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur hover:bg-black/70 transition">
-
                                                         <i class="fas fa-chevron-left"></i>
-
                                                     </button>
 
                                                     {{-- RIGHT --}}
                                                     <button type="button" @click="nextAdsImage"
                                                         class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur hover:bg-black/70 transition">
-
                                                         <i class="fas fa-chevron-right"></i>
-
                                                     </button>
 
                                                     {{-- PLAY / PAUSE --}}
@@ -502,7 +490,7 @@
                                                     {{-- INDICATOR --}}
                                                     <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
 
-                                                        @foreach ($ads->images as $index => $image)
+                                                        @foreach ($modalAdsImages as $index => $image)
                                                             <button type="button"
                                                                 @click="goToAdsImage({{ $index }})"
                                                                 class="w-3 h-3 rounded-full transition-all duration-300"
@@ -515,13 +503,6 @@
                                                     </div>
 
                                                 </div>
-                                            @else
-                                                <div class="w-full h-[420px] bg-gray-100 rounded-2xl overflow-hidden">
-
-                                                    <img src="{{ asset($customSettingAds?->image_url) }}"
-                                                        class="w-full h-full object-cover" alt="Advertisement">
-
-                                                </div>
                                             @endif
 
                                         </div>
@@ -530,9 +511,8 @@
                             </div>
                             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 @php
-                                    $isBlockedAds = $ads?->is_block ? 'true' : 'false';
+                                    $isBlockedAds = $modalAds?->is_block ? 'true' : 'false';
                                 @endphp
-
                                 <button type="button" @click="closeAdsModal"
                                     :disabled="{{ $isBlockedAds }} ? isLoadingAds : false"
                                     class="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-300"
@@ -541,8 +521,8 @@
                                         'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
 
                                     <div v-if="
-            {{ $ads?->is_block ? 'isLoadingAds' : 'false' }}
-        "
+                                        {{ $modalAds?->is_block ? 'isLoadingAds' : 'false' }}
+                    "
                                         class="flex items-center">
 
                                         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -575,7 +555,8 @@
             <!-- Main Content -->
             <div class="container mx-auto px-4 py-8" :class="{ 'pt-16': disabledAfter > 0 }">
                 <!-- Header -->
-                <div id="headerContainerRunningText" class="rounded-[14px] overflow-hidden mb-8 fade-in {{ $customSettingRunningText->is_active == 1 ? 'mt-4' : ''}}">
+                <div id="headerContainerRunningText"
+                    class="rounded-[14px] overflow-hidden mb-8 fade-in {{ $customSettingRunningText->is_active == 1 ? 'mt-4' : '' }}">
                     {{-- Hero --}}
                     <div class="bg-gradient-to-br from-blue-600 via-purple-600/80 to-purple-600 relative">
                         <div class="absolute inset-0 pointer-events-none"
@@ -1276,22 +1257,22 @@
                     </div>
 
                     ${ev.images.length > 1 ? `
-                                                                                                                                                                                                            <button class="carousel-control-prev"
-                                                                                                                                                                                                                type="button"
-                                                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
-                                                                                                                                                                                                                data-bs-slide="prev">
+                                                                                                                                                                                                                <button class="carousel-control-prev"
+                                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                                    data-bs-slide="prev">
 
-                                                                                                                                                                                                                <span class="carousel-control-prev-icon"></span>
-                                                                                                                                                                                                            </button>
+                                                                                                                                                                                                                    <span class="carousel-control-prev-icon"></span>
+                                                                                                                                                                                                                </button>
 
-                                                                                                                                                                                                            <button class="carousel-control-next"
-                                                                                                                                                                                                                type="button"
-                                                                                                                                                                                                                data-bs-target="#eventDetailCarousel"
-                                                                                                                                                                                                                data-bs-slide="next">
+                                                                                                                                                                                                                <button class="carousel-control-next"
+                                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                                    data-bs-slide="next">
 
-                                                                                                                                                                                                                <span class="carousel-control-next-icon"></span>
-                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                        ` : ''}
+                                                                                                                                                                                                                    <span class="carousel-control-next-icon"></span>
+                                                                                                                                                                                                                </button>
+                                                                                                                                                                                                            ` : ''}
 
                 </div>
 
@@ -1312,14 +1293,14 @@
                         </div>
 
                         ${ev.end_date ? `
-                                                                                                                                                                                                            <div class="mt-1">
-                                                                                                                                                                                                                <span class="font-semibold">
-                                                                                                                                                                                                                    Until:
-                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                <div class="mt-1">
+                                                                                                                                                                                                                    <span class="font-semibold">
+                                                                                                                                                                                                                        Until:
+                                                                                                                                                                                                                    </span>
 
-                                                                                                                                                                                                                ${ev.end_date} WITA
-                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                        ` : ''}
+                                                                                                                                                                                                                    ${ev.end_date} WITA
+                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                            ` : ''}
 
                     </div>
 
@@ -1445,7 +1426,8 @@
                 return {
                     comments: [],
                     currentAdsImage: 0,
-                    adsImagesCount: "{{ $ads?->images?->count() ?? 0 }}",
+                    isBlockedAds: "{{ $modalAds?->is_block ? 'true' : 'false' }}",
+                    adsImagesCount: "{{ $modalAdsImages->count() }}",
                     adsInterval: null,
                     adsPaused: false,
                     selectedRating: 0,
@@ -1460,8 +1442,8 @@
                     editUserId: null,
                     currEditId: null,
                     isLoadingAds: true,
-                    timeAds: "{!! $customSettingAds?->time !!}",
-                    isAdsActive: "{!! $customSettingAds?->is_active !!}",
+                    timeAds: "{!! $modalAds?->time ?? 0 !!}",
+                    isAdsActive: "{!! $modalAds?->is_active ?? 0 !!}",
                     disabledAfter: "{!! $customSettingRunningText->disabled_after !!}",
                     showAdsModal: false
                 }
@@ -1754,11 +1736,6 @@
             async mounted() {
                 await this.getCommentData();
 
-                @if ($ads)
-                    this.timeAds = "{!! $ads->time !!}";
-                    this.isAdsActive = "{!! $ads->is_active !!}";
-                @endif
-
                 if (this.isAdsActive === "1") {
                     this.showModal();
                     this.setCountDownModal();
@@ -1774,6 +1751,7 @@
     <!-- Google Translate -->
     <script>
         console.log('Google Translate script loaded');
+
         function googleTranslateElementInit() {
 
             new google.translate.TranslateElement({

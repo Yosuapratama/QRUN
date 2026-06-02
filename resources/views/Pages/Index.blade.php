@@ -45,6 +45,8 @@
     <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
 
     <meta name="theme-color" content="#2d4373">
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ asset('transparent-logo.png') }}">
 
     <!-- Structured Data -->
     <script type="application/ld+json">

@@ -93,6 +93,51 @@ class FileController extends Controller
         return response()->json($customAds);
     }
 
+    function bulkUploadImageAds(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file.*' => 'mimes:png,jpg,jpeg,gif,webp|max:10240',
+            'file' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Invalid file',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $customAds = CustomAdsSettings::first();
+
+        $files = $request->file('file');
+
+        // 👉 normalize jadi array
+        if (!is_array($files)) {
+            $files = [$files];
+        }
+
+        $saved = [];
+
+        foreach ($files as $file) {
+
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = "image_ads/" . $filename;
+
+            $file->move(public_path("image_ads"), $filename);
+
+            $image = $customAds->images()->create([
+                'image_url' => $path
+            ]);
+
+            $saved[] = $image;
+        }
+
+        return response()->json([
+            'message' => 'Uploaded successfully',
+            'data' => $saved
+        ]);
+    }
+
     function uploadImageAdsPlace(Request $request)
     {
         $request->validate([
@@ -155,5 +200,4 @@ class FileController extends Controller
         // return the result
         return response()->json(["image_url" => $path])->header('Content-Type', 'application/json');;
     }
-
 }

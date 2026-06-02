@@ -809,6 +809,7 @@
                     confirmText,
                     url
                 }) {
+
                     Swal.fire({
                         title,
                         text,
@@ -825,23 +826,49 @@
 
                         if (!result.isConfirmed) return;
 
+                        // Loading Swal
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait a moment',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         $.ajax({
                             url,
                             type: "PUT",
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
+
                             success: function(response) {
+
+                                Swal.close();
+
                                 showSuccess(response);
+
                                 reloadTable();
                             },
-                            error: function() {
-                                showError('User not found');
+
+                            error: function(xhr) {
+
+                                Swal.close();
+
+                                let message = 'Something went wrong';
+
+                                if (xhr.responseJSON?.message) {
+                                    message = xhr.responseJSON.message;
+                                }
+
+                                showError(message);
                             }
                         });
                     });
                 }
-
                 /* ------------------------------
                    MODAL
                 ------------------------------ */

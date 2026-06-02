@@ -1,9 +1,30 @@
  <!-- Sidebar On Left Menu -->
  <ul class="navbar-nav sidebar sidebar-dark accordion" style="background-color: #24396f" id="accordionSidebar">
      <!-- Sidebar - Brand -->
-     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('dashboard') }}">
-         <div class="sidebar-brand-text mx-3">QRUN WEBSITE</div>
-     </a>
+    <a class="p-0 m-3 sidebar-brand d-flex align-items-center justify-content-center"
+    href="{{ route('dashboard') }}">
+
+    <img
+        src="{{ asset('qrun-logo-fullwidth.png') }}"
+        alt="QRUN Logo"
+        class="sidebar-logo"
+    >
+</a>
+
+<style>
+    .sidebar-logo {
+        max-width: 160px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-logo {
+            max-width: 100px;
+        }
+    }
+</style>
      <!-- Divider -->
      <hr class="sidebar-divider my-0">
      <!-- Nav Item - Dashboard -->

@@ -15,6 +15,9 @@
     <link href="{{ asset('AdminBS2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
+    {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ asset('transparent-logo.png') }}">
+
     <!-- Select2 JS -->
 
     {{-- <link rel="stylesheet" href="//cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css"> --}}

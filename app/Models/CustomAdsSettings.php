@@ -12,4 +12,12 @@ class CustomAdsSettings extends Model
     public $table = 'custom_ads_settings';
 
     public $guarded = ['id'];
+
+    public function images()
+    {
+        return $this->hasMany(
+            AdsSettingImage::class,
+            'custom_ads_setting_id'
+        );
+    }
 }

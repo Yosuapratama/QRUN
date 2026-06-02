@@ -3,8 +3,11 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
+            <!-- Logo -->
             <div class="flex-shrink-0">
-                <a href="{{ route('homes') }}" class="text-xl font-bold text-gray-800">Qrun Online</a>
+                <a href="{{ route('homes') }}" class="inline-flex items-center">
+                    <img src="{{ asset('qrun-logo-fullwidth.png') }}" alt="QRUN Logo" class="h-10 w-auto py-2">
+                </a>
             </div>
 
             <!-- Desktop Menu -->

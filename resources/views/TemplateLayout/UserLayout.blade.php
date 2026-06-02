@@ -13,6 +13,9 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('AdminBS2/css/sb-admin-2.min.css') }}" rel="stylesheet">
+      {{-- Favicon --}}
+    <link rel="icon" type="image/png" href="{{ asset('transparent-logo.png') }}">
+
     <style>
         .login-wrapper {
             position: relative;
