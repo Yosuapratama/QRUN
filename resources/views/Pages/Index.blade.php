@@ -200,11 +200,12 @@
             <div class="flex flex-col-reverse lg:grid lg:grid-cols-2 lg:gap-8 items-center">
                 <div class="mb-8 lg:mb-0">
                     <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 mt-4 lg:mt-0 md:mt-1">
-                        Ciptakan tempat pertama mu disini!
+                        Melestarikan Warisan Budaya
+                        Lewat Teknologi QR Code
                     </h1>
                     <p class="text-lg text-gray-600 mb-8">
-                        Bergabunglah dengan komunitas kami dan mulai berbagi cerita Anda dengan dunia. Platform yang
-                        mudah digunakan untuk semua kalangan.
+                        Qrun membantu pengunjung memahami sejarah tempat dengan pengalaman digital yang modern dan
+                        interaktif.
                     </p>
                     <div class="space-x-4">
                         <a href="{{ route('login') }}"
@@ -222,25 +223,200 @@
             </div>
         </div>
     </section>
-
     <!-- Video Section -->
-    <section class="py-16 bg-white">
+    <section class="py-8 bg-white">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                Cara Penggunaan Website
-            </h2>
-            <p class="text-lg text-gray-600 mb-8">
-                Pelajari bagaimana menggunakan platform kami dalam video tutorial singkat ini
-            </p>
             <div class="relative bg-gray-900 rounded-lg overflow-hidden shadow-xl">
                 <div class="aspect-w-16 aspect-h-9">
-                    <iframe width="100%" height="400px"
+                    {{-- <iframe width="100%" height="400px"
                         src="https://www.youtube.com/embed/W5IUwH-tk8g?si=_2OtIl56GzFtULGh" title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> --}}
+
+                    <iframe width="100%" height="400px"
+                        src="https://www.youtube.com/embed/cwQX8Ov0A_M?si=RdtQLg3E1EPhuCf9" title="YouTube video player"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Vision Mission Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Header -->
+            <div class="text-center mb-14">
+                <span
+                    class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold mb-4">
+                    <i class="fas fa-landmark mr-2"></i>
+                    Tentang Qrun Online
+                </span>
+
+                <h2 class="text-3xl lg:text-5xl font-bold text-gray-900 mb-4">
+                    Melestarikan Sejarah dan Budaya dengan Teknologi
+                </h2>
+
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Qrun Online hadir untuk membantu masyarakat mengakses informasi sejarah,
+                    budaya, dan warisan Indonesia secara lebih interaktif melalui teknologi
+                    QR Code.
+                </p>
+            </div>
+
+            <!-- Vision -->
+            <div
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 lg:p-12 shadow-xl mb-10 text-white">
+                <div class="flex items-start gap-4">
+                    <div class="bg-white/20 p-4 rounded-2xl">
+                        <i class="fas fa-eye text-3xl"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4">
+                            Visi Kami
+                        </h3>
+
+                        <p class="text-lg text-blue-100 leading-relaxed">
+                            Menjadi sumber informasi terpercaya dan interaktif tentang sejarah
+                            pura dan candi di Indonesia, sehingga meningkatkan kesadaran
+                            dan apresiasi masyarakat terhadap warisan budaya.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mission -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+
+                <div class="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-blue-100 text-blue-600 p-3 rounded-xl mr-4">
+                            <i class="fas fa-bullseye text-xl"></i>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-gray-900">
+                            Misi Kami
+                        </h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <span
+                                class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3 shrink-0">1</span>
+                            <p class="text-gray-600">
+                                Menyediakan informasi akurat dan menarik tentang sejarah pura dan candi melalui QR Code.
+                            </p>
+                        </div>
+
+                        <div class="flex items-start">
+                            <span
+                                class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3 shrink-0">2</span>
+                            <p class="text-gray-600">
+                                Meningkatkan kesadaran masyarakat terhadap warisan budaya Indonesia.
+                            </p>
+                        </div>
+
+                        <div class="flex items-start">
+                            <span
+                                class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3 shrink-0">3</span>
+                            <p class="text-gray-600">
+                                Membuat pengalaman belajar sejarah menjadi interaktif dan menyenangkan.
+                            </p>
+                        </div>
+
+                        <div class="flex items-start">
+                            <span
+                                class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3 shrink-0">4</span>
+                            <p class="text-gray-600">
+                                Membangun komunitas yang peduli terhadap warisan budaya Indonesia.
+                            </p>
+                        </div>
+
+                        <div class="flex items-start">
+                            <span
+                                class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold mr-3 shrink-0">5</span>
+                            <p class="text-gray-600">
+                                Menjalin kerja sama dengan instansi terkait untuk meningkatkan kualitas layanan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Core Values -->
+                <div class="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                    <div class="flex items-center mb-6">
+                        <div class="bg-green-100 text-green-600 p-3 rounded-xl mr-4">
+                            <i class="fas fa-gem text-xl"></i>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-gray-900">
+                            Nilai Inti
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4">
+
+                        <div class="bg-white p-4 rounded-2xl border">
+                            <h4 class="font-semibold text-gray-900 mb-1">
+                                Informasi Berkualitas
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Menyajikan informasi sejarah yang akurat dan menarik.
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border">
+                            <h4 class="font-semibold text-gray-900 mb-1">
+                                Inovasi Digital
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Menggunakan teknologi untuk pengalaman belajar yang modern.
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border">
+                            <h4 class="font-semibold text-gray-900 mb-1">
+                                Pelestarian Budaya
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Mendukung pelestarian warisan budaya Indonesia.
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border">
+                            <h4 class="font-semibold text-gray-900 mb-1">
+                                Kolaborasi
+                            </h4>
+                            <p class="text-sm text-gray-600">
+                                Bekerja sama dengan komunitas dan instansi terkait.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="rounded-3xl bg-gradient-to-r from-gray-900 to-gray-800 p-10 text-center text-white shadow-xl">
+                <h3 class="text-2xl lg:text-3xl font-bold mb-4">
+                    Bersama Melestarikan Warisan Budaya Indonesia
+                </h3>
+
+                <p class="text-gray-300 max-w-2xl mx-auto mb-6">
+                    Jadilah bagian dari transformasi digital sejarah dan budaya Indonesia
+                    melalui teknologi QR Code yang interaktif.
+                </p>
+
+                <a href="{{ route('login') }}"
+                    class="inline-flex items-center bg-white text-gray-900 px-8 py-4 rounded-xl font-semibold hover:shadow-lg transition">
+                    Mulai Sekarang
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+
         </div>
     </section>
 
@@ -315,6 +491,28 @@
                     id="nextBtn">
                     <i class="fas fa-chevron-right text-gray-600"></i>
                 </button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Video Section -->
+    <section class="py-10 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                Cara Penggunaan Website
+            </h2>
+            <p class="text-lg text-gray-600 mb-8">
+                Pelajari bagaimana menggunakan platform kami dalam video tutorial singkat ini
+            </p>
+            <div class="relative bg-gray-900 rounded-lg overflow-hidden shadow-xl">
+                <div class="aspect-w-16 aspect-h-9">
+                    <iframe width="100%" height="400px"
+                        src="https://www.youtube.com/embed/W5IUwH-tk8g?si=_2OtIl56GzFtULGh"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </section>

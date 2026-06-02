@@ -13,7 +13,7 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('AdminBS2/css/sb-admin-2.min.css') }}" rel="stylesheet">
-      {{-- Favicon --}}
+    {{-- Favicon --}}
     <link rel="icon" type="image/png" href="{{ asset('transparent-logo.png') }}">
 
     <style>
@@ -62,6 +62,61 @@
             width: 100%;
         }
 
+        .back-home-btn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 9999;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 12px 18px;
+
+            background: rgba(255, 255, 255, .92);
+            border: 1px solid rgba(0, 0, 0, .06);
+            border-radius: 14px;
+
+            color: #2d4373;
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, .08);
+
+            transition: all .25s ease;
+        }
+
+        .back-home-btn:hover {
+            text-decoration: none;
+            color: #1f3260;
+
+            transform: translateY(-2px);
+
+            background: #ffffff;
+
+            box-shadow:
+                0 14px 40px rgba(0, 0, 0, .12);
+        }
+
+        .back-home-btn i {
+            font-size: 13px;
+        }
+
+        @media (max-width: 576px) {
+            .back-home-btn {
+                top: 16px;
+                left: 16px;
+
+                padding: 10px 14px;
+                font-size: 13px;
+                border-radius: 12px;
+            }
+        }
+
         @media (max-width: 768px) {
             .wave {
                 height: 200px;
@@ -99,7 +154,11 @@
 
 @push('scriptApp')
     <div class="login-wrapper d-flex justify-content-center align-items-center">
-
+        <!-- Back to Home Button -->
+        <a href="{{ url('/') }}" class="back-home-btn">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Home
+        </a>
         <div class="wave">
             <div class="wave-footer">
                 © {{ date('Y') }} QRUN Online. All rights reserved.
