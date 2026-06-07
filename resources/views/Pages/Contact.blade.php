@@ -18,7 +18,7 @@
     <meta name="robots"
         content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-    <link rel="canonical" href="https://www.qrun.online/contact">
+    <link rel="canonical" href="https://qrun.online/contact">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -31,10 +31,10 @@
         content="Hubungi tim Qrun Online untuk dukungan, pertanyaan, atau kerja sama terkait platform QR Code untuk sejarah, budaya, dan informasi tempat.">
 
     <meta property="og:url"
-        content="https://www.qrun.online/contact">
+        content="https://qrun.online/contact">
 
     <meta property="og:image"
-        content="https://www.qrun.online/home.jpg">
+        content="https://qrun.online/home.jpg">
 
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -49,7 +49,7 @@
         content="Butuh bantuan atau ingin bekerja sama dengan Qrun Online? Hubungi tim kami di sini.">
 
     <meta name="twitter:image"
-        content="https://www.qrun.online/home.jpg">
+        content="https://qrun.online/home.jpg">
 
     <meta name="theme-color" content="#2d4373">
 
@@ -59,12 +59,12 @@
         "@context": "https://schema.org",
         "@type": "ContactPage",
         "name": "Contact Qrun Online",
-        "url": "https://www.qrun.online/contact",
+        "url": "https://qrun.online/contact",
         "description": "Halaman kontak resmi Qrun Online untuk dukungan dan pertanyaan.",
         "publisher": {
             "@type": "Organization",
             "name": "Qrun Online",
-            "url": "https://www.qrun.online"
+            "url": "https://qrun.online"
         }
     }
     </script>

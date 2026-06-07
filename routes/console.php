@@ -11,4 +11,4 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('checkpoint:summary 6')
     ->everySixHours();
 Schedule::command('user:summary 6')
-    ->everySixHours();
+    ->everyMinute();

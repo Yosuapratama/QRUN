@@ -26,7 +26,7 @@
 
     <meta name="author" content="Qrun Online">
 
-    <link rel="canonical" href="https://www.qrun.online">
+    <link rel="canonical" href="https://qrun.online">
 
     <meta name="theme-color" content="#2d4373">
 
@@ -44,9 +44,9 @@
     <meta property="og:description"
         content="Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.">
 
-    <meta property="og:url" content="https://www.qrun.online">
+    <meta property="og:url" content="https://qrun.online">
 
-    <meta property="og:image" content="https://www.qrun.online/home.jpg">
+    <meta property="og:image" content="https://qrun.online/home.jpg">
 
     <meta property="og:image:width" content="1200">
 
@@ -62,7 +62,7 @@
     <meta name="twitter:description"
         content="Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.">
 
-    <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
+    <meta name="twitter:image" content="https://qrun.online/home.jpg">
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -71,22 +71,22 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://www.qrun.online/#organization",
+          "@id": "https://qrun.online/#organization",
           "name": "Qrun Online",
-          "url": "https://www.qrun.online",
+          "url": "https://qrun.online",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://www.qrun.online/transparent-logo.png"
+            "url": "https://qrun.online/transparent-logo.png"
           }
         },
         {
           "@type": "WebSite",
-          "@id": "https://www.qrun.online/#website",
-          "url": "https://www.qrun.online",
+          "@id": "https://qrun.online/#website",
+          "url": "https://qrun.online",
           "name": "Qrun Online",
           "description": "Platform prasasti digital berbasis QR Code untuk mengakses sejarah, budaya, dokumentasi, dan informasi tempat secara interaktif.",
           "publisher": {
-            "@id": "https://www.qrun.online/#organization"
+            "@id": "https://qrun.online/#organization"
           },
           "inLanguage": "id-ID"
         }

@@ -13,7 +13,7 @@
 
     <meta name="author" content="Qrun Online">
 
-    <link rel="canonical" href="https://www.qrun.online/login">
+    <link rel="canonical" href="https://qrun.online/login">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -25,9 +25,9 @@
     <meta property="og:description"
         content="Masuk ke akun Qrun Online untuk mengelola QR Code dan prasasti digital lokasi Anda.">
 
-    <meta property="og:url" content="https://www.qrun.online/login">
+    <meta property="og:url" content="https://qrun.online/login">
 
-    <meta property="og:image" content="https://www.qrun.online/home.jpg">
+    <meta property="og:image" content="https://qrun.online/home.jpg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -37,7 +37,7 @@
     <meta name="twitter:description"
         content="Masuk ke akun Qrun Online untuk mengelola QR Code dan prasasti digital lokasi Anda.">
 
-    <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
+    <meta name="twitter:image" content="https://qrun.online/home.jpg">
 
     <meta name="theme-color" content="#2d4373">
 
@@ -46,12 +46,12 @@
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Login | Qrun Online",
-        "url": "https://www.qrun.online/login",
+        "url": "https://qrun.online/login",
         "description": "Masuk ke akun Qrun Online untuk mengelola prasasti digital, QR Code, dan informasi lokasi Anda.",
         "isPartOf": {
             "@type": "WebSite",
             "name": "Qrun Online",
-            "url": "https://www.qrun.online"
+            "url": "https://qrun.online"
         }
     }
     </script>

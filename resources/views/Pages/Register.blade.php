@@ -13,7 +13,7 @@
 
     <meta name="author" content="Qrun Online">
 
-    <link rel="canonical" href="https://www.qrun.online/register">
+    <link rel="canonical" href="https://qrun.online/register">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -25,9 +25,9 @@
     <meta property="og:description"
         content="Buat akun Qrun Online dan mulai membuat prasasti digital berbasis QR Code untuk lokasi Anda.">
 
-    <meta property="og:url" content="https://www.qrun.online/register">
+    <meta property="og:url" content="https://qrun.online/register">
 
-    <meta property="og:image" content="https://www.qrun.online/home.jpg">
+    <meta property="og:image" content="https://qrun.online/home.jpg">
 
     <meta property="og:image:width" content="1200">
 
@@ -41,7 +41,7 @@
     <meta name="twitter:description"
         content="Daftar akun Qrun Online dan mulai membuat prasasti digital berbasis QR Code untuk lokasi Anda.">
 
-    <meta name="twitter:image" content="https://www.qrun.online/home.jpg">
+    <meta name="twitter:image" content="https://qrun.online/home.jpg">
 
     <meta name="theme-color" content="#2d4373">
 
@@ -50,12 +50,12 @@
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Register | Qrun Online",
-        "url": "https://www.qrun.online/register",
+        "url": "https://qrun.online/register",
         "description": "Daftar akun Qrun Online dan mulai membuat prasasti digital berbasis QR Code untuk lokasi Anda.",
         "isPartOf": {
             "@type": "WebSite",
             "name": "Qrun Online",
-            "url": "https://www.qrun.online"
+            "url": "https://qrun.online"
         }
     }
     </script>

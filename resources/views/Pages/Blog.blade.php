@@ -18,7 +18,7 @@
     <meta name="robots"
         content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 
-    <link rel="canonical" href="https://www.qrun.online/blog">
+    <link rel="canonical" href="https://qrun.online/blog">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -31,10 +31,10 @@
         content="Baca artikel tentang sejarah, budaya, wisata, teknologi QR Code, dan informasi tempat dari Qrun Online.">
 
     <meta property="og:url"
-        content="https://www.qrun.online/blog">
+        content="https://qrun.online/blog">
 
     <meta property="og:image"
-        content="https://www.qrun.online/home.jpg">
+        content="https://qrun.online/home.jpg">
 
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -49,7 +49,7 @@
         content="Temukan artikel sejarah, budaya, wisata, dan teknologi QR Code dari Qrun Online.">
 
     <meta name="twitter:image"
-        content="https://www.qrun.online/home.jpg">
+        content="https://qrun.online/home.jpg">
 
     <meta name="theme-color" content="#2d4373">
 
@@ -59,12 +59,12 @@
         "@context": "https://schema.org",
         "@type": "Blog",
         "name": "Qrun Online Blog",
-        "url": "https://www.qrun.online/blog",
+        "url": "https://qrun.online/blog",
         "description": "Blog resmi Qrun Online tentang sejarah, budaya, wisata, teknologi QR Code, dan digital heritage.",
         "publisher": {
             "@type": "Organization",
             "name": "Qrun Online",
-            "url": "https://www.qrun.online"
+            "url": "https://qrun.online"
         }
     }
     </script>
