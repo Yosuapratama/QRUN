@@ -63,11 +63,11 @@
 
             <div>
                 <h1 class="page-title">
-                    {{ $blog ? 'Update Blog' : 'Create Blog' }}
+                    {{ $blog ? __('messages.management.blog_form.title_update') : __('messages.management.blog_form.title_create') }}
                 </h1>
 
                 <div class="page-subtitle">
-                    Manage blog content, thumbnail, and publish settings.
+                    {{ __('messages.management.blog_form.subtitle') }}
                 </div>
             </div>
 
@@ -118,11 +118,11 @@
             <div class="card-header">
 
                 <div class="section-title">
-                    Blog Form
+                    {{ __('messages.management.blog_form.section_title') }}
                 </div>
 
                 <div class="section-subtitle">
-                    Fill in the information below carefully.
+                    {{ __('messages.management.blog_form.section_subtitle') }}
                 </div>
 
             </div>
@@ -143,7 +143,7 @@
                 <div class="form-group-modern">
 
                     <label class="form-label-modern">
-                        Blog Title
+                        {{ __('messages.management.blog_form.field_title') }}
                         <span class="text-danger">*</span>
                     </label>
 
@@ -160,7 +160,7 @@
                 <div class="form-group-modern">
 
                     <label class="form-label-modern">
-                        Slug
+                        {{ __('messages.management.blog_form.field_slug') }}
                         <span class="text-danger">*</span>
                     </label>
 
@@ -177,7 +177,7 @@
                 <div class="form-group-modern">
 
                     <label class="form-label-modern">
-                        Short Description
+                        {{ __('messages.management.blog_form.field_description') }}
                         <span class="text-danger">*</span>
                     </label>
 
@@ -194,7 +194,7 @@
                 <div class="form-group-modern">
 
                     <label class="form-label-modern">
-                        Blog Content <span class="text-danger">*</span>
+                        {{ __('messages.management.blog_form.field_content') }} <span class="text-danger">*</span>
                     </label>
 
                     <textarea class="form-control" name="content" id="summernote">
@@ -211,7 +211,7 @@
                 <div class="form-group-modern">
 
                     <label class="form-label-modern">
-                        Blog Cover
+                        {{ __('messages.management.blog_form.field_cover') }}
                         <span class="text-danger">*</span>
                     </label>
 
@@ -222,11 +222,11 @@
                             <i class="fas fa-cloud-upload-alt"></i>
 
                             <div class="font-weight-bold">
-                                Drag & Drop image here
+                                {{ __('messages.management.blog_form.drag_drop') }}
                             </div>
 
                             <small>
-                                PNG, JPG, JPEG up to 5MB
+                                {{ __('messages.management.blog_form.file_hint') }}
                             </small>
 
                         </div>
@@ -273,11 +273,11 @@
                         <div>
 
                             <div class="publish-title">
-                                Publish Blog
+                                {{ __('messages.management.blog_form.publish_title') }}
                             </div>
 
                             <div class="publish-subtitle">
-                                Enable this if you want the blog visible publicly.
+                                {{ __('messages.management.blog_form.publish_subtitle') }}
                             </div>
 
                         </div>
@@ -300,12 +300,12 @@
                     @if ($blog)
                         <button type="submit" class="btn btn-primary btn-modern">
                             <i class="fas fa-save mr-2"></i>
-                            Update Blog
+                            {{ __('messages.management.blog_form.update_btn') }}
                         </button>
                     @else
                         <button type="submit" class="btn btn-success btn-modern">
                             <i class="fas fa-paper-plane mr-2"></i>
-                            Publish Blog
+                            {{ __('messages.management.blog_form.publish_btn') }}
                         </button>
                     @endif
 
@@ -590,6 +590,12 @@
     @push('script')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
         <script>
+            const i18nBlogForm = {
+                uploading:    @json(__('messages.management.gallery_form.swal_uploading')),
+                uploadWait:   @json(__('messages.management.gallery_form.swal_wait')),
+                uploadFailed: @json(__('messages.management.gallery_form.swal_upload_failed')),
+            };
+
             Dropzone.autoDiscover = false;
             var myDropzone = new Dropzone('#formDropzone', {
                 url: "{{ route('upload.blog') }}", // Ensure the URL is correct
@@ -651,13 +657,13 @@
                         var token = $('meta[name="csrf-token"]').attr('content');
                         formData.append('_token', token);
                         Swal.fire({
-                            title: 'Uploading...',
-                            text: 'Please wait while we upload your file.',
+                            title: i18nBlogForm.uploading,
+                            text: i18nBlogForm.uploadWait,
                             didOpen: () => {
-                                Swal.showLoading(); // Show the loading spinner
+                                Swal.showLoading();
                             },
-                            allowOutsideClick: false, // Prevent closing the modal by clicking outside
-                            showConfirmButton: false // Hide the confirm button
+                            allowOutsideClick: false,
+                            showConfirmButton: false
                         });
                     });
 

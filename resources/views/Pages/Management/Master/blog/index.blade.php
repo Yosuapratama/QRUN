@@ -94,7 +94,7 @@
     <div class="container-fluid">
 
         <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Management All Blog
+            {{ __('messages.management.blog.title') }}
         </h1>
 
         {{-- FILTER CARD --}}
@@ -104,11 +104,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Filter blog by title and slug.
+                        {{ __('messages.management.blog.filter_subtitle') }}
                     </small>
                 </div>
 
@@ -117,15 +117,14 @@
                     <select class="form-control form-control-sm mr-2" id="sort-order"
                         style="min-width:220px;">
 
-                        <option value="">Sort By</option>
-                        <option value="title">Title</option>
-                        <option value="slug">Slug</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="title">{{ __('messages.management.blog.sort_title') }}</option>
+                        <option value="slug">{{ __('messages.management.blog.sort_slug') }}</option>
 
                     </select>
 
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters" style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
-
-                        Clear Filters
+                        {{ __('messages.management.common.clear_filters') }}
                     </button>
 
                 </div>
@@ -139,22 +138,22 @@
                     <div class="col-md-6 mb-3">
 
                         <label class="small font-weight-bold text-dark">
-                            Title
+                            {{ __('messages.management.blog.filter_title') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-title"
-                            placeholder="Search title">
+                            placeholder="{{ __('messages.management.common.search') }}">
 
                     </div>
 
                     <div class="col-md-6 mb-3">
 
                         <label class="small font-weight-bold text-dark">
-                            Slug
+                            {{ __('messages.management.blog.filter_slug') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-slug"
-                            placeholder="Search slug">
+                            placeholder="{{ __('messages.management.common.search') }}">
 
                     </div>
 
@@ -172,11 +171,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Blog Table
+                        {{ __('messages.management.blog.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage all blogs here.
+                        {{ __('messages.management.blog.table_subtitle') }}
                     </small>
                 </div>
 
@@ -186,14 +185,14 @@
                         id="columnVisibilityDropdown" data-toggle="dropdown">
 
                         <i class="fas fa-columns mr-1"></i>
-                        Columns
+                        {{ __('messages.management.common.columns') }}
 
                     </button>
 
                     <a class="btn btn-success btn-sm shadow-sm" href="{{ route('blog.create') }}">
 
                         <i class="fas fa-plus mr-1"></i>
-                        Add Blog
+                        {{ __('messages.management.blog.add_blog') }}
 
                     </a>
 
@@ -205,7 +204,7 @@
                                 id="toggle-title" data-column="0" checked>
 
                             <label class="custom-control-label" for="toggle-title">
-                                Title
+                                {{ __('messages.management.blog.col_title') }}
                             </label>
 
                         </div>
@@ -216,7 +215,7 @@
                                 id="toggle-description" data-column="1" checked>
 
                             <label class="custom-control-label" for="toggle-description">
-                                Description
+                                {{ __('messages.management.blog.col_description') }}
                             </label>
 
                         </div>
@@ -227,21 +226,10 @@
                                 id="toggle-slug" data-column="2" checked>
 
                             <label class="custom-control-label" for="toggle-slug">
-                                Slug
+                                {{ __('messages.management.blog.col_slug') }}
                             </label>
 
                         </div>
-
-                        {{-- <div class="custom-control custom-checkbox mb-2">
-
-                            <input type="checkbox" class="custom-control-input toggle-column"
-                                id="toggle-date" data-column="3" checked>
-
-                            <label class="custom-control-label" for="toggle-date">
-                                Date
-                            </label>
-
-                        </div> --}}
 
                     </div>
 
@@ -259,10 +247,10 @@
                         <thead class="thead-light">
 
                             <tr>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Slug</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.blog.col_title') }}</th>
+                                <th>{{ __('messages.management.blog.col_description') }}</th>
+                                <th>{{ __('messages.management.blog.col_slug') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
 
                         </thead>
@@ -281,6 +269,14 @@
 
     @push('script')
         <script>
+            const i18nBlog = {
+                swalTitle:   @json(__('messages.management.common.swal_are_you_sure')),
+                swalText:    @json(__('messages.management.blog.swal_delete_text')),
+                swalConfirm: @json(__('messages.management.common.swal_yes_delete')),
+                swalCancel:  @json(__('messages.management.common.swal_no_cancel')),
+                minColumn:   @json(__('messages.management.common.min_column_warning')),
+            };
+
             $(document).ready(function() {
 
                 $('.dropdown-menu').on('click', function(e) {
@@ -499,7 +495,7 @@
                                 toast: true,
                                 position: 'top-end',
                                 icon: 'warning',
-                                title: 'Minimum 1 column must remain visible',
+                                title: i18nBlog.minColumn,
                                 showConfirmButton: false,
                                 timer: 1800
                             });
@@ -538,12 +534,12 @@
                             confirmButton: "btn btn-success",
                             cancelButton: "btn btn-danger"
                         },
-                        title: "Are you sure?",
-                        text: "Delete this Blog",
+                        title: i18nBlog.swalTitle,
+                        text: i18nBlog.swalText,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nBlog.swalConfirm,
+                        cancelButtonText: i18nBlog.swalCancel,
                         reverseButtons: true
                     }).then((result) => {
 

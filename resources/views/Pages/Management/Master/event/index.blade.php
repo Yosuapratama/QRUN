@@ -8,33 +8,33 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
 
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Management All Event
+        <h1 class="h3 text-gray-800 font-weight-bold m-2" id="eventPageTitle">
+            {{ __('messages.management.event.title') }}
         </h1>
 
         <!-- FILTER CARD -->
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4" id="eventFilterCard">
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Filter event by title, place code, status, and date.
+                        {{ __('messages.management.event.filter_subtitle') }}
                     </small>
                 </div>
 
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mt-3 mt-md-0">
                     <select class="form-control form-control-sm mr-2" id="sort-order" style="min-width:220px;">
-                        <option value="">Sort By</option>
-                        <option value="title">Title</option>
-                        <option value="date">Date</option>
-                        <option value="status">Status</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="title">{{ __('messages.management.event.sort_title') }}</option>
+                        <option value="date">{{ __('messages.management.event.sort_date') }}</option>
+                        <option value="status">{{ __('messages.management.event.sort_status') }}</option>
                     </select>
 
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters" style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
-                        Clear Filters
+                        {{ __('messages.management.common.clear_filters') }}
                     </button>
                 </div>
             </div>
@@ -45,37 +45,37 @@
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Title
+                            {{ __('messages.management.event.filter_title') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-title"
-                            placeholder="Search title">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Place Code
+                            {{ __('messages.management.event.filter_place_code') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-place-code"
-                            placeholder="Search place code">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Status
+                            {{ __('messages.management.event.filter_status') }}
                         </label>
 
                         <select class="form-control form-control-sm" id="filter-status">
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="">{{ __('messages.management.event.all_status') }}</option>
+                            <option value="active">{{ __('messages.management.common.active') }}</option>
+                            <option value="inactive">{{ __('messages.management.common.inactive') }}</option>
                         </select>
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Event Start Date
+                            {{ __('messages.management.event.filter_start_date') }}
                         </label>
 
                         <input type="date" class="form-control form-control-sm" id="filter-date">
@@ -83,7 +83,7 @@
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Event End Date
+                            {{ __('messages.management.event.filter_end_date') }}
                         </label>
 
                         <input type="date" class="form-control form-control-sm" id="filter-end-date">
@@ -95,17 +95,17 @@
         </div>
 
         <!-- TABLE CARD -->
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4" id="eventTableCard">
 
             <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap" style="gap:6px;">
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Event Table
+                        {{ __('messages.management.event.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage all events and actions here.
+                        {{ __('messages.management.event.table_subtitle') }}
                     </small>
                 </div>
 
@@ -117,7 +117,7 @@
                             id="columnVisibilityDropdown" data-toggle="dropdown">
 
                             <i class="fas fa-columns mr-1"></i>
-                            Columns
+                            {{ __('messages.management.common.columns') }}
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-right p-3 shadow">
@@ -127,7 +127,7 @@
                                     data-column="0" checked>
 
                                 <label class="custom-control-label" for="toggle-title">
-                                    Title
+                                    {{ __('messages.management.event.col_title') }}
                                 </label>
                             </div>
 
@@ -136,7 +136,7 @@
                                     data-column="1" checked>
 
                                 <label class="custom-control-label" for="toggle-description">
-                                    Description
+                                    {{ __('messages.management.event.col_description') }}
                                 </label>
                             </div>
 
@@ -145,7 +145,7 @@
                                     data-column="2" checked>
 
                                 <label class="custom-control-label" for="toggle-place-code">
-                                    Place Code
+                                    {{ __('messages.management.event.col_place_code') }}
                                 </label>
                             </div>
 
@@ -154,7 +154,7 @@
                                     data-column="3" checked>
 
                                 <label class="custom-control-label" for="toggle-date">
-                                    Date
+                                    {{ __('messages.management.event.col_date') }}
                                 </label>
                             </div>
 
@@ -163,17 +163,17 @@
                                     data-column="4" checked>
 
                                 <label class="custom-control-label" for="toggle-status">
-                                    Status
+                                    {{ __('messages.management.event.col_status') }}
                                 </label>
                             </div>
 
                         </div>
                     </div>
 
-                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addEventModalAdminNew">
+                    <button class="btn btn-success btn-sm" id="btnAddEvent" data-bs-toggle="modal" data-bs-target="#addEventModalAdminNew">
 
                         <i class="fas fa-plus mr-1"></i>
-                        Add Event
+                        {{ __('messages.management.event.add_event') }}
                     </button>
                 </div>
             </div>
@@ -186,12 +186,12 @@
 
                         <thead class="thead-light">
                             <tr>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Place Code</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.event.col_title') }}</th>
+                                <th>{{ __('messages.management.event.col_description') }}</th>
+                                <th>{{ __('messages.management.event.col_place_code') }}</th>
+                                <th>{{ __('messages.management.event.col_date') }}</th>
+                                <th>{{ __('messages.management.event.col_status') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
                         </thead>
 
@@ -206,7 +206,7 @@
         @push('css')
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/introjs.min.css">
 
             <style>
                 #sort-order {
@@ -498,6 +498,34 @@
                     width: 70px;
                     opacity: .65;
                 }
+
+                /* Tutorial FAB */
+                .event-tutorial-fab {
+                    position: fixed;
+                    bottom: 72px;
+                    right: 20px;
+                    z-index: 9999;
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #4e73df, #3a5abf);
+                    color: #fff;
+                    border: none;
+                    box-shadow: 0 6px 20px rgba(78,115,223,.4);
+                    font-size: 16px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: .2s ease;
+                }
+                .event-tutorial-fab:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 28px rgba(78,115,223,.5);
+                }
+                @media(max-width:768px) {
+                    .event-tutorial-fab { width: 40px; height: 40px; bottom: 68px; right: 14px; font-size: 14px; }
+                }
             </style>
         @endpush
 
@@ -507,6 +535,21 @@
 
             <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
             <script>
+                const i18nEvent = {
+                    swalTitle:    @json(__('messages.management.common.swal_are_you_sure')),
+                    swalConfirm:  @json(__('messages.management.common.swal_yes_delete')),
+                    swalCancel:   @json(__('messages.management.common.swal_no_cancel')),
+                    deleteText:   @json(__('messages.management.event.swal_delete_text')),
+                    minColumn:    @json(__('messages.management.common.min_column_warning')),
+                    statusActive: @json(__('messages.management.event.status_active')),
+                    statusInactive: @json(__('messages.management.event.status_inactive')),
+                    noImages:     @json(__('messages.management.event.no_images')),
+                    noImagesDesc: @json(__('messages.management.event.no_images_desc')),
+                    removeImage:  @json(__('messages.management.event.remove_image')),
+                    swalSuccess:  @json(__('messages.management.common.swal_success')),
+                    swalFailed:   @json(__('messages.management.dashboard.swal_failed')),
+                };
+
                 $(document).ready(function() {
                     if ($.fn.modal.Constructor.prototype.enforceFocus) {
                         $.fn.modal.Constructor.prototype.enforceFocus =
@@ -527,7 +570,7 @@
                         const checked = $('#addEventIsActive').is(':checked');
 
                         $('#addEventStatusText')
-                            .text(checked ? 'Active' : 'Inactive')
+                            .text(checked ? i18nEvent.statusActive : i18nEvent.statusInactive)
                             .removeClass('badge-success badge-secondary')
                             .addClass(checked ? 'badge-success' : 'badge-secondary');
                     }
@@ -537,7 +580,7 @@
                         const checked = $('#editEventIsActive').is(':checked');
 
                         $('#editEventStatusText')
-                            .text(checked ? 'Active' : 'Inactive')
+                            .text(checked ? i18nEvent.statusActive : i18nEvent.statusInactive)
                             .removeClass('badge-success badge-secondary')
                             .addClass(checked ? 'badge-success' : 'badge-secondary');
                     }
@@ -606,11 +649,11 @@
             <div class="empty-image-state">
 
                 <div class="font-weight-bold text-muted mt-2">
-                    No Images
+                    ${i18nEvent.noImages}
                 </div>
 
                 <small class="text-muted">
-                    No event images available
+                    ${i18nEvent.noImagesDesc}
                 </small>
 
             </div>
@@ -662,7 +705,7 @@
                                 data-index="${index}"
                                 data-mode="${mode}">
 
-                                Remove
+                                ${i18nEvent.removeImage}
                             </button>
 
                         </div>
@@ -722,7 +765,7 @@
                             class="btn btn-danger btn-sm btn-block removeExistingImageBtn"
                             data-index="${index}">
 
-                            Remove
+                            ${i18nEvent.removeImage}
                         </button>
 
                     </div>
@@ -1223,7 +1266,7 @@
 
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Success',
+                                    title: i18nEvent.swalSuccess,
                                     text: response.message
                                 });
                             },
@@ -1232,7 +1275,7 @@
 
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Failed',
+                                    title: i18nEvent.swalFailed,
                                     text: xhr.responseJSON?.message ??
                                         'Something went wrong'
                                 });
@@ -1394,7 +1437,7 @@
 
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Updated',
+                                    title: i18nEvent.swalSuccess,
                                     text: response.message ?? response.success
                                 });
                             },
@@ -1403,7 +1446,7 @@
 
                                 Swal.fire({
                                     icon: 'error',
-                                    title: 'Failed',
+                                    title: i18nEvent.swalFailed,
                                     text: xhr.responseJSON?.message ??
                                         'Something went wrong'
                                 });
@@ -1481,7 +1524,7 @@
 
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Failed',
+                                title: i18nEvent.swalFailed,
                                 text: 'Failed to fetch places'
                             });
                         }
@@ -1726,7 +1769,7 @@
                                     toast: true,
                                     position: 'top-end',
                                     icon: 'warning',
-                                    title: 'Minimum 1 column must remain visible',
+                                    title: i18nEvent.minColumn,
                                     showConfirmButton: false,
                                     timer: 1800
                                 });
@@ -1806,12 +1849,12 @@
                                 confirmButton: "btn btn-success",
                                 cancelButton: "btn btn-danger"
                             },
-                            title: "Are you sure?",
-                            text: "Delete this Event",
+                            title: i18nEvent.swalTitle,
+                            text: i18nEvent.deleteText,
                             icon: "warning",
                             showCancelButton: true,
-                            confirmButtonText: "Yes, delete it!",
-                            cancelButtonText: "No, cancel!",
+                            confirmButtonText: i18nEvent.swalConfirm,
+                            cancelButtonText: i18nEvent.swalCancel,
                             reverseButtons: true
                         }).then((result) => {
                             if (result.isConfirmed) {
@@ -1911,4 +1954,318 @@
             </script>
         @endpush
         <!-- End of Main Content -->
+    </div>
+
+    {{-- TUTORIAL FAB --}}
+    <button class="event-tutorial-fab" title="Tutorial" onclick="showEventTutorialModal()">
+        <i class="fas fa-question"></i>
+    </button>
+
+    @push('script')
+        <script src="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/intro.min.js"></script>
+        <script>
+            const eventTutorialSteps = {
+                id: [
+                    {
+                        element: '#eventPageTitle',
+                        intro: '<strong>Selamat Datang di Manajemen Event!</strong><br>Halaman ini memungkinkan Anda mengelola semua event yang terhubung ke tempat Anda — tambah, edit, hapus, dan filter dengan mudah.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#eventFilterCard',
+                        intro: '<strong>Panel Filter</strong><br>Gunakan panel ini untuk menyaring event berdasarkan judul, kode tempat, status aktif/nonaktif, dan rentang tanggal.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#filter-title',
+                        intro: '<strong>Cari Berdasarkan Judul</strong><br>Ketik kata kunci judul event untuk memfilter tabel secara real-time.',
+                        position: 'right'
+                    },
+                    {
+                        element: '#filter-status',
+                        intro: '<strong>Filter Status</strong><br>Pilih <em>Active</em> untuk menampilkan event yang sedang berjalan, atau <em>Inactive</em> untuk yang sudah tidak aktif.',
+                        position: 'right'
+                    },
+                    {
+                        element: '#filter-date',
+                        intro: '<strong>Filter Tanggal Mulai & Selesai</strong><br>Gunakan kedua kolom ini untuk menyaring event berdasarkan rentang tanggal tertentu.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#sort-order',
+                        intro: '<strong>Urutkan Data</strong><br>Pilih cara pengurutan: berdasarkan judul (A–Z), tanggal terbaru, atau status aktif.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#clear-filters',
+                        intro: '<strong>Reset Filter</strong><br>Klik tombol ini untuk menghapus semua filter aktif dan kembali ke tampilan penuh.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#eventTableCard',
+                        intro: '<strong>Tabel Event</strong><br>Daftar semua event ditampilkan di sini dengan pagination otomatis. Klik tombol aksi di baris untuk mengedit atau menghapus event.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#columnVisibilityDropdown',
+                        intro: '<strong>Visibilitas Kolom</strong><br>Klik tombol ini untuk menampilkan atau menyembunyikan kolom tertentu. Preferensi Anda akan tersimpan otomatis di browser.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#btnAddEvent',
+                        intro: '<strong>Tambah Event Baru</strong><br>Klik tombol ini untuk membuka form tambah event. Kita akan melihat form-nya sekarang!',
+                        position: 'left'
+                    },
+                    {
+                        element: '#addEventDateGroup',
+                        intro: '<strong>Jadwal Event</strong><br>Pilih tanggal dan waktu mulai serta selesai event menggunakan date-range picker. Pastikan rentang waktu sudah benar.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#placeSelectWrapper',
+                        intro: '<strong>Pilih Tempat</strong><br>Hubungkan event ini ke salah satu tempat yang Anda miliki. Dropdown akan menampilkan semua tempat yang terdaftar.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#addEventTitleGroup',
+                        intro: '<strong>Judul Event</strong><br>Masukkan nama event yang jelas dan mudah dikenali oleh pengunjung. Judul ini akan tampil di halaman publik.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#addEventDescGroup',
+                        intro: '<strong>Deskripsi Event</strong><br>Tuliskan informasi detail tentang event — kegiatan, lokasi spesifik, persyaratan, dan hal-hal penting lainnya.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#addEventStatusGroup',
+                        intro: '<strong>Status Aktif</strong><br>Toggle ini menentukan apakah event langsung terlihat oleh publik. Nonaktifkan jika event masih dalam persiapan.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#addEventImagesGroup',
+                        intro: '<strong>Foto Event</strong><br>Upload satu atau beberapa foto untuk event. Klik foto yang sudah diupload untuk memotong/crop gambar sesuai kebutuhan.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#addEventFooter',
+                        intro: '<strong>Simpan atau Batal</strong><br>Klik <strong>Save Event</strong> untuk menyimpan, atau klik <strong>Cancel</strong> / tombol ✕ untuk menutup modal tanpa menyimpan.',
+                        position: 'top'
+                    },
+                ],
+                en: [
+                    {
+                        element: '#eventPageTitle',
+                        intro: '<strong>Welcome to Event Management!</strong><br>This page lets you manage all events linked to your places — add, edit, delete, and filter with ease.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#eventFilterCard',
+                        intro: '<strong>Filter Panel</strong><br>Use this panel to filter events by title, place code, active/inactive status, and date range.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#filter-title',
+                        intro: '<strong>Search by Title</strong><br>Type a keyword to filter the event table in real-time.',
+                        position: 'right'
+                    },
+                    {
+                        element: '#filter-status',
+                        intro: '<strong>Filter by Status</strong><br>Choose <em>Active</em> to show ongoing events or <em>Inactive</em> for deactivated ones.',
+                        position: 'right'
+                    },
+                    {
+                        element: '#filter-date',
+                        intro: '<strong>Start & End Date Filter</strong><br>Use both date fields to filter events within a specific date range.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#sort-order',
+                        intro: '<strong>Sort Data</strong><br>Choose a sort order: by title (A–Z), newest date, or status.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#clear-filters',
+                        intro: '<strong>Reset Filters</strong><br>Click this to clear all active filters and return to the full list.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#eventTableCard',
+                        intro: '<strong>Event Table</strong><br>All events are listed here with automatic pagination. Use the action buttons in each row to edit or delete an event.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#columnVisibilityDropdown',
+                        intro: '<strong>Column Visibility</strong><br>Click here to show or hide specific table columns. Your preferences are saved automatically in the browser.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#btnAddEvent',
+                        intro: '<strong>Add New Event</strong><br>Click this button to open the add event form. We\'ll walk through it now!',
+                        position: 'left'
+                    },
+                    {
+                        element: '#addEventDateGroup',
+                        intro: '<strong>Event Schedule</strong><br>Select the start and end date/time using the date-range picker. Make sure the time range is correct.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#placeSelectWrapper',
+                        intro: '<strong>Select Place</strong><br>Link this event to one of your registered places. The dropdown lists all your available places.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#addEventTitleGroup',
+                        intro: '<strong>Event Title</strong><br>Enter a clear and recognizable event name. This title will appear on the public page.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#addEventDescGroup',
+                        intro: '<strong>Event Description</strong><br>Provide detailed information — activities, specific location, requirements, and other key details.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#addEventStatusGroup',
+                        intro: '<strong>Active Status</strong><br>This toggle controls whether the event is visible to the public. Disable it if the event is still being prepared.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#addEventImagesGroup',
+                        intro: '<strong>Event Photos</strong><br>Upload one or more photos for the event. Click an uploaded photo to crop it as needed.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#addEventFooter',
+                        intro: '<strong>Save or Cancel</strong><br>Click <strong>Save Event</strong> to save, or click <strong>Cancel</strong> / the ✕ button to close the modal without saving.',
+                        position: 'top'
+                    },
+                ]
+            };
+
+            // Steps that require the modal to be open
+            const MODAL_STEP_IDS = [
+                '#addEventDateGroup', '#placeSelectWrapper', '#addEventTitleGroup',
+                '#addEventDescGroup', '#addEventStatusGroup', '#addEventImagesGroup', '#addEventFooter'
+            ];
+
+            function startEventTutorial(lang) {
+                const steps = eventTutorialSteps[lang] ?? eventTutorialSteps['en'];
+
+                const validSteps = steps.filter(function(step) {
+                    const el = document.querySelector(step.element);
+                    if (!el) return false;
+                    // Skip steps for elements that are hidden (e.g. placeSelectWrapper when only 1 place)
+                    return el.offsetParent !== null || getComputedStyle(el).display !== 'none';
+                });
+
+                let modalOpened = false;
+
+                introJs()
+                    .setOptions({
+                        steps: validSteps,
+                        nextLabel: lang === 'id' ? 'Lanjut ›' : 'Next ›',
+                        prevLabel: lang === 'id' ? '‹ Kembali' : '‹ Back',
+                        doneLabel: lang === 'id' ? 'Selesai' : 'Done',
+                        showBullets: true,
+                        showProgress: true,
+                        exitOnOverlayClick: false,
+                        scrollToElement: false,
+                        overlayOpacity: 0.45
+                    })
+                    .onbeforechange(function(el) {
+                        if (!el) return;
+
+                        const isModalStep = MODAL_STEP_IDS.some(sel => el.matches?.(sel));
+
+                        if (isModalStep && !modalOpened) {
+                            // Return a Promise — intro.js waits for it before rendering the tooltip
+                            return new Promise(function(resolve) {
+                                modalOpened = true;
+                                $('#addEventModalAdminNew')
+                                    .one('shown.bs.modal', function() {
+                                        // Modal fully visible — now safe to center and resolve
+                                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        setTimeout(resolve, 80);
+                                    })
+                                    .modal('show');
+                            });
+                        }
+
+                        if (!isModalStep && modalOpened) {
+                            modalOpened = false;
+                            $('#addEventModalAdminNew').modal('hide');
+                        }
+
+                        // Center every non-modal element in the viewport
+                        if (!isModalStep) {
+                            setTimeout(function() {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 50);
+                        } else {
+                            // Already in modal — just scroll within it
+                            setTimeout(function() {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }, 80);
+                        }
+                    })
+                    .oncomplete(function() {
+                        if (modalOpened) { modalOpened = false; $('#addEventModalAdminNew').modal('hide'); }
+                        localStorage.setItem('event_tutorial_seen', '1');
+                    })
+                    .onexit(function() {
+                        if (modalOpened) { modalOpened = false; $('#addEventModalAdminNew').modal('hide'); }
+                        localStorage.setItem('event_tutorial_seen', '1');
+                    })
+                    .start();
+            }
+
+            function showEventTutorialModal() {
+                Swal.fire({
+                    title: '👋 Welcome',
+                    html: `
+                        <p class="text-muted mb-4">Please choose your preferred tutorial language or skip the tutorial.</p>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <button id="event-lang-id" class="btn btn-primary btn-block py-3">
+                                    🇮🇩<br><strong>Bahasa Indonesia</strong>
+                                </button>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <button id="event-lang-en" class="btn btn-outline-primary btn-block py-3">
+                                    🇺🇸<br><strong>English</strong>
+                                </button>
+                            </div>
+                        </div>
+                        <hr>
+                        <button id="event-skip" class="btn btn-link text-muted">Skip Tutorial</button>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: function() {
+                        document.getElementById('event-lang-id').addEventListener('click', function() {
+                            localStorage.setItem('event_tutorial_lang', 'id');
+                            Swal.close();
+                            startEventTutorial('id');
+                        });
+                        document.getElementById('event-lang-en').addEventListener('click', function() {
+                            localStorage.setItem('event_tutorial_lang', 'en');
+                            Swal.close();
+                            startEventTutorial('en');
+                        });
+                        document.getElementById('event-skip').addEventListener('click', function() {
+                            localStorage.setItem('event_tutorial_seen', '1');
+                            Swal.close();
+                        });
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                if (!localStorage.getItem('event_tutorial_seen')) {
+                    setTimeout(showEventTutorialModal, 900);
+                }
+            });
+        </script>
+    @endpush
+
     @endsection

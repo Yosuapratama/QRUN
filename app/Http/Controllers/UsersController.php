@@ -322,7 +322,9 @@ class UsersController extends Controller
             'address' => $request->address,
             'phone' => $request->phone,
             'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
+            'email_verified_at' => $request->auto_verified == "1" ? Carbon::now() : null,
+            'approved_at' => $request->auto_approved == "1" ? Carbon::now() : null,
         ]);
 
         $user->assignRole('localadmin');

@@ -10,6 +10,11 @@
           --border: #e3e6f0;
       }
 
+      /* Fix toolbar dropdowns clipped by editor container */
+      .note-editor.note-frame { overflow: visible !important; }
+      .note-editor .note-toolbar { overflow: visible !important; position: relative; z-index: 10; }
+      .note-editor .note-toolbar .dropdown-menu { z-index: 1051 !important; }
+
       .note-editor .note-editable p,
       .note-editor .note-editable div {
           margin-bottom: 10px !important;

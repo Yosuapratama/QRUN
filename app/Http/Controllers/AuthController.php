@@ -106,11 +106,23 @@ class AuthController extends Controller
     public function search(Request $request)
     {
         $query = $request->get('query');
-        $blogs = Blog::select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')
-            ->where('title', 'like', "%{$query}%")
-            ->orWhere('description', 'like', "%{$query}%")
+
+        $blogs = Blog::select(
+            'id',
+            'slug',
+            'title',
+            'description',
+            'image_url',
+            'views',
+            'is_published',
+            'created_at'
+        )
+            ->where(function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%");
+            })
             ->where('is_published', true)
-            ->orderBy('created_at', 'desc')
+            ->orderByDesc('created_at')
             ->limit(6)
             ->get();
 

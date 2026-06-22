@@ -8,23 +8,23 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Activity Log</h1>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">{{ __('messages.management.log_activity.title') }}</h1>
         {{-- <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addEventModal">@lang('messages.my-event.add_event')</button> --}}
         {{-- <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Place</button> --}}
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Filter Table</h6>
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.log_activity.filter_title') }}</h6>
             </div>
             <div class="card-body">
 
                 <form id="form-filter">
                     <div class="row">
                         <div class="form-group col-md-5 col-12 mb-3">
-                            <label class="form-label" for="select2classes">Type<span class="text-danger"
+                            <label class="form-label" for="select2classes">{{ __('messages.management.log_activity.type_label') }}<span class="text-danger"
                                     style="font-size: 12px">*</span></label>
                             <select name="marketing_group_id" class="select2 form-control" id="select2classes">
-                                <option value="">All</option>
+                                <option value="">{{ __('messages.management.log_activity.type_all') }}</option>
                                 <option value="LOGIN">Login</option>
                                 <option value="LOGIN_GOOGLE">Login Google</option>
                                 <option value="REGISTER">Register</option>
@@ -69,13 +69,13 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="startDate">Start Date:</label>
+                            <label for="startDate">{{ __('messages.management.log_activity.start_date') }}</label>
                             <input type="date" id="startDate" class="form-control" name="startDate"
                                 placeholder="Select Start Date">
 
                         </div>
                         <div class="form-group ml-2">
-                            <label for="endDate">End Date:</label>
+                            <label for="endDate">{{ __('messages.management.log_activity.end_date') }}</label>
                             <input type="date" id="endDate" class="form-control" name="endDate"
                                 placeholder="Select End Date">
 
@@ -95,8 +95,8 @@
 
                     </div>
                     <div class="d-flex flex-wrap justify-content-end gap-3 mt-3">
-                        <button type="submit" class="btn btn-success waves-effect waves-light mr-2">Filter</button>
-                        <button type="reset" class="btn btn-outline-danger waves-effect waves-light ">Reset</button>
+                        <button type="submit" class="btn btn-success waves-effect waves-light mr-2">{{ __('messages.management.log_activity.filter_btn') }}</button>
+                        <button type="reset" class="btn btn-outline-danger waves-effect waves-light ">{{ __('messages.management.log_activity.reset_btn') }}</button>
                     </div>
                 </form>
 
@@ -105,18 +105,18 @@
 
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Log Table</h6>
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.log_activity.table_title') }}</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped" id="dataTableEvent" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>Ip</th>
-                                <th>User Agent</th>
-                                <th>Email</th>
-                                <th>Activities</th>
-                                <th>type</th>
+                                <th>{{ __('messages.management.log_activity.col_ip') }}</th>
+                                <th>{{ __('messages.management.log_activity.col_user_agent') }}</th>
+                                <th>{{ __('messages.management.log_activity.col_email') }}</th>
+                                <th>{{ __('messages.management.log_activity.col_activities') }}</th>
+                                <th>{{ __('messages.management.log_activity.col_type') }}</th>
                                 {{-- <th class="text-center">Action</th> --}}
                             </tr>
                         </thead>

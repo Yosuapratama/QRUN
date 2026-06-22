@@ -92,7 +92,7 @@
     <div class="container-fluid">
 
         <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Management Place Limit
+            {{ __('messages.management.place_limit.title') }}
         </h1>
 
         @if (session()->has('success'))
@@ -112,7 +112,7 @@
                     </h6>
 
                     <small class="text-secondary">
-                        Filter place limit data.
+                        {{ __('messages.management.place_limit.filter_subtitle') }}
                     </small>
                 </div>
 
@@ -125,15 +125,15 @@
                         </option>
 
                         <option value="name">
-                            Name
+                            {{ __('messages.management.place_limit.sort_name') }}
                         </option>
 
                         <option value="limit">
-                            Total Limit
+                            {{ __('messages.management.place_limit.sort_limit') }}
                         </option>
 
                         <option value="updated">
-                            Updated At
+                            {{ __('messages.management.place_limit.sort_updated') }}
                         </option>
 
                     </select>
@@ -156,7 +156,7 @@
                     <div class="col-md-12">
 
                         <label class="small font-weight-bold text-dark">
-                            Name
+                            {{ __('messages.management.place_limit.filter_name') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-name"
@@ -177,11 +177,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Place Limit Table
+                        {{ __('messages.management.place_limit.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage all place limit data here.
+                        {{ __('messages.management.place_limit.table_subtitle') }}
                     </small>
                 </div>
 
@@ -197,7 +197,7 @@
                     <a href="{{ route('place-limit.create') }}" class="btn btn-success btn-sm shadow-sm">
 
                         <i class="fas fa-plus mr-1"></i>
-                        Add Place Limit
+                        {{ __('messages.management.place_limit.add_btn') }}
 
                     </a>
 
@@ -209,7 +209,7 @@
                                 data-column="0" checked>
 
                             <label class="custom-control-label" for="toggle-name">
-                                Name
+                                {{ __('messages.management.place_limit.col_name') }}
                             </label>
 
                         </div>
@@ -220,7 +220,7 @@
                                 data-column="1" checked>
 
                             <label class="custom-control-label" for="toggle-limit">
-                                Total Limit
+                                {{ __('messages.management.place_limit.col_total_limit') }}
                             </label>
 
                         </div>
@@ -231,7 +231,7 @@
                                 data-column="2" checked>
 
                             <label class="custom-control-label" for="toggle-updated">
-                                Updated At
+                                {{ __('messages.management.place_limit.col_updated_at') }}
                             </label>
 
                         </div>
@@ -252,10 +252,10 @@
 
                             <tr>
 
-                                <th>Name</th>
-                                <th>Total Limit</th>
-                                <th>Updated At</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.place_limit.col_name') }}</th>
+                                <th>{{ __('messages.management.place_limit.col_total_limit') }}</th>
+                                <th>{{ __('messages.management.place_limit.col_updated_at') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
 
                             </tr>
 
@@ -276,6 +276,14 @@
 
     @push('script')
         <script>
+            const i18nPlaceLimit = {
+                swalTitle:   @json(__('messages.management.common.swal_are_you_sure')),
+                swalConfirm: @json(__('messages.management.common.swal_yes_delete')),
+                swalCancel:  @json(__('messages.management.common.swal_no_cancel')),
+                deleteText:  @json(__('messages.management.place_limit.swal_delete_text')),
+                minColumn:   @json(__('messages.management.common.min_column_warning')),
+            };
+
             $(document).ready(function() {
                 const STORAGE_KEY = 'place_limit_column_visibility';
 
@@ -433,7 +441,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'warning',
-                            title: 'Minimum 1 column must remain visible',
+                            title: i18nPlaceLimit.minColumn,
                             showConfirmButton: false,
                             timer: 1800
                         });
@@ -461,12 +469,12 @@
                             confirmButton: "btn btn-success",
                             cancelButton: "btn btn-danger"
                         },
-                        title: "Are you sure?",
-                        text: "Delete this limit will removed all user connected with this",
+                        title: i18nPlaceLimit.swalTitle,
+                        text: i18nPlaceLimit.deleteText,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nPlaceLimit.swalConfirm,
+                        cancelButtonText: i18nPlaceLimit.swalCancel,
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {

@@ -151,11 +151,11 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
                 <h1 class="h3 text-gray-800 font-weight-bold mb-1">
-                    Management Users Limit
+                    {{ __('messages.management.users_limit.title') }}
                 </h1>
 
                 <p class="text-muted mb-0 small">
-                    Manage user access limits and place permissions.
+                    {{ __('messages.management.users_limit.subtitle') }}
                 </p>
             </div>
         </div>
@@ -167,11 +167,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Refine users limit data by email and place limit.
+                        {{ __('messages.management.users_limit.filter_subtitle') }}
                     </small>
                 </div>
 
@@ -179,16 +179,16 @@
 
                     <select class="form-control form-control-sm" id="sort-order" style="min-width: 220px;">
 
-                        <option value="">Sort by</option>
-                        <option value="email">Email</option>
-                        <option value="place">Place Limit</option>
-                        <option value="updated_at">Updated At</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="email">{{ __('messages.management.users_limit.sort_email') }}</option>
+                        <option value="place">{{ __('messages.management.users_limit.sort_place') }}</option>
+                        <option value="updated_at">{{ __('messages.management.users_limit.sort_updated_at') }}</option>
                     </select>
 
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters"
                         style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
 
-                        Clear Filters
+                        {{ __('messages.management.common.clear_filters') }}
                     </button>
                 </div>
 
@@ -200,20 +200,20 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            User Email
+                            {{ __('messages.management.users_limit.filter_email') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-email"
-                            placeholder="Search user email">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Place Limit
+                            {{ __('messages.management.users_limit.filter_place') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-place"
-                            placeholder="Search place limit">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                 </div>
@@ -229,11 +229,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Users Limit Table
+                        {{ __('messages.management.users_limit.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage users that have place limits assigned.
+                        {{ __('messages.management.users_limit.table_subtitle') }}
                     </small>
                 </div>
 
@@ -245,7 +245,7 @@
                             id="columnVisibilityDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                             <i class="fas fa-columns mr-1"></i>
-                            Columns
+                            {{ __('messages.management.common.columns') }}
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-right p-3 shadow" aria-labelledby="columnVisibilityDropdown"
@@ -256,7 +256,7 @@
                                     data-column="0" checked>
 
                                 <label class="custom-control-label" for="toggle-email">
-                                    Email
+                                    {{ __('messages.management.users_limit.col_email') }}
                                 </label>
                             </div>
 
@@ -265,7 +265,7 @@
                                     data-column="1" checked>
 
                                 <label class="custom-control-label" for="toggle-place">
-                                    Place Limit
+                                    {{ __('messages.management.users_limit.col_place') }}
                                 </label>
                             </div>
 
@@ -274,7 +274,7 @@
                                     data-column="2" checked>
 
                                 <label class="custom-control-label" for="toggle-updated">
-                                    Updated At
+                                    {{ __('messages.management.users_limit.col_updated_at') }}
                                 </label>
                             </div>
 
@@ -295,7 +295,7 @@
                         data-bs-target="#addUserhasLimitModal">
 
                         <i class="fas fa-plus-circle mr-1"></i>
-                        Add User Limit
+                        {{ __('messages.management.users_limit.add_btn') }}
                     </button>
 
                 </div>
@@ -311,10 +311,10 @@
 
                         <thead class="thead-light">
                             <tr>
-                                <th>Email</th>
-                                <th>Place Limit</th>
-                                <th>Updated At</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.users_limit.col_email') }}</th>
+                                <th>{{ __('messages.management.users_limit.col_place') }}</th>
+                                <th>{{ __('messages.management.users_limit.col_updated_at') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
                         </thead>
 
@@ -332,6 +332,14 @@
 
     @push('script')
         <script>
+            const i18nUsersLimit = {
+                swalTitle:   @json(__('messages.management.common.swal_are_you_sure')),
+                swalConfirm: @json(__('messages.management.common.swal_yes_delete')),
+                swalCancel:  @json(__('messages.management.common.swal_no_cancel')),
+                deleteText:  @json(__('messages.management.users_limit.swal_delete_text')),
+                minColumn:   @json(__('messages.management.common.min_column_warning')),
+            };
+
             $(document).ready(function() {
 
                 $('#columnVisibilityDropdown')
@@ -775,12 +783,12 @@
                             cancelButton: "btn btn-danger"
                         },
 
-                        title: "Are you sure?",
-                        text: "Delete this limit will affect user place access!",
+                        title: i18nUsersLimit.swalTitle,
+                        text: i18nUsersLimit.deleteText,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nUsersLimit.swalConfirm,
+                        cancelButtonText: i18nUsersLimit.swalCancel,
                         reverseButtons: true
 
                     }).then((result) => {

@@ -162,15 +162,8 @@
     <div class="container-fluid">
 
         <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Management Gallery
+            {{ __('messages.management.gallery.title') }}
         </h1>
-        {{-- 
-        <div class="d-flex align-items-center mb-3">
-            <a class="btn btn-success shadow-sm" href="{{ route('gallery.create') }}">
-                <i class="fas fa-plus mr-2"></i>
-                Add Gallery
-            </a>
-        </div> --}}
 
         {{-- FILTER CARD --}}
         <div class="card shadow mb-4">
@@ -179,11 +172,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Filter gallery by title and status.
+                        {{ __('messages.management.gallery.filter_subtitle') }}
                     </small>
                 </div>
 
@@ -191,14 +184,13 @@
 
                     <select class="form-control form-control-sm mr-2" id="sort-order" style="min-width:220px;">
 
-                        <option value="">Sort By</option>
-                        <option value="title">Title</option>
-                        <option value="status">Status</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="title">{{ __('messages.management.gallery.sort_title') }}</option>
+                        <option value="status">{{ __('messages.management.gallery.sort_status') }}</option>
                     </select>
 
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters" style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
-
-                        Clear Filters
+                        {{ __('messages.management.common.clear_filters') }}
                     </button>
                 </div>
             </div>
@@ -209,23 +201,23 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Title
+                            {{ __('messages.management.gallery.filter_title') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-title"
-                            placeholder="Search title">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Status
+                            {{ __('messages.management.gallery.filter_status') }}
                         </label>
 
                         <select class="form-control form-control-sm" id="filter-status">
 
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="">{{ __('messages.management.gallery.all_status') }}</option>
+                            <option value="active">{{ __('messages.management.common.active') }}</option>
+                            <option value="inactive">{{ __('messages.management.common.inactive') }}</option>
 
                         </select>
                     </div>
@@ -242,11 +234,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Gallery Table
+                        {{ __('messages.management.gallery.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage all gallery items here.
+                        {{ __('messages.management.gallery.table_subtitle') }}
                     </small>
                 </div>
 
@@ -256,13 +248,13 @@
                         id="columnVisibilityDropdown" data-toggle="dropdown">
 
                         <i class="fas fa-columns mr-1"></i>
-                        Columns
+                        {{ __('messages.management.common.columns') }}
                     </button>
 
                     <a class="btn btn-success btn-sm shadow-sm" href="{{ route('gallery.create') }}">
 
                         <i class="fas fa-plus mr-1"></i>
-                        Add Gallery
+                        {{ __('messages.management.gallery.add_gallery') }}
                     </a>
 
                     <div class="dropdown-menu dropdown-menu-right p-3 shadow">
@@ -273,7 +265,7 @@
                                 data-column="0" checked>
 
                             <label class="custom-control-label" for="toggle-title">
-                                Title
+                                {{ __('messages.management.gallery.toggle_title') }}
                             </label>
                         </div>
 
@@ -283,7 +275,7 @@
                                 data-column="1" checked>
 
                             <label class="custom-control-label" for="toggle-image">
-                                Image
+                                {{ __('messages.management.gallery.toggle_image') }}
                             </label>
                         </div>
 
@@ -293,7 +285,7 @@
                                 data-column="2" checked>
 
                             <label class="custom-control-label" for="toggle-status">
-                                Status
+                                {{ __('messages.management.gallery.toggle_status') }}
                             </label>
                         </div>
 
@@ -311,10 +303,10 @@
                         <thead class="thead-light">
 
                             <tr>
-                                <th>Title</th>
-                                <th>Image</th>
-                                <th>Status</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.gallery.col_title') }}</th>
+                                <th>{{ __('messages.management.gallery.col_image') }}</th>
+                                <th>{{ __('messages.management.gallery.col_status') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
 
                         </thead>
@@ -334,6 +326,14 @@
 
     @push('script')
         <script>
+            const i18nGallery = {
+                swalTitle:   @json(__('messages.management.common.swal_are_you_sure')),
+                swalText:    @json(__('messages.management.gallery.swal_delete_text')),
+                swalConfirm: @json(__('messages.management.common.swal_yes_delete')),
+                swalCancel:  @json(__('messages.management.common.swal_no_cancel')),
+                minColumn:   @json(__('messages.management.common.min_column_warning')),
+            };
+
             function toggleStatus(id) {
                 $.ajax({
                     type: "POST",
@@ -589,7 +589,7 @@
                                 toast: true,
                                 position: 'top-end',
                                 icon: 'warning',
-                                title: 'Minimum 1 column must remain visible',
+                                title: i18nGallery.minColumn,
                                 showConfirmButton: false,
                                 timer: 1800
                             });
@@ -628,12 +628,12 @@
                             confirmButton: "btn btn-success",
                             cancelButton: "btn btn-danger"
                         },
-                        title: "Are you sure?",
-                        text: "The deleted gallery cannot be recovered.",
+                        title: i18nGallery.swalTitle,
+                        text: i18nGallery.swalText,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nGallery.swalConfirm,
+                        cancelButtonText: i18nGallery.swalCancel,
                         reverseButtons: true
                     }).then((result) => {
 

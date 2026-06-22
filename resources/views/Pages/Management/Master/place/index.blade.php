@@ -148,93 +148,114 @@
                 opacity: 0.5;
                 cursor: not-allowed;
             }
+
+            /* ===== TUTORIAL FAB ===== */
+            .dashboard-tutorial-fab {
+                position: fixed; bottom: 72px; right: 20px; z-index: 9999;
+                width: 44px; height: 44px; border-radius: 50%;
+                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                color: #fff; border: none;
+                box-shadow: 0 6px 20px rgba(37,99,235,.35);
+                font-size: 16px; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                transition: .2s ease;
+            }
+            .dashboard-tutorial-fab:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,99,235,.45); }
+            @media (max-width:768px) {
+                .dashboard-tutorial-fab { width:40px; height:40px; bottom:68px; right:14px; font-size:14px; }
+            }
+            .introjs-overlay { backdrop-filter: blur(6px); background: rgba(0,0,0,.35) !important; }
+            .introjs-helperLayer { border-radius: 14px !important; box-shadow: 0 0 0 9999px rgba(0,0,0,.15); }
+            .introjs-button { border-radius: 10px !important; }
+            .introjs-skipbutton {
+                position: absolute !important; top: 10px !important; right: 10px !important;
+                width: 32px; height: 32px;
+                display: flex !important; align-items: center; justify-content: center;
+                border-radius: 50% !important;
+                background: #f8f9fc !important; border: 1px solid #e3e6f0 !important;
+                color: #6c757d !important; font-size: 18px !important; font-weight: 700 !important;
+                text-decoration: none !important; transition: all .2s ease;
+            }
+            .introjs-skipbutton:hover { background: #eaecf4 !important; color: #dc3545 !important; transform: rotate(90deg); }
+            .introjs-skipbutton:focus { outline: none !important; box-shadow: 0 0 0 3px rgba(78,115,223,.2); }
         </style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
     @endpush
 
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Management Place</h1>
-        {{-- <button class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#addUserModal">Add Place</button> --}}
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">{{ __('messages.management.place.title') }}</h1>
         <!-- Filters Card -->
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <div>
-                    <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
-                    <small class="text-secondary">Refine the list by title, place code, views, description, creator,
-                        province, regency, district, village, and update date.</small>
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.common.filters') }}</h6>
+                    <small class="text-secondary">{{ __('messages.management.place.filter_subtitle') }}</small>
                 </div>
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mt-3 mt-md-0">
                     <select class="form-control form-control-sm" id="sort-order" style="min-width: 220px;">
-                        <option value="">Sort by</option>
-                        <option value="views">Views</option>
-                        <option value="name">Name</option>
-                        <option value="place_code">Place Code</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="views">{{ __('messages.management.place.sort_views') }}</option>
+                        <option value="name">{{ __('messages.management.place.sort_name') }}</option>
+                        <option value="place_code">{{ __('messages.management.place.sort_place_code') }}</option>
                     </select>
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters"
-                        style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">Clear Filters</button>
+                        style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">{{ __('messages.management.common.clear_filters') }}</button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="filter-title" class="small font-weight-bold text-dark">Title</label>
+                        <label for="filter-title" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_title') }}</label>
                         <input type="text" class="form-control form-control-sm" id="filter-title"
-                            placeholder="Search title">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="filter-place-code" class="small font-weight-bold text-dark">Place Code</label>
+                        <label for="filter-place-code" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_place_code') }}</label>
                         <input type="text" class="form-control form-control-sm" id="filter-place-code"
-                            placeholder="Search place code">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
-                    {{-- <div class="col-md-3 mb-3">
-                        <label for="filter-views" class="small font-weight-bold text-dark">Views</label>
-                        <input type="text" class="form-control form-control-sm" id="filter-views"
-                            placeholder="Search views">
-                    </div> --}}
                     <div class="col-md-3 mb-3">
-                        <label for="filter-description" class="small font-weight-bold text-dark">Description</label>
+                        <label for="filter-description" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_description') }}</label>
                         <input type="text" class="form-control form-control-sm" id="filter-description"
-                            placeholder="Search description">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="filter-creator" class="small font-weight-bold text-dark">Created By</label>
+                        <label for="filter-creator" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_created_by') }}</label>
                         <input type="text" class="form-control form-control-sm" id="filter-creator"
-                            placeholder="Search created by">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                 </div>
                 <div class="row">
-
                     <div class="col-md-3 mb-3">
-                        <label for="filter-province" class="small font-weight-bold text-dark">Province</label>
+                        <label for="filter-province" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_province') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-province"
-                            placeholder="Search province"></select>
+                            placeholder="{{ __('messages.management.place.filter_province') }}"></select>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="filter-regency" class="small font-weight-bold text-dark">Regency</label>
+                        <label for="filter-regency" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_regency') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-regency"
-                            placeholder="Search regency" disabled></select>
+                            placeholder="{{ __('messages.management.place.filter_regency') }}" disabled></select>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="filter-district" class="small font-weight-bold text-dark">District</label>
+                        <label for="filter-district" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_district') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-district"
-                            placeholder="Search district" disabled></select>
+                            placeholder="{{ __('messages.management.place.filter_district') }}" disabled></select>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="filter-village" class="small font-weight-bold text-dark">Village</label>
+                        <label for="filter-village" class="small font-weight-bold text-dark">{{ __('messages.management.place.filter_village') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-village"
-                            placeholder="Search village" disabled></select>
+                            placeholder="{{ __('messages.management.place.filter_village') }}" disabled></select>
                     </div>
                 </div>
                 <div class="row">
-
                     <div class="col-md-3 mb-3">
                         <label for="filter-updated-range" class="small font-weight-bold text-dark">
-                            Updated Date Range
+                            {{ __('messages.management.place.filter_updated_range') }}
                         </label>
-
                         <input type="text" class="form-control form-control-sm" id="filter-updated-range"
-                            placeholder="Select date range" autocomplete="off">
+                            placeholder="{{ __('messages.management.common.search') }}" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -243,24 +264,19 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <div>
-                    <h6 class="m-0 font-weight-bold text-primary">Place Table</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.place.table_title') }}</h6>
                     <small class="text-secondary">
-                        Tap any action on the right to manage or view more details.
+                        {{ __('messages.management.common.tap_action_hint') }}
                     </small>
                 </div>
 
                 <div class="mt-3 mt-md-0">
-                    {{-- <a href="{{ route('place.create') }}"
-                        class="btn btn-primary btn-sm shadow-sm {{ Route::is('place.create') ? 'active' : '' }}">
-                        <i class="fas fa-plus mr-1"></i>
-                        @lang('messages.navigation_admin.manage_place.create_place')
-                    </a> --}}
                     <div class="d-flex align-items-center gap-2 mt-3 mt-md-0 flex-wrap" style="gap:2px">
 
                         {{-- Download Excel --}}
                         <button id="download-excel-place" class="btn btn-success btn-sm shadow-sm mr-2">
                             <i class="fas fa-file-excel mr-1"></i>
-                            Download Excel
+                            {{ __('messages.management.common.download_excel') }}
                         </button>
                         {{-- Column Visibility --}}
                         <div class="dropdown">
@@ -268,7 +284,7 @@
                                 id="columnVisibilityDropdown" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
                                 <i class="fas fa-columns mr-1"></i>
-                                Columns
+                                {{ __('messages.management.common.columns') }}
                             </button>
 
                             <div class="dropdown-menu dropdown-menu-right p-3 shadow"
@@ -278,7 +294,7 @@
                                     <input type="checkbox" class="custom-control-input toggle-column" id="toggle-title"
                                         data-column="0" checked>
                                     <label class="custom-control-label" for="toggle-title">
-                                        Title
+                                        {{ __('messages.management.place.toggle_title') }}
                                     </label>
                                 </div>
 
@@ -286,7 +302,7 @@
                                     <input type="checkbox" class="custom-control-input toggle-column"
                                         id="toggle-place-code" data-column="1" checked>
                                     <label class="custom-control-label" for="toggle-place-code">
-                                        Place Code
+                                        {{ __('messages.management.place.toggle_place_code') }}
                                     </label>
                                 </div>
 
@@ -294,7 +310,7 @@
                                     <input type="checkbox" class="custom-control-input toggle-column" id="toggle-views"
                                         data-column="2" checked>
                                     <label class="custom-control-label" for="toggle-views">
-                                        Views
+                                        {{ __('messages.management.place.toggle_views') }}
                                     </label>
                                 </div>
 
@@ -302,7 +318,7 @@
                                     <input type="checkbox" class="custom-control-input toggle-column"
                                         id="toggle-description" data-column="3" checked>
                                     <label class="custom-control-label" for="toggle-description">
-                                        Description
+                                        {{ __('messages.management.place.toggle_description') }}
                                     </label>
                                 </div>
 
@@ -310,7 +326,7 @@
                                     <input type="checkbox" class="custom-control-input toggle-column"
                                         id="toggle-created-by" data-column="4" checked>
                                     <label class="custom-control-label" for="toggle-created-by">
-                                        Created By
+                                        {{ __('messages.management.place.toggle_created_by') }}
                                     </label>
                                 </div>
 
@@ -318,14 +334,14 @@
                                     <input type="checkbox" class="custom-control-input toggle-column"
                                         id="toggle-updated-at" data-column="5" checked>
                                     <label class="custom-control-label" for="toggle-updated-at">
-                                        Updated At
+                                        {{ __('messages.management.place.toggle_updated_at') }}
                                     </label>
                                 </div>
 
                             </div>
                         </div>
 
-                        <a href="{{ route('place.create') }}"
+                        <a href="{{ route('place.create') }}" id="createPlaceBtn"
                             class="btn btn-primary btn-sm shadow-sm {{ Route::is('place.create') ? 'active' : '' }}">
                             <i class="fas fa-plus mr-1"></i>
                             @lang('messages.navigation_admin.manage_place.create_place')
@@ -339,13 +355,13 @@
                         cellspacing="0">
                         <thead class="thead-light">
                             <tr>
-                                <th>Title</th>
-                                <th>Place Code</th>
-                                <th>Views</th>
-                                <th>Description</th>
-                                <th>Created By</th>
-                                <th>Updated At</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.place.col_title') }}</th>
+                                <th>{{ __('messages.management.place.col_place_code') }}</th>
+                                <th>{{ __('messages.management.place.col_views') }}</th>
+                                <th>{{ __('messages.management.place.col_description') }}</th>
+                                <th>{{ __('messages.management.place.col_created_by') }}</th>
+                                <th>{{ __('messages.management.place.col_updated_at') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -357,10 +373,213 @@
     </div>
     <!-- /.container-fluid -->
 
+    <button id="placeListTutorialBtn" class="dashboard-tutorial-fab" title="Tutorial">
+        <i class="fas fa-question"></i>
+    </button>
+
     @push('script')
+        <script src="https://cdn.jsdelivr.net/npm/intro.js/minified/intro.min.js"></script>
+        <script>
+            $(document).on('click', '#placeListTutorialBtn', function() {
+                showPlaceListTutorialModal();
+            });
+
+            // Auto-show tutorial on first visit (if not seen before)
+            $(document).ready(function() {
+                if (!localStorage.getItem('placelist_tutorial_seen')) {
+                    setTimeout(function() {
+                        showPlaceListTutorialModal();
+                    }, 600);
+                }
+            });
+
+            function showPlaceListTutorialModal() {
+
+                Swal.fire({
+
+                    title: '👋 Welcome',
+                    html: `
+
+                        <p class="text-muted mb-4">
+                            Please choose your preferred tutorial language
+                            or skip the tutorial.
+                        </p>
+
+                        <div class="row">
+
+                            <div class="col-6 mb-3">
+                                <button
+                                    id="placelist-tutorial-lang-id"
+                                    class="btn btn-primary btn-block py-3">
+
+                                    🇮🇩<br>
+                                    <strong>Bahasa Indonesia</strong>
+
+                                </button>
+                            </div>
+
+                            <div class="col-6 mb-3">
+                                <button
+                                    id="placelist-tutorial-lang-en"
+                                    class="btn btn-outline-primary btn-block py-3">
+
+                                    🇺🇸<br>
+                                    <strong>English</strong>
+
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <button
+                            id="placelist-tutorial-skip"
+                            class="btn btn-link text-muted">
+
+                            Skip Tutorial
+
+                        </button>
+
+                    `,
+
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+
+                    didOpen: () => {
+
+                        $('#placelist-tutorial-lang-id').on('click', function() {
+                            localStorage.setItem('placelist_tutorial_lang', 'id');
+                            Swal.close();
+                            startPlaceListTutorial('id');
+                        });
+
+                        $('#placelist-tutorial-lang-en').on('click', function() {
+                            localStorage.setItem('placelist_tutorial_lang', 'en');
+                            Swal.close();
+                            startPlaceListTutorial('en');
+                        });
+
+                        $('#placelist-tutorial-skip').on('click', function() {
+                            localStorage.setItem('placelist_tutorial_seen', 'true');
+                            Swal.close();
+                        });
+
+                    }
+
+                });
+
+            }
+
+            function startPlaceListTutorial(lang) {
+
+                const tutorials = {
+                    id: {
+                        nextLabel: 'Lanjut', prevLabel: 'Kembali', doneLabel: 'Selesai', skipLabel: 'X',
+                        steps: [
+                            {
+                                title: 'Selamat Datang 👋',
+                                intro: `
+                        <div class="text-left">
+                            <h5 class="mb-3">Tutorial Manage Place</h5>
+                            <p>
+                                Tutorial ini menjelaskan fitur pada halaman daftar tempat:
+                            </p>
+                            <ul>
+                                <li>Mencari & memfilter tempat</li>
+                                <li>Mengurutkan & mengatur kolom</li>
+                                <li>Ekspor data & menambah tempat baru</li>
+                            </ul>
+                            <p class="mb-0">Estimasi waktu: ±1 menit</p>
+                        </div>
+                    `
+                            },
+                            { element: document.getElementById('sort-order'), title: 'Urutkan', intro: 'Urutkan daftar tempat berdasarkan jumlah views, nama, atau kode tempat.' },
+                            { element: document.getElementById('filter-title'), title: 'Pencarian', intro: 'Cari tempat berdasarkan judul, kode, deskripsi, atau pembuat.' },
+                            { element: document.getElementById('filter-province'), title: 'Filter Lokasi', intro: 'Saring tempat berdasarkan Provinsi → Kabupaten → Kecamatan → Desa secara berurutan.' },
+                            { element: document.getElementById('filter-updated-range'), title: 'Filter Tanggal', intro: 'Tampilkan tempat berdasarkan rentang tanggal pembaruan terakhir.' },
+                            { element: document.getElementById('clear-filters'), title: 'Reset Filter', intro: 'Kosongkan semua filter dan urutan dengan satu klik.' },
+                            { element: document.getElementById('download-excel-place'), title: 'Ekspor Excel', intro: 'Unduh data tempat (sesuai filter aktif) ke file Excel.' },
+                            { element: document.getElementById('columnVisibilityDropdown'), title: 'Atur Kolom', intro: 'Pilih kolom mana yang ingin ditampilkan atau disembunyikan pada tabel.' },
+                            { element: document.getElementById('createPlaceBtn'), title: 'Tambah Tempat', intro: 'Buat tempat / objek baru beserta QR Code-nya.' },
+                            { title: 'Daftar Tempat', intro: 'Semua tempat ditampilkan di sini. Gunakan tombol aksi pada tiap baris untuk melihat detail, mengubah, atau menghapus.' }
+                        ]
+                    },
+                    en: {
+                        nextLabel: 'Next', prevLabel: 'Back', doneLabel: 'Finish', skipLabel: 'X',
+                        steps: [
+                            {
+                                title: 'Welcome 👋',
+                                intro: `
+                        <div class="text-left">
+                            <h5 class="mb-3">Manage Place Tutorial</h5>
+                            <p>
+                                This tutorial covers the place list page features:
+                            </p>
+                            <ul>
+                                <li>Searching & filtering places</li>
+                                <li>Sorting & arranging columns</li>
+                                <li>Exporting data & adding new places</li>
+                            </ul>
+                            <p class="mb-0">Estimated duration: 1 minute</p>
+                        </div>
+                    `
+                            },
+                            { element: document.getElementById('sort-order'), title: 'Sort', intro: 'Sort the place list by views, name, or place code.' },
+                            { element: document.getElementById('filter-title'), title: 'Search', intro: 'Search places by title, code, description, or creator.' },
+                            { element: document.getElementById('filter-province'), title: 'Location Filter', intro: 'Filter places by Province → Regency → District → Village in sequence.' },
+                            { element: document.getElementById('filter-updated-range'), title: 'Date Filter', intro: 'Show places based on their last updated date range.' },
+                            { element: document.getElementById('clear-filters'), title: 'Reset Filters', intro: 'Clear all filters and sorting with a single click.' },
+                            { element: document.getElementById('download-excel-place'), title: 'Export Excel', intro: 'Download place data (matching active filters) to an Excel file.' },
+                            { element: document.getElementById('columnVisibilityDropdown'), title: 'Manage Columns', intro: 'Choose which columns to show or hide in the table.' },
+                            { element: document.getElementById('createPlaceBtn'), title: 'Add Place', intro: 'Create a new place / object along with its QR Code.' },
+                            { title: 'Place List', intro: 'All places appear here. Use the action buttons on each row to view details, edit, or delete.' }
+                        ]
+                    }
+                };
+
+                const config = tutorials[lang] || tutorials.en;
+                const validSteps = config.steps.filter(function(s) {
+                    if (!s.element) return true;
+                    return s.element.offsetParent !== null;
+                });
+
+                introJs().setOptions({
+                    steps: validSteps,
+                    nextLabel: config.nextLabel,
+                    prevLabel: config.prevLabel,
+                    doneLabel: config.doneLabel,
+                    skipLabel: config.skipLabel,
+                    showBullets: true,
+                    showProgress: true,
+                    exitOnOverlayClick: false,
+                    scrollToElement: true,
+                    scrollTo: 'element',
+                    tooltipClass: 'custom-intro-tooltip',
+                }).onbeforechange(function(el) {
+                    if (el) setTimeout(function() {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 50);
+                }).oncomplete(function() {
+                    localStorage.setItem('placelist_tutorial_seen', 'true');
+                }).onexit(function() {
+                    localStorage.setItem('placelist_tutorial_seen', 'true');
+                }).start();
+            }
+        </script>
         <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
         <script>
+            const i18nPlace = {
+                codeCopied:    @json(__('messages.management.place.code_copied')),
+                swalTitle:     @json(__('messages.management.common.swal_are_you_sure')),
+                swalText:      @json(__('messages.management.place.swal_delete_text')),
+                swalConfirm:   @json(__('messages.management.place.swal_delete_confirm')),
+                swalCancel:    @json(__('messages.management.common.swal_no_cancel')),
+                minColumn:     @json(__('messages.management.common.min_column_warning')),
+            };
+
             $(document).ready(function() {
                 let updatedAtStart = '';
                 let updatedAtEnd = '';
@@ -583,7 +802,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Place code copied',
+                            title: i18nPlace.codeCopied,
                             text: placeCode,
                             showConfirmButton: false,
                             timer: 1800,
@@ -606,7 +825,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Place code copied',
+                            title: i18nPlace.codeCopied,
                             text: placeCode,
                             showConfirmButton: false,
                             timer: 1800,
@@ -946,12 +1165,12 @@
                             confirmButton: "btn btn-success",
                             cancelButton: "btn btn-danger"
                         },
-                        title: "Are you sure?",
-                        text: "Permanently delete data",
+                        title: i18nPlace.swalTitle,
+                        text: i18nPlace.swalText,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, Delete It!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nPlace.swalConfirm,
+                        cancelButtonText: i18nPlace.swalCancel,
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {

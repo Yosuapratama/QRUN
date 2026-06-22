@@ -61,17 +61,17 @@
 
             <div>
                 <h1 class="page-title mb-1">
-                    {{ isset($gallery) ? 'Edit Gallery' : 'Create Gallery' }}
+                    {{ isset($gallery) ? __('messages.management.gallery_form.title_edit') : __('messages.management.gallery_form.title_create') }}
                 </h1>
 
                 <p class="text-muted mb-0">
-                    Manage gallery image and information
+                    {{ __('messages.management.gallery_form.subtitle') }}
                 </p>
             </div>
 
             <a href="{{ route('gallery.index') }}" class="btn btn-light btn-back shadow-sm">
                 <i class="fas fa-arrow-left mr-2"></i>
-                Back
+                {{ __('messages.management.gallery_form.back') }}
             </a>
 
         </div>
@@ -131,11 +131,11 @@
 
                     <div>
                         <h5 class="section-title mb-1">
-                            Gallery Information
+                            {{ __('messages.management.gallery_form.section_title') }}
                         </h5>
 
                         <p class="text-muted small mb-0">
-                            Upload and manage gallery image
+                            {{ __('messages.management.gallery_form.section_subtitle') }}
                         </p>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                 <div class="form-group mb-4">
 
                     <label class="form-label">
-                        Title
+                        {{ __('messages.management.gallery_form.field_title') }}
                         <span class="text-danger">*</span>
                     </label>
 
@@ -168,7 +168,7 @@
                 <div class="form-group">
 
                     <label class="form-label">
-                        Gallery Image
+                        {{ __('messages.management.gallery_form.field_image') }}
                         <span class="text-danger">*</span>
                     </label>
 
@@ -183,11 +183,11 @@
 
                             <div class="text-center">
                                 <h5 class="font-weight-bold mb-1">
-                                    Drag & Drop Image
+                                    {{ __('messages.management.gallery_form.drag_drop') }}
                                 </h5>
 
                                 <p class="text-muted mb-0">
-                                    or click to browse file
+                                    {{ __('messages.management.gallery_form.click_browse') }}
                                 </p>
                             </div>
 
@@ -218,7 +218,7 @@
                     </div>
 
                     <small class="text-muted d-block mt-3">
-                        Supported format: JPG, PNG, GIF
+                        {{ __('messages.management.gallery_form.supported_format') }}
                     </small>
 
                     @error('image_url')
@@ -237,7 +237,7 @@
                 <button type="submit" class="btn btn-save btn-primary shadow-sm">
 
                     <i class="fas fa-save mr-2"></i>
-                    Save Gallery
+                    {{ __('messages.management.gallery_form.save_btn') }}
 
                 </button>
 
@@ -469,6 +469,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
 
         <script>
+            const i18nGalleryForm = {
+                uploading:       @json(__('messages.management.gallery_form.swal_uploading')),
+                uploadWait:      @json(__('messages.management.gallery_form.swal_wait')),
+                uploadSuccess:   @json(__('messages.management.gallery_form.swal_upload_success')),
+                uploadSuccessText: @json(__('messages.management.gallery_form.swal_upload_success_text')),
+                uploadFailed:    @json(__('messages.management.gallery_form.swal_upload_failed')),
+            };
+
             Dropzone.autoDiscover = false;
 
             let existingThumb = null;
@@ -535,8 +543,8 @@
                         );
 
                         Swal.fire({
-                            title: 'Uploading...',
-                            text: 'Please wait while uploading image.',
+                            title: i18nGalleryForm.uploading,
+                            text: i18nGalleryForm.uploadWait,
                             allowOutsideClick: false,
                             showConfirmButton: false,
                             didOpen: () => {
@@ -561,8 +569,8 @@
 
                         Swal.fire({
                             icon: 'success',
-                            title: 'Upload Success',
-                            text: 'Image uploaded successfully.',
+                            title: i18nGalleryForm.uploadSuccess,
+                            text: i18nGalleryForm.uploadSuccessText,
                             timer: 1500,
                             showConfirmButton: false
                         });
@@ -579,7 +587,7 @@
 
                         Swal.fire({
                             icon: 'error',
-                            title: 'Upload Failed',
+                            title: i18nGalleryForm.uploadFailed,
                             text: errorMessage
                         });
 

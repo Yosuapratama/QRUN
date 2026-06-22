@@ -98,7 +98,7 @@
     <div class="container-fluid">
 
         <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Management Place Advertise
+            {{ __('messages.management.advertise.title') }}
         </h1>
 
         {{-- ALERT --}}
@@ -129,7 +129,7 @@
                     </h6>
 
                     <small class="text-secondary">
-                        Filter advertise by title and place.
+                        {{ __('messages.management.advertise.filter_subtitle') }}
                     </small>
                 </div>
 
@@ -142,15 +142,15 @@
                         </option>
 
                         <option value="title">
-                            Title
+                            {{ __('messages.management.advertise.sort_title') }}
                         </option>
 
                         <option value="place">
-                            Place
+                            {{ __('messages.management.advertise.sort_place') }}
                         </option>
 
                         <option value="time">
-                            Time
+                            {{ __('messages.management.advertise.sort_time') }}
                         </option>
 
                     </select>
@@ -173,7 +173,7 @@
                     <div class="col-md-6 mb-3">
 
                         <label class="small font-weight-bold text-dark">
-                            Title
+                            {{ __('messages.management.advertise.filter_title') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-title"
@@ -184,7 +184,7 @@
                     <div class="col-md-6 mb-3">
 
                         <label class="small font-weight-bold text-dark">
-                            Place
+                            {{ __('messages.management.advertise.filter_place') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-place"
@@ -206,11 +206,11 @@
                 <div>
 
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Advertisement Table
+                        {{ __('messages.management.advertise.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage all advertisement banners and promotions here.
+                        {{ __('messages.management.advertise.table_subtitle') }}
                     </small>
 
                 </div>
@@ -228,7 +228,7 @@
                     <a class="btn btn-success btn-sm shadow-sm" href="{{ route('advertise.create') }}">
 
                         <i class="fas fa-plus mr-1"></i>
-                        Add Advertise
+                        {{ __('messages.management.advertise.add_btn') }}
 
                     </a>
 
@@ -240,7 +240,7 @@
                                 data-column="0" checked>
 
                             <label class="custom-control-label" for="toggle-title">
-                                Title
+                                {{ __('messages.management.advertise.col_title') }}
                             </label>
 
                         </div>
@@ -251,7 +251,7 @@
                                 data-column="1" checked>
 
                             <label class="custom-control-label" for="toggle-place">
-                                Place
+                                {{ __('messages.management.advertise.col_place') }}
                             </label>
 
                         </div>
@@ -262,7 +262,7 @@
                                 data-column="2" checked>
 
                             <label class="custom-control-label" for="toggle-time">
-                                Time
+                                {{ __('messages.management.advertise.col_time') }}
                             </label>
 
                         </div>
@@ -282,10 +282,10 @@
                         <thead class="thead-light">
 
                             <tr>
-                                <th>Title</th>
-                                <th>Place</th>
-                                <th>Time (Seconds)</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.advertise.col_title') }}</th>
+                                <th>{{ __('messages.management.advertise.col_place') }}</th>
+                                <th>{{ __('messages.management.advertise.col_time') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
 
                         </thead>
@@ -304,6 +304,14 @@
 
     @push('script')
         <script>
+            const i18nAdvertise = {
+                swalTitle:    @json(__('messages.management.common.swal_are_you_sure')),
+                swalConfirm:  @json(__('messages.management.common.swal_yes_delete')),
+                swalCancel:   @json(__('messages.management.common.swal_no_cancel')),
+                deleteText:   @json(__('messages.management.advertise.swal_delete_text')),
+                minColumn:    @json(__('messages.management.common.min_column_warning')),
+            };
+
             $(document).ready(function() {
 
                 $('.dropdown-menu').on('click', function(e) {
@@ -560,7 +568,7 @@
                                 toast: true,
                                 position: 'top-end',
                                 icon: 'warning',
-                                title: 'Minimum 1 column must remain visible',
+                                title: i18nAdvertise.minColumn,
                                 showConfirmButton: false,
                                 timer: 1800
                             });
@@ -599,12 +607,12 @@
                             confirmButton: "btn btn-success",
                             cancelButton: "btn btn-danger"
                         },
-                        title: "Are you sure?",
-                        text: "The deleted advertisement cannot be recovered.",
+                        title: i18nAdvertise.swalTitle,
+                        text: i18nAdvertise.deleteText,
                         icon: "warning",
                         showCancelButton: true,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nAdvertise.swalConfirm,
+                        cancelButtonText: i18nAdvertise.swalCancel,
                         reverseButtons: true
                     }).then((result) => {
 

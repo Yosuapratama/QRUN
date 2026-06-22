@@ -19,11 +19,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Filter comments by email, rating, place code, and date.
+                        {{ __('messages.management.comments.filter_subtitle') }}
                     </small>
                 </div>
 
@@ -32,15 +32,14 @@
                     <select class="form-control form-control-sm mr-2" id="sort-order"
                         style="min-width:220px;">
 
-                        <option value="">Sort By</option>
-                        <option value="email">Email</option>
-                        <option value="rating">Rating</option>
-                        <option value="updated_at">Updated At</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="email">{{ __('messages.management.comments.sort_email') }}</option>
+                        <option value="rating">{{ __('messages.management.comments.sort_rating') }}</option>
+                        <option value="updated_at">{{ __('messages.management.comments.sort_updated') }}</option>
                     </select>
 
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters" style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
-
-                        Clear Filters
+                        {{ __('messages.management.common.clear_filters') }}
                     </button>
                 </div>
             </div>
@@ -51,48 +50,48 @@
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Email
+                            {{ __('messages.management.comments.filter_email') }}
                         </label>
 
                         <input type="text"
                             class="form-control form-control-sm"
                             id="filter-email"
-                            placeholder="Search email">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Place Code
+                            {{ __('messages.management.comments.filter_place_code') }}
                         </label>
 
                         <input type="text"
                             class="form-control form-control-sm"
                             id="filter-place-code"
-                            placeholder="Search place code">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Rating
+                            {{ __('messages.management.comments.filter_rating') }}
                         </label>
 
                         <select class="form-control form-control-sm" id="filter-rating">
 
-                            <option value="">All Rating</option>
+                            <option value="">{{ __('messages.management.comments.all_rating') }}</option>
 
-                            <option value="5">5 Stars</option>
-                            <option value="4">4 Stars</option>
-                            <option value="3">3 Stars</option>
-                            <option value="2">2 Stars</option>
-                            <option value="1">1 Star</option>
-                            <option value="0">No Rating</option>
+                            <option value="5">{{ __('messages.management.comments.stars_5') }}</option>
+                            <option value="4">{{ __('messages.management.comments.stars_4') }}</option>
+                            <option value="3">{{ __('messages.management.comments.stars_3') }}</option>
+                            <option value="2">{{ __('messages.management.comments.stars_2') }}</option>
+                            <option value="1">{{ __('messages.management.comments.stars_1') }}</option>
+                            <option value="0">{{ __('messages.management.comments.no_rating') }}</option>
 
                         </select>
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Updated Date
+                            {{ __('messages.management.comments.filter_date') }}
                         </label>
 
                         <input type="date"
@@ -113,11 +112,11 @@
                 <div>
 
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Comments Table
+                        {{ __('messages.management.comments.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage all comments and moderation actions here.
+                        {{ __('messages.management.comments.table_subtitle') }}
                     </small>
 
                 </div>
@@ -130,7 +129,7 @@
                         data-toggle="dropdown">
 
                         <i class="fas fa-columns mr-1"></i>
-                        Columns
+                        {{ __('messages.management.common.columns') }}
                     </button>
 
                     <div class="dropdown-menu dropdown-menu-right p-3 shadow">
@@ -143,7 +142,7 @@
                                 checked>
 
                             <label class="custom-control-label" for="toggle-email">
-                                Email
+                                {{ __('messages.management.comments.col_email') }}
                             </label>
                         </div>
 
@@ -155,7 +154,7 @@
                                 checked>
 
                             <label class="custom-control-label" for="toggle-rating">
-                                Rating
+                                {{ __('messages.management.comments.col_rating') }}
                             </label>
                         </div>
 
@@ -167,7 +166,7 @@
                                 checked>
 
                             <label class="custom-control-label" for="toggle-comment">
-                                Comment
+                                {{ __('messages.management.comments.col_comment') }}
                             </label>
                         </div>
 
@@ -179,7 +178,7 @@
                                 checked>
 
                             <label class="custom-control-label" for="toggle-place-code">
-                                Place Code
+                                {{ __('messages.management.comments.col_place_code') }}
                             </label>
                         </div>
 
@@ -191,7 +190,7 @@
                                 checked>
 
                             <label class="custom-control-label" for="toggle-updated">
-                                Updated At
+                                {{ __('messages.management.comments.col_updated_at') }}
                             </label>
                         </div>
 
@@ -212,12 +211,12 @@
                         <thead class="thead-light">
 
                             <tr>
-                                <th>Email</th>
-                                <th>Rating</th>
-                                <th>Comment</th>
-                                <th>Place Code</th>
-                                <th>Updated At</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.comments.col_email') }}</th>
+                                <th>{{ __('messages.management.comments.col_rating') }}</th>
+                                <th>{{ __('messages.management.comments.col_comment') }}</th>
+                                <th>{{ __('messages.management.comments.col_place_code') }}</th>
+                                <th>{{ __('messages.management.comments.col_updated_at') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
 
                         </thead>
@@ -298,6 +297,14 @@
 
     @push('script')
         <script>
+            const i18nComments = {
+                swalTitle:   @json(__('messages.management.common.swal_are_you_sure')),
+                swalText:    @json(__('messages.management.comments.swal_delete_text')),
+                swalConfirm: @json(__('messages.management.common.swal_yes_delete')),
+                swalCancel:  @json(__('messages.management.common.swal_no_cancel')),
+                minColumn:   @json(__('messages.management.common.min_column_warning')),
+            };
+
             $(document).ready(function() {
 
                 // =========================
@@ -547,7 +554,7 @@
                                 toast: true,
                                 position: 'top-end',
                                 icon: 'warning',
-                                title: 'Minimum 1 column must remain visible',
+                                title: i18nComments.minColumn,
                                 showConfirmButton: false,
                                 timer: 1800
                             });
@@ -588,14 +595,14 @@
                             cancelButton: "btn btn-danger"
                         },
 
-                        title: "Are you sure?",
-                        text: "Delete this comment",
+                        title: i18nComments.swalTitle,
+                        text: i18nComments.swalText,
                         icon: "warning",
 
                         showCancelButton: true,
 
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel!",
+                        confirmButtonText: i18nComments.swalConfirm,
+                        cancelButtonText: i18nComments.swalCancel,
 
                         reverseButtons: true
 

@@ -101,33 +101,26 @@ class DashboardController extends Controller
 
         $query->latest('created_at');
 
-        return DataTables::eloquent($query)
+        /** @var \App\Models\User $authUser */
+        $authUser = Auth::user();
+        $isSuperAdmin = $authUser->hasRole('superadmin');
+
+        $datatable = DataTables::eloquent($query)
             ->addIndexColumn()
+            ->addColumn('user_name', fn($row) => $row->user?->name ?? 'Guest')
+            ->addColumn('place_name', fn($row) => $row->place?->title ?? $row->place_code)
+            ->editColumn('checked_at', fn($row) => Carbon::parse($row->checked_at)->format('d M Y H:i:s'))
+            ->editColumn('created_at', fn($row) => Carbon::parse($row->created_at)->format('d M Y H:i:s'))
+            ->blacklist(['user_name', 'place_name']);
 
-            ->addColumn('user_name', function ($row) {
-                return $row->user?->name ?? 'Guest';
-            })
+        if (!$isSuperAdmin) {
+            $datatable->removeColumn('user_name');
+            $datatable->rawColumns(['place_name']);
+        } else {
+            $datatable->rawColumns(['user_name', 'place_name']);
+        }
 
-            ->addColumn('place_name', function ($row) {
-                return $row->place?->title ?? $row->place_code;
-            })
-
-            ->editColumn('checked_at', function ($row) {
-                return Carbon::parse($row->checked_at)
-                    ->format('d M Y H:i:s');
-            })
-
-            ->editColumn('created_at', function ($row) {
-                return Carbon::parse($row->created_at)
-                    ->format('d M Y H:i:s');
-            })
-
-            ->rawColumns([
-                'user_name',
-                'place_name'
-            ])
-
-            ->make(true);
+        return $datatable->make(true);
     }
 
     function sync()

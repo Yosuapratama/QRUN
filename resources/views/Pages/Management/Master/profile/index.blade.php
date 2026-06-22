@@ -9,9 +9,9 @@
         {{-- Header --}}
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <div>
-                <h1 class="h3 mb-1 text-gray-800 font-weight-bold">My Profile</h1>
+                <h1 class="h3 mb-1 text-gray-800 font-weight-bold">{{ __('messages.management.profile.title') }}</h1>
                 <p class="text-muted mb-0">
-                    Manage your account information and security settings.
+                    {{ __('messages.management.profile.subtitle') }}
                 </p>
             </div>
         </div>
@@ -75,12 +75,12 @@
                             @if ($User->email_verified_at)
                                 <span class="badge badge-light px-3 py-2">
                                     <i class="fas fa-check-circle text-success mr-1"></i>
-                                    Verified Account
+                                    {{ __('messages.management.profile.verified_acc') }}
                                 </span>
                             @else
                                 <span class="badge badge-light px-3 py-2">
                                     <i class="fas fa-exclamation-triangle text-warning mr-1"></i>
-                                    Email Not Verified
+                                    {{ __('messages.management.profile.not_verified') }}
                                 </span>
                             @endif
                         </div>
@@ -91,7 +91,7 @@
                             {{-- Quick Info --}}
                             <div class="mb-4">
                                 <h6 class="font-weight-bold text-dark mb-3">
-                                    Personal Information
+                                    {{ __('messages.management.profile.personal_info') }}
                                 </h6>
 
                                 <div class="profile-info-card">
@@ -100,7 +100,7 @@
                                     </div>
 
                                     <div>
-                                        <small class="text-muted d-block">Phone Number</small>
+                                        <small class="text-muted d-block">{{ __('messages.management.profile.phone_number') }}</small>
                                         <strong>{{ $User->phone ?: '-' }}</strong>
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@
                                     </div>
 
                                     <div>
-                                        <small class="text-muted d-block">Address</small>
+                                        <small class="text-muted d-block">{{ __('messages.management.profile.address') }}</small>
                                         <strong>{{ $User->address ?: '-' }}</strong>
                                     </div>
                                 </div>
@@ -120,18 +120,18 @@
                             {{-- Account Status --}}
                             <div class="mb-4">
                                 <h6 class="font-weight-bold text-dark mb-3">
-                                    Account Status
+                                    {{ __('messages.management.profile.account_status') }}
                                 </h6>
 
                                 <div class="row">
                                     <div class="col-6 mb-3">
                                         <div class="mini-stat-card">
                                             <h5 class="font-weight-bold text-primary mb-1">
-                                                Active
+                                                {{ __('messages.management.profile.status_active') }}
                                             </h5>
 
                                             <small class="text-muted">
-                                                Account Status
+                                                {{ __('messages.management.profile.status_label') }}
                                             </small>
                                         </div>
                                     </div>
@@ -139,11 +139,11 @@
                                     <div class="col-6 mb-3">
                                         <div class="mini-stat-card">
                                             <h5 class="font-weight-bold text-success mb-1">
-                                                {{ $User->email_verified_at ? 'Yes' : 'No' }}
+                                                {{ $User->email_verified_at ? __('messages.management.common.yes') : __('messages.management.common.no') }}
                                             </h5>
 
                                             <small class="text-muted">
-                                                Verified
+                                                {{ __('messages.management.profile.verified_label') }}
                                             </small>
                                         </div>
                                     </div>
@@ -153,7 +153,7 @@
                             {{-- Additional Info --}}
                             <div>
                                 <h6 class="font-weight-bold text-dark mb-3">
-                                    Security
+                                    {{ __('messages.management.profile.security') }}
                                 </h6>
 
                                 <div class="security-box">
@@ -162,11 +162,11 @@
 
                                         <div>
                                             <strong class="d-block">
-                                                Your account is protected
+                                                {{ __('messages.management.profile.protected') }}
                                             </strong>
 
                                             <small class="text-muted">
-                                                Keep your password secure and never share it.
+                                                {{ __('messages.management.profile.keep_password') }}
                                             </small>
                                         </div>
                                     </div>
@@ -183,7 +183,7 @@
                 <div class="card shadow border-0">
                     <div class="card-header bg-white py-3 border-0">
                         <h5 class="mb-0 font-weight-bold text-primary">
-                            Account Settings
+                            {{ __('messages.management.profile.account_settings') }}
                         </h5>
                     </div>
 
@@ -194,15 +194,15 @@
                             <div class="alert alert-warning shadow-sm border-left-warning">
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                                     <div class="mb-2 mb-md-0">
-                                        <strong>Email verification required.</strong><br>
-                                        Please verify your account before creating a new place.
+                                        <strong>{{ __('messages.management.profile.email_verification_required') }}</strong><br>
+                                        {{ __('messages.management.profile.email_verification_desc') }}
                                     </div>
 
                                     <form action="{{ route('verification.send') }}" method="POST">
                                         @csrf
                                         <button class="btn btn-warning btn-sm px-3">
                                             <i class="fas fa-paper-plane mr-1"></i>
-                                            Resend Verification
+                                            {{ __('messages.management.profile.resend_verification') }}
                                         </button>
                                     </form>
                                 </div>
@@ -215,14 +215,14 @@
                             {{-- Personal Information --}}
                             <div class="mb-4">
                                 <h6 class="font-weight-bold text-dark mb-3">
-                                    Personal Information
+                                    {{ __('messages.management.profile.personal_info') }}
                                 </h6>
 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                Full Name <span class="text-danger">*</span>
+                                                {{ __('messages.management.profile.full_name') }} <span class="text-danger">*</span>
                                             </label>
 
                                             <div class="input-group">
@@ -233,7 +233,7 @@
                                                 </div>
 
                                                 <input type="text" name="name" value="{{ old('name', $User->name) }}"
-                                                    class="form-control custom-input" placeholder="Enter your name">
+                                                    class="form-control custom-input" placeholder="{{ __('messages.management.profile.full_name_placeholder') }}">
                                             </div>
 
                                             @error('name')
@@ -247,7 +247,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                Phone Number  <span class="text-danger">*</span>
+                                                {{ __('messages.management.profile.phone_number') }} <span class="text-danger">*</span>
                                             </label>
 
                                             <div class="input-group">
@@ -259,7 +259,7 @@
 
                                                 <input type="text" name="phone"
                                                     value="{{ old('phone', $User->phone) }}"
-                                                    class="form-control custom-input" placeholder="Ex: 0812xxxx">
+                                                    class="form-control custom-input" placeholder="{{ __('messages.management.profile.phone_placeholder') }}">
                                             </div>
 
                                             @error('phone')
@@ -273,10 +273,10 @@
 
                                 <div class="form-group">
                                     <label class="font-weight-semibold">
-                                        Address  <span class="text-danger">*</span>
+                                        {{ __('messages.management.profile.address') }} <span class="text-danger">*</span>
                                     </label>
 
-                                    <textarea name="address" rows="4" class="form-control custom-input" placeholder="Enter your address">{{ old('address', $User->address) }}</textarea>
+                                    <textarea name="address" rows="4" class="form-control custom-input" placeholder="{{ __('messages.management.profile.address_placeholder') }}">{{ old('address', $User->address) }}</textarea>
 
                                     @error('address')
                                         <small class="text-danger d-block mt-2">
@@ -287,7 +287,7 @@
 
                                 <div class="form-group">
                                     <label class="font-weight-semibold">
-                                        Email Address  <span class="text-danger">*</span>
+                                        {{ __('messages.management.profile.email_address') }} <span class="text-danger">*</span>
                                     </label>
 
                                     <div class="input-group">
@@ -307,11 +307,11 @@
                             <div class="mb-4">
                                 <div class="d-flex align-items-center mb-3">
                                     <h6 class="font-weight-bold text-dark mb-0">
-                                        Change Password
+                                        {{ __('messages.management.profile.change_password') }}
                                     </h6>
 
                                     <span class="badge badge-light ml-2">
-                                        Optional
+                                        {{ __('messages.management.profile.optional') }}
                                     </span>
                                 </div>
 
@@ -319,33 +319,33 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                Current Password
+                                                {{ __('messages.management.profile.current_password') }}
                                             </label>
 
                                             <input type="password" name="currpassword" class="form-control custom-input"
-                                                placeholder="Enter current password">
+                                                placeholder="{{ __('messages.management.profile.current_password_placeholder') }}">
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                New Password
+                                                {{ __('messages.management.profile.new_password') }}
                                             </label>
 
                                             <input type="password" name="password" class="form-control custom-input"
-                                                placeholder="New password">
+                                                placeholder="{{ __('messages.management.profile.new_password_placeholder') }}">
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-semibold">
-                                                Confirm Password
+                                                {{ __('messages.management.profile.confirm_password') }}
                                             </label>
 
                                             <input type="password" name="password2" class="form-control custom-input"
-                                                placeholder="Confirm password">
+                                                placeholder="{{ __('messages.management.profile.confirm_password_placeholder') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -355,7 +355,7 @@
                             <div class="text-right">
                                 <button type="submit" class="btn btn-primary px-4 py-2 shadow-sm">
                                     <i class="fas fa-save mr-2"></i>
-                                    Update Profile
+                                    {{ __('messages.management.profile.update_profile') }}
                                 </button>
                             </div>
                         </form>

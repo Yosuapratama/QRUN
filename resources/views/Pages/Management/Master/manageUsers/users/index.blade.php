@@ -38,9 +38,9 @@
                 box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
             }
 
-            .custom-control-label::after {
+            /* .custom-control-label::after {
                 left: -2.6rem !important;
-            }
+            } */
 
             .custom-control-input:checked~.custom-control-label::before {
                 background-color: #4e73df;
@@ -237,8 +237,8 @@
         <!-- HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h1 class="h3 text-gray-800 font-weight-bold">Management Users</h1>
-                <small class="text-muted">Manage users, verification, approval, and access control</small>
+                <h1 class="h3 text-gray-800 font-weight-bold">{{ __('messages.management.users.title') }}</h1>
+                <small class="text-muted">{{ __('messages.management.users.subtitle') }}</small>
             </div>
         </div>
 
@@ -251,65 +251,65 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                         <small class="ml-1">
                             (
                             <span class="text-warning font-weight-bold">
-                                Pending Approvals: {{ $pendingUser }}
+                                {{ __('messages.management.users.pending_label') }} {{ $pendingUser }}
                             </span>
                             )
                         </small>
                     </h6>
 
                     <small class="text-secondary">
-                        Refine the list by name, email, phone, status, and block status.
+                        {{ __('messages.management.users.filter_subtitle') }}
                     </small>
                 </div>
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mt-3 mt-md-0">
                     <select class="form-control form-control-sm" id="sort-order" style="min-width: 220px;">
-                        <option value="">Sort by</option>
-                        <option value="name">Name</option>
-                        <option value="phone">Phone</option>
-                        <option value="email">Email</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="name">{{ __('messages.management.users.sort_name') }}</option>
+                        <option value="phone">{{ __('messages.management.users.sort_phone') }}</option>
+                        <option value="email">{{ __('messages.management.users.sort_email') }}</option>
                     </select>
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters"
-                        style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">Clear Filters</button>
+                        style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">{{ __('messages.management.common.clear_filters') }}</button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
-                        <label class="small font-weight-bold text-dark">Name</label>
+                        <label class="small font-weight-bold text-dark">{{ __('messages.management.users.filter_name') }}</label>
                         <input type="text" id="filter_name" class="form-control form-control-sm"
-                            placeholder="Search Name">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                     <div class="col-md-3">
-                        <label class="small font-weight-bold text-dark">Email</label>
+                        <label class="small font-weight-bold text-dark">{{ __('messages.management.users.filter_email') }}</label>
                         <input type="text" id="filter_email" class="form-control form-control-sm"
-                            placeholder="Search Email">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                     <div class="col-md-3">
-                        <label class="small font-weight-bold text-dark">Phone</label>
+                        <label class="small font-weight-bold text-dark">{{ __('messages.management.users.filter_phone') }}</label>
                         <input type="text" id="filter_phone" class="form-control form-control-sm"
-                            placeholder="Search Phone">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                     <div class="col-md-3">
-                        <label class="small font-weight-bold text-dark">Status Approval</label>
+                        <label class="small font-weight-bold text-dark">{{ __('messages.management.users.filter_status') }}</label>
                         <select id="filter_status" class="form-control form-control-sm">
-                            <option value="">All</option>
-                            <option value="approved">Approved</option>
-                            <option value="pending">Pending</option>
+                            <option value="">{{ __('messages.management.common.all') }}</option>
+                            <option value="approved">{{ __('messages.management.users.approved') }}</option>
+                            <option value="pending">{{ __('messages.management.users.pending') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="row mt-2">
                     <div class="col-md-3">
-                        <label>Blocked</label>
+                        <label class="small font-weight-bold text-dark">{{ __('messages.management.users.filter_block') }}</label>
                         <select id="filter_block" class="form-control form-control-sm">
-                            <option value="">All</option>
-                            <option value="blocked">Blocked</option>
-                            <option value="active">Active</option>
+                            <option value="">{{ __('messages.management.common.all') }}</option>
+                            <option value="blocked">{{ __('messages.management.users.blocked') }}</option>
+                            <option value="active">{{ __('messages.management.users.active') }}</option>
                         </select>
                     </div>
                 </div>
@@ -320,9 +320,9 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <div>
-                    <h6 class="m-0 font-weight-bold text-primary">Users Table <small>*(Verified Only)</small></h6>
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.users.table_title') }} <small>{{ __('messages.management.users.verified_only') }}</small></h6>
                     <small class="text-secondary">
-                        Tap any action on the right to manage or view more details.
+                        {{ __('messages.management.common.tap_action_hint') }}
                     </small>
                 </div>
                 <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">
@@ -333,7 +333,7 @@
                             id="columnVisibilityDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                             <i class="fas fa-columns mr-1"></i>
-                            Columns
+                            {{ __('messages.management.common.columns') }}
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-right p-3 shadow" aria-labelledby="columnVisibilityDropdown"
@@ -343,7 +343,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-name"
                                     data-column="0" checked>
                                 <label class="custom-control-label" for="toggle-name">
-                                    Name
+                                    {{ __('messages.management.users.toggle_name') }}
                                 </label>
                             </div>
 
@@ -351,7 +351,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-phone"
                                     data-column="1" checked>
                                 <label class="custom-control-label" for="toggle-phone">
-                                    Phone
+                                    {{ __('messages.management.users.toggle_phone') }}
                                 </label>
                             </div>
 
@@ -359,7 +359,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-email"
                                     data-column="2" checked>
                                 <label class="custom-control-label" for="toggle-email">
-                                    Email
+                                    {{ __('messages.management.users.toggle_email') }}
                                 </label>
                             </div>
 
@@ -367,7 +367,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-address"
                                     data-column="3" checked>
                                 <label class="custom-control-label" for="toggle-address">
-                                    Address
+                                    {{ __('messages.management.users.toggle_address') }}
                                 </label>
                             </div>
 
@@ -375,7 +375,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-verified"
                                     data-column="4" checked>
                                 <label class="custom-control-label" for="toggle-verified">
-                                    Verified
+                                    {{ __('messages.management.users.toggle_verified') }}
                                 </label>
                             </div>
 
@@ -383,7 +383,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-approved"
                                     data-column="5" checked>
                                 <label class="custom-control-label" for="toggle-approved">
-                                    Approved
+                                    {{ __('messages.management.users.toggle_approved') }}
                                 </label>
                             </div>
 
@@ -391,7 +391,7 @@
                                 <input type="checkbox" class="custom-control-input toggle-column" id="toggle-blocked"
                                     data-column="6" checked>
                                 <label class="custom-control-label" for="toggle-blocked">
-                                    Blocked
+                                    {{ __('messages.management.users.toggle_blocked') }}
                                 </label>
                             </div>
 
@@ -400,7 +400,7 @@
 
                     <button class="btn btn-primary btn-sm shadow-sm" id="btnAddUser">
                         <i class="fas fa-plus mr-1"></i>
-                        Add User
+                        {{ __('messages.management.users.add_user_btn') }}
                     </button>
                 </div>
             </div>
@@ -409,14 +409,14 @@
                     <table class="table table-striped table-hover table-bordered" id="dataTableUser">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Address</th>
-                                <th>Verified</th>
-                                <th>Approved</th>
-                                <th>Blocked</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ __('messages.management.users.col_name') }}</th>
+                                <th>{{ __('messages.management.users.col_phone') }}</th>
+                                <th>{{ __('messages.management.users.col_email') }}</th>
+                                <th>{{ __('messages.management.users.col_address') }}</th>
+                                <th>{{ __('messages.management.users.col_verified') }}</th>
+                                <th>{{ __('messages.management.users.col_approved') }}</th>
+                                <th>{{ __('messages.management.users.col_blocked') }}</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
                         </thead>
                     </table>
@@ -431,7 +431,7 @@
                     <div class="modal-content">
 
                         <div class="modal-header">
-                            <h5 id="modalTitle">User</h5>
+                            <h5 id="modalTitle">{{ __('messages.management.users.modal_add_title') }}</h5>
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
 
@@ -441,18 +441,18 @@
 
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label>Name <small class='text-danger'>*</small></label>
+                                    <label>{{ __('messages.management.users.name_label') }} <small class='text-danger'>*</small></label>
                                     <input type="text" id="name" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label>Email <small class='text-danger'>*</small></label>
+                                    <label>{{ __('messages.management.users.email_label') }} <small class='text-danger'>*</small></label>
                                     <input type="email" id="email" class="form-control" required>
                                 </div>
                             </div>
 
                             <div class="row mt-2">
                                 <div class="col-md-6">
-                                    <label>Phone <small class='text-danger'>*</small></label>
+                                    <label>{{ __('messages.management.users.phone_label') }} <small class='text-danger'>*</small></label>
 
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -466,11 +466,11 @@
                                     </div>
 
                                     <small class="text-muted">
-                                        Example: 85959959 (without leading 0)
+                                        {{ __('messages.management.users.phone_hint') }}
                                     </small>
                                 </div>
                                 <div class="col-md-6">
-                                    <label>Address <small class='text-danger'>*</small></label>
+                                    <label>{{ __('messages.management.users.address_label') }} <small class='text-danger'>*</small></label>
                                     <input type="text" id="address" class="form-control">
                                 </div>
                             </div>
@@ -479,20 +479,20 @@
 
                                 <div class="col-md-6" id="passwordBox">
                                     <label id="passwordLabel">
-                                        Password <small class="text-danger">*</small>
+                                        {{ __('messages.management.users.password_label') }} <small class="text-danger">*</small>
                                     </label>
 
                                     <input type="password" id="password" class="form-control"
                                         autocomplete="new-password">
 
                                     <small id="passwordHint" class="text-muted d-none">
-                                        Leave blank if you don't want to change password
+                                        {{ __('messages.management.users.pw_hint') }}
                                     </small>
                                 </div>
 
                                 <div class="col-md-6" id="confirmPasswordBox">
                                     <label>
-                                        Confirm Password <small class="text-danger">*</small>
+                                        {{ __('messages.management.users.confirm_pw_label') }} <small class="text-danger">*</small>
                                     </label>
 
                                     <input type="password" id="confirm_password" class="form-control"
@@ -501,31 +501,35 @@
 
                             </div>
                             <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="auto_verified">
+                                <div class="col-12">
+                                    <div style="display:flex;gap:16px;flex-wrap:wrap;">
 
-                                        <label class="custom-control-label font-weight-semibold" for="auto_verified">
-                                            Auto Verified
-                                        </label>
+                                        <div style="flex:1;min-width:220px;background:#f8f9fc;border-radius:10px;padding:14px 16px;border:1px solid #e3e6f0;">
+                                            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                                                <div>
+                                                    <div class="font-weight-bold" style="font-size:13px;">{{ __('messages.management.users.auto_verified') }}</div>
+                                                    <small class="text-muted">{{ __('messages.management.users.auto_verified_desc') }}</small>
+                                                </div>
+                                                <div class="custom-control custom-switch mb-0" style="flex-shrink:0;padding-left:2.25rem;min-width:3.5rem;">
+                                                    <input type="checkbox" class="custom-control-input" id="auto_verified">
+                                                    <label class="custom-control-label" for="auto_verified"></label>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        <small class="d-block text-muted">
-                                            Automatically mark email as verified
-                                        </small>
-                                    </div>
-                                </div>
+                                        <div style="flex:1;min-width:220px;background:#f8f9fc;border-radius:10px;padding:14px 16px;border:1px solid #e3e6f0;">
+                                            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                                                <div>
+                                                    <div class="font-weight-bold" style="font-size:13px;">{{ __('messages.management.users.auto_approved') }}</div>
+                                                    <small class="text-muted">{{ __('messages.management.users.auto_approved_desc') }}</small>
+                                                </div>
+                                                <div class="custom-control custom-switch mb-0" style="flex-shrink:0;padding-left:2.25rem;min-width:3.5rem;">
+                                                    <input type="checkbox" class="custom-control-input" id="auto_approved">
+                                                    <label class="custom-control-label" for="auto_approved"></label>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                <div class="col-md-6">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="auto_approved">
-
-                                        <label class="custom-control-label font-weight-semibold" for="auto_approved">
-                                            Auto Approved
-                                        </label>
-
-                                        <small class="d-block text-muted">
-                                            Automatically approve user access
-                                        </small>
                                     </div>
                                 </div>
                             </div>
@@ -533,7 +537,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
+                            <button type="button" class="btn btn-light" data-dismiss="modal">{{ __('messages.management.common.cancel') }}</button>
+                            <button type="submit" class="btn btn-primary" id="saveBtn">{{ __('messages.management.users.save_btn') }}</button>
                         </div>
 
                     </div>
@@ -545,6 +550,23 @@
 
     @push('script')
         <script>
+            const i18nUsers = {
+                addTitle:      @json(__('messages.management.users.modal_add_title')),
+                editTitle:     @json(__('messages.management.users.modal_edit_title')),
+                detailTitle:   @json(__('messages.management.users.modal_detail_title')),
+                swalTitle:     @json(__('messages.management.common.swal_are_you_sure')),
+                swalCancel:    @json(__('messages.management.common.swal_cancel')),
+                swalProcessing:@json(__('messages.management.common.swal_processing')),
+                swalWait:      @json(__('messages.management.common.swal_please_wait')),
+
+                badgeVerified:   @json(__('messages.management.users.badge_verified')),
+                badgeUnverified: @json(__('messages.management.users.badge_unverified')),
+                badgeApproved:   @json(__('messages.management.users.badge_approved')),
+                badgePending:    @json(__('messages.management.users.badge_pending')),
+                badgeBlocked:    @json(__('messages.management.users.badge_blocked')),
+                badgeActive:     @json(__('messages.management.users.badge_active')),
+            };
+
             $(function() {
 
                 let mode = 'create';
@@ -612,22 +634,22 @@
                             data: 'email_verified_at',
                             render: d =>
                                 d ?
-                                '<span class="badge-soft-success">Verified</span>' :
-                                '<span class="badge-soft-warning">Unverified</span>'
+                                `<span class="badge-soft-success">${i18nUsers.badgeVerified}</span>` :
+                                `<span class="badge-soft-warning">${i18nUsers.badgeUnverified}</span>`
                         },
                         {
                             data: 'approved_at',
                             render: d =>
                                 d ?
-                                '<span class="badge-soft-success">Approved</span>' :
-                                '<span class="badge-soft-warning">Pending</span>'
+                                `<span class="badge-soft-success">${i18nUsers.badgeApproved}</span>` :
+                                `<span class="badge-soft-warning">${i18nUsers.badgePending}</span>`
                         },
                         {
                             data: 'deleted_at',
                             render: d =>
                                 d ?
-                                '<span class="badge-soft-danger">Blocked</span>' :
-                                '<span class="badge-soft-success">Active</span>'
+                                `<span class="badge-soft-danger">${i18nUsers.badgeBlocked}</span>` :
+                                `<span class="badge-soft-success">${i18nUsers.badgeActive}</span>`
                         },
                         {
                             data: 'action',
@@ -816,7 +838,7 @@
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: confirmText,
-                        cancelButtonText: "Cancel",
+                        cancelButtonText: i18nUsers.swalCancel,
                         reverseButtons: true,
                         customClass: {
                             confirmButton: "btn btn-success",
@@ -828,8 +850,8 @@
 
                         // Loading Swal
                         Swal.fire({
-                            title: 'Processing...',
-                            text: 'Please wait a moment',
+                            title: i18nUsers.swalProcessing,
+                            text: i18nUsers.swalWait,
                             allowOutsideClick: false,
                             allowEscapeKey: false,
                             showConfirmButton: false,
@@ -897,7 +919,7 @@
                     // CREATE MODE
                     if (type === 'create') {
 
-                        $('#modalTitle').text('Add User');
+                        $('#modalTitle').text(i18nUsers.addTitle);
 
                         $('#passwordBox').show();
                         $('#confirmPasswordBox').show();
@@ -911,7 +933,7 @@
                     // EDIT MODE
                     if (type === 'edit') {
 
-                        $('#modalTitle').text('Edit User');
+                        $('#modalTitle').text(i18nUsers.editTitle);
 
                         $('#passwordBox').show();
 
@@ -921,7 +943,7 @@
                     } else {
 
                         // DETAIL MODE
-                        $('#modalTitle').text('User Detail');
+                        $('#modalTitle').text(i18nUsers.detailTitle);
                     }
 
                     $.ajax({

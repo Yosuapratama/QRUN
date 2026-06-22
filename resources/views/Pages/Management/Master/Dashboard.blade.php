@@ -8,6 +8,7 @@
     @push('css')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/introjs.min.css">
 
         <style>
             #mapGuideModal .modal-dialog {
@@ -1075,103 +1076,84 @@
 
             /*
                                                                                                                 |--------------------------------------------------------------------------
-                                                                                                                | FILTER INFO
+                                                                                                                | PLACE LIMIT (legacy – kept for tutorial step ref)
                                                                                                                 |--------------------------------------------------------------------------
                                                                                                                 */
 
-            .filter-info-chip {
+            /* ==========================================================================
+               | COMBO CARDS (Place Limit + Request / Filter + DateRange)
+               |========================================================================== */
+
+            .dashboard-combo-card {
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+                padding: 14px 18px;
+                box-shadow: 0 3px 10px rgba(0,0,0,.04);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 400px;
+                transition: .2s ease;
+            }
+
+            .dashboard-combo-card.combo-row {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+            }
+
+            .combo-card-top {
                 display: flex;
                 align-items: center;
                 gap: 10px;
-
-                background: #ffffff;
-                border: 1px solid #e5e7eb;
-
-                border-radius: 14px;
-
-                padding: 10px 14px;
-
-                min-height: 58px;
-
-                box-shadow: 0 3px 10px rgba(0, 0, 0, .04);
             }
 
-            .filter-info-icon {
-                width: 38px;
-                height: 38px;
+            .combo-card-divider {
+                height: 1px;
+                background: #f1f5f9;
+            }
 
-                border-radius: 12px;
-
+            .combo-card-btn {
                 background: #eff6ff;
+                border: 1px solid #dbeafe;
                 color: #2563eb;
-
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                font-size: 15px;
-            }
-
-            .filter-info-content {
-                line-height: 1.1;
-            }
-
-            .filter-info-label {
-                display: block;
-                color: #6b7280;
-                font-size: 11px;
+                border-radius: 999px;
+                padding: 7px 16px;
+                font-size: 12px;
                 font-weight: 700;
-                margin-bottom: 4px;
-            }
-
-            .filter-info-value {
-                font-size: 13px;
-                font-weight: 700;
-                color: #111827;
-            }
-
-            /*
-                                                                                                                |--------------------------------------------------------------------------
-                                                                                                                | PLACE LIMIT
-                                                                                                                |--------------------------------------------------------------------------
-                                                                                                                */
-
-            .place-limit-chip {
-                display: flex;
+                white-space: nowrap;
+                flex-shrink: 0;
+                cursor: pointer;
+                transition: .2s ease;
+                outline: none;
+                display: inline-flex;
                 align-items: center;
-                gap: 10px;
-
-                background: #ffffff;
-                border: 1px solid #e5e7eb;
-
-                border-radius: 14px;
-
-                padding: 10px 14px;
-
-                min-height: 58px;
-
-                box-shadow: 0 3px 10px rgba(0, 0, 0, .04);
+                gap: 5px;
             }
 
+            .combo-card-btn:hover {
+                background: #dbeafe;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(37,99,235,.15);
+            }
+
+            /* Place limit icon */
             .place-limit-icon {
                 width: 38px;
                 height: 38px;
-
                 border-radius: 12px;
-
                 background: #eefbf3;
                 color: #16a34a;
-
                 display: flex;
                 align-items: center;
                 justify-content: center;
-
                 font-size: 15px;
+                flex-shrink: 0;
             }
 
-            .place-limit-content {
-                line-height: 1.1;
-            }
+            .place-limit-content { line-height: 1.1; }
 
             .place-limit-label {
                 display: block;
@@ -1187,46 +1169,57 @@
                 color: #111827;
             }
 
-            /*
-                                                                                                                |--------------------------------------------------------------------------
-                                                                                                                | DATE RANGE
-                                                                                                                |--------------------------------------------------------------------------
-                                                                                                                */
-
-            .date-range-wrapper {
-                min-width: 280px;
+            /* Filter icon */
+            .filter-info-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 12px;
+                background: #eff6ff;
+                color: #2563eb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                flex-shrink: 0;
             }
 
-            #dashboardDateRange {
-                background: #fff;
-                cursor: pointer;
+            .filter-info-content { line-height: 1.1; }
 
-                border: 1px solid #e5e7eb;
-                border-radius: 14px;
-
-                width: 100%;
-
-                padding: 15px 18px;
-
+            .filter-info-label {
+                display: block;
+                color: #6b7280;
+                font-size: 11px;
                 font-weight: 700;
-                font-size: 14px;
-
-                color: #111827;
-
-                box-shadow: 0 3px 10px rgba(0, 0, 0, .04);
+                margin-bottom: 2px;
             }
 
-            /*
-                                                                                                                |--------------------------------------------------------------------------
-                                                                                                                | MOBILE
-                                                                                                                |--------------------------------------------------------------------------
-                                                                                                                */
+            .filter-info-value {
+                font-size: 13px;
+                font-weight: 700;
+                color: #111827;
+            }
+
+            /* Date range inside combo card */
+            #dashboardDateRange {
+                background: #f8fafc;
+                border: 1px solid #e5e7eb;
+                border-radius: 10px;
+                padding: 9px 14px;
+                font-weight: 700;
+                font-size: 13px;
+                color: #111827;
+                cursor: pointer;
+                outline: none;
+                min-width: 0;
+            }
+
+            #dashboardDateRange:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+            }
 
             @media(max-width:768px) {
-
-                .dashboard-header {
-                    align-items: stretch;
-                }
+                .dashboard-header { align-items: stretch; }
 
                 .dashboard-toolbar {
                     width: 100%;
@@ -1234,32 +1227,23 @@
                     align-items: stretch;
                 }
 
-                .filter-info-chip,
-                .place-limit-chip {
+                .dashboard-combo-card {
                     width: 100%;
                 }
 
-                .date-range-wrapper {
+                .dashboard-combo-card.combo-row {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .dashboard-combo-card.combo-row .combo-card-btn {
                     width: 100%;
-                    min-width: 100%;
+                    justify-content: center;
+                    border-radius: 10px;
                 }
 
-                #dashboardDateRange {
+                .dashboard-combo-card.combo-row #dashboardDateRange {
                     width: 100%;
-                }
-            }
-
-            @media(max-width:768px) {
-
-                .place-limit-card {
-                    width: auto;
-                    min-width: unset;
-                    padding: 8px 12px;
-                    height: 46px;
-                }
-
-                .place-limit-value {
-                    font-size: 14px;
                 }
             }
 
@@ -1426,6 +1410,46 @@
                     justify-content: flex-end;
                 }
             }
+
+            /* ==========================================================================
+               | TUTORIAL FAB
+               |========================================================================== */
+
+            .dashboard-tutorial-fab {
+                position: fixed;
+                bottom: 72px;
+                right: 20px;
+                z-index: 9999;
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                color: #fff;
+                border: none;
+                box-shadow: 0 6px 20px rgba(37, 99, 235, .35);
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: .2s ease;
+            }
+
+            .dashboard-tutorial-fab:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 28px rgba(37, 99, 235, .45);
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-tutorial-fab {
+                    width: 40px;
+                    height: 40px;
+                    bottom: 68px;
+                    right: 14px;
+                    font-size: 14px;
+                    box-shadow: 0 4px 14px rgba(37, 99, 235, .3);
+                }
+            }
         </style>
     @endpush
 
@@ -1467,65 +1491,49 @@
     @endpush
     <div class="container-fluid">
 
-        <div class="dashboard-header">
+        <div class="dashboard-header" id="dashboardHeaderSection">
 
             <div class="dashboard-title">
-                <h1>Dashboard</h1>
+                <h1>{{ __('messages.management.dashboard.title') }}</h1>
                 <p>
-                    Analytics overview, territory monitoring & performance insights
+                    {{ __('messages.management.dashboard.subtitle') }}
                 </p>
             </div>
 
             <div class="dashboard-toolbar">
 
-                {{-- PLACE LIMIT --}}
-                <div class="place-limit-chip">
-
-                    <div class="place-limit-icon">
-                        {{-- <i class="fas fa-layer-group"></i> --}}
-                        <i class="fas fa-fw fa-map"></i>
-
-                    </div>
-
-                    <div class="place-limit-content">
-
-                        <small class="place-limit-label">
-                            Place Limit
-                        </small>
-
-                        <div class="place-limit-value" id="placeLimitText">
-                            {{ $data['account_limit'] ?? '-' }}
+                {{-- CARD 1: PLACE LIMIT + REQUEST --}}
+                <div class="dashboard-combo-card combo-row" id="placeLimitChip">
+                    <div class="combo-card-top" style="flex:1;min-width:0;">
+                        <div class="place-limit-icon">
+                            <i class="fas fa-fw fa-map"></i>
                         </div>
-
+                        <div class="place-limit-content">
+                            <small class="place-limit-label">{{ __('messages.management.dashboard.place_limit') }}</small>
+                            <div class="place-limit-value" id="placeLimitText">{{ $data['account_limit'] ?? '-' }}</div>
+                        </div>
                     </div>
 
+                    @if (!Auth::user()->hasRole('superadmin'))
+                        <button type="button" class="combo-card-btn" id="btnRequestLimit" onclick="openRequestLimitModal()">
+                            <i class="fas fa-arrow-up" style="font-size:10px;"></i>
+                            Request More Limit
+                        </button>
+                    @endif
                 </div>
 
-                {{-- FILTER INFO --}}
-                <div class="filter-info-chip">
-
-                    <div class="filter-info-icon">
-                        <i class="fas fa-filter"></i>
-                    </div>
-
-                    <div class="filter-info-content">
-
-                        <small class="filter-info-label">
-                            Statistics Filter
-                        </small>
-
-                        <div class="filter-info-value">
-                            Selected Date Range
+                {{-- CARD 2: STATS FILTER + DATE RANGE --}}
+                <div class="dashboard-combo-card combo-row" id="filterInfoChip">
+                    <div class="combo-card-top" style="flex-shrink:0;">
+                        <div class="filter-info-icon">
+                            <i class="fas fa-filter"></i>
                         </div>
-
+                        <div class="filter-info-content">
+                            <small class="filter-info-label">{{ __('messages.management.dashboard.stats_filter') }}</small>
+                            <div class="filter-info-value">{{ __('messages.management.dashboard.date_range') }}</div>
+                        </div>
                     </div>
-
-                </div>
-
-
-                {{-- DATE RANGE --}}
-                <div class="date-range-wrapper">
-                    <input type="text" id="dashboardDateRange">
+                    <input type="text" id="dashboardDateRange" style="flex:1;min-width:0;">
                 </div>
 
             </div>
@@ -1549,11 +1557,11 @@
 
                     <div>
                         <h5 class="account-alert-title">
-                            Account Verification Required
+                            {{ __('messages.management.dashboard.alert_title') }}
                         </h5>
 
                         <p class="account-alert-subtitle">
-                            Some account requirements still need to be completed.
+                            {{ __('messages.management.dashboard.alert_subtitle') }}
                         </p>
                     </div>
 
@@ -1568,9 +1576,9 @@
                             </div>
 
                             <div class="account-alert-item-content">
-                                <strong>Email Not Verified</strong>
+                                <strong>{{ __('messages.management.dashboard.email_not_verified') }}</strong>
                                 <span>
-                                    Please verify your email address before using all dashboard features.
+                                    {{ __('messages.management.dashboard.email_verify_desc') }}
                                 </span>
                             </div>
                         </div>
@@ -1583,9 +1591,9 @@
                             </div>
 
                             <div class="account-alert-item-content">
-                                <strong>Account Pending Approval</strong>
+                                <strong>{{ __('messages.management.dashboard.pending_approval') }}</strong>
                                 <span>
-                                    Your account is currently waiting for administrator approval.
+                                    {{ __('messages.management.dashboard.pending_approval_desc') }}
                                 </span>
                             </div>
                         </div>
@@ -1602,63 +1610,63 @@
                 @php
                     $stats = [
                         [
-                            'title' => 'Total Users',
+                            'title' => __('messages.management.dashboard.stat_total_users'),
                             'id' => 'stat-user-count',
                             'value' => '0',
                             'icon' => 'fas fa-users',
                             'bg' => 'primary',
                         ],
                         [
-                            'title' => 'Pending Approved',
+                            'title' => __('messages.management.dashboard.stat_pending'),
                             'id' => 'stat-user-pending',
                             'value' => '0',
                             'icon' => 'fas fa-user-clock',
                             'bg' => 'warning',
                         ],
                         [
-                            'title' => 'Places',
+                            'title' => __('messages.management.dashboard.stat_places'),
                             'id' => 'stat-place-total',
                             'value' => '0',
                             'icon' => 'fas fa-map-marked-alt',
                             'bg' => 'success',
                         ],
                         [
-                            'title' => 'Events',
+                            'title' => __('messages.management.dashboard.stat_events'),
                             'id' => 'stat-event-count',
                             'value' => '0',
                             'icon' => 'fas fa-calendar-alt',
                             'bg' => 'info',
                         ],
                         [
-                            'title' => 'Comments',
+                            'title' => __('messages.management.dashboard.stat_comments'),
                             'id' => 'stat-comments-count',
                             'value' => '0',
                             'icon' => 'fas fa-comments',
                             'bg' => 'secondary',
                         ],
                         [
-                            'title' => 'Gallery',
+                            'title' => __('messages.management.dashboard.stat_gallery'),
                             'id' => 'stat-gallery-count',
                             'value' => '0',
                             'icon' => 'fas fa-images',
                             'bg' => 'dark',
                         ],
                         [
-                            'title' => 'Blogs',
+                            'title' => __('messages.management.dashboard.stat_blogs'),
                             'id' => 'stat-blog-count',
                             'value' => '0',
                             'icon' => 'fas fa-blog',
                             'bg' => 'danger',
                         ],
                         [
-                            'title' => 'Not Verified',
+                            'title' => __('messages.management.dashboard.stat_not_verified'),
                             'id' => 'stat-user-not-verified',
                             'value' => '0',
                             'icon' => 'fas fa-user-shield',
                             'bg' => 'warning',
                         ],
                         [
-                            'title' => 'Avg Checkin Time',
+                            'title' => __('messages.management.dashboard.stat_avg_checkin'),
                             'id' => 'stat-avg-checkin',
                             'value' => '00:00:00',
                             'icon' => 'fas fa-clock',
@@ -1666,7 +1674,7 @@
                         ],
 
                         [
-                            'title' => 'Fastest Checkin',
+                            'title' => __('messages.management.dashboard.stat_fastest_checkin'),
                             'id' => 'stat-fastest-checkin',
                             'value' => '00:00:00',
                             'icon' => 'fas fa-bolt',
@@ -1674,7 +1682,7 @@
                         ],
 
                         [
-                            'title' => 'Slowest Checkin',
+                            'title' => __('messages.management.dashboard.stat_slowest_checkin'),
                             'id' => 'stat-slowest-checkin',
                             'value' => '00:00:00',
                             'icon' => 'fas fa-hourglass-end',
@@ -1686,28 +1694,28 @@
                 @php
                     $stats = [
                         [
-                            'title' => 'Places',
+                            'title' => __('messages.management.dashboard.stat_places'),
                             'id' => 'stat-place-total',
                             'value' => '0',
                             'icon' => 'fas fa-map-marked-alt',
                             'bg' => 'success',
                         ],
                         [
-                            'title' => 'Events',
+                            'title' => __('messages.management.dashboard.stat_events'),
                             'id' => 'stat-event-count',
                             'value' => '0',
                             'icon' => 'fas fa-calendar-alt',
                             'bg' => 'info',
                         ],
                         [
-                            'title' => 'Comments',
+                            'title' => __('messages.management.dashboard.stat_comments'),
                             'id' => 'stat-comments-count',
                             'value' => '0',
                             'icon' => 'fas fa-comments',
                             'bg' => 'secondary',
                         ],
                         [
-                            'title' => 'Avg Checkin Time',
+                            'title' => __('messages.management.dashboard.stat_avg_checkin'),
                             'id' => 'stat-avg-checkin',
                             'value' => '00:00:00',
                             'icon' => 'fas fa-clock',
@@ -1715,7 +1723,7 @@
                         ],
 
                         [
-                            'title' => 'Fastest Checkin',
+                            'title' => __('messages.management.dashboard.stat_fastest_checkin'),
                             'id' => 'stat-fastest-checkin',
                             'value' => '00:00:00',
                             'icon' => 'fas fa-bolt',
@@ -1723,7 +1731,7 @@
                         ],
 
                         [
-                            'title' => 'Slowest Checkin',
+                            'title' => __('messages.management.dashboard.stat_slowest_checkin'),
                             'id' => 'stat-slowest-checkin',
                             'value' => '00:00:00',
                             'icon' => 'fas fa-hourglass-end',
@@ -1782,11 +1790,11 @@
 
                 <div class="analytics-map-header-left">
                     <h5 class="mb-1">
-                        Location Analytics Map
+                        {{ __('messages.management.dashboard.map_title') }}
                     </h5>
 
                     <small class="text-muted">
-                        Click <strong>How to Use</strong> for interaction guide
+                        {!! __('messages.management.dashboard.map_guide_hint') !!}
                     </small>
                 </div>
 
@@ -1795,13 +1803,13 @@
                     {{-- RESET --}}
                     <button class="btn btn-light btn-sm btn-reset-map" onclick="resetMapNavigation()" title="Reset Map">
                         <i class="fas fa-times"></i>
-                        <span>Reset</span>
+                        <span>{{ __('messages.management.dashboard.map_reset') }}</span>
                     </button>
 
                     {{-- GUIDE --}}
                     <button class="btn btn-primary btn-sm px-3" data-toggle="modal" data-target="#mapGuideModal">
                         <i class="fas fa-info-circle mr-1"></i>
-                        How to Use
+                        {{ __('messages.management.dashboard.map_how_to_use') }}
                     </button>
 
                 </div>
@@ -1824,11 +1832,11 @@
                     <div id="analyticsMap"></div>
                     <div class="map-side-panel hidden" id="mapSidePanel">
                         <div class="map-side-title" id="mapSideTitle">
-                            Region Summary
+                            {{ __('messages.management.dashboard.map_region_summary') }}
                         </div>
 
                         <div class="map-side-subtitle" id="mapSideSubtitle">
-                            Click region bubble to see details
+                            {{ __('messages.management.dashboard.map_click_bubble') }}
                         </div>
 
                         <div id="mapBreakdownContent"></div>
@@ -1843,17 +1851,17 @@
         </div>
 
         {{-- RUNNING SCAN TIME --}}
-        <div class="card analytics-card mt-4">
+        <div class="card analytics-card mt-4" id="runningScanCard">
 
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" id="runningScanHeader">
 
                 <div>
                     <h5 class="mb-1">
-                        Running Scan Time
+                        {{ __('messages.management.dashboard.running_scan_title') }}
                     </h5>
 
                     <small class="text-muted">
-                        Live scan duration monitoring
+                        {{ __('messages.management.dashboard.running_scan_subtitle') }}
                     </small>
                 </div>
 
@@ -1863,14 +1871,14 @@
                         {{-- SEND RECAP --}}
                         <button class="btn btn-primary btn-sm mr-2" id="btnSendRecapToday">
                             <i class="fas fa-paper-plane mr-1"></i>
-                            Send Recap Today (24h)
+                            {{ __('messages.management.dashboard.send_recap') }}
                         </button>
                     @endif
 
                     {{-- STATUS --}}
                     <span class="badge badge-success px-3 py-2">
                         <i class="fas fa-circle mr-1" style="font-size:10px;"></i>
-                        Realtime
+                        {{ __('messages.management.dashboard.realtime') }}
                     </span>
 
                 </div>
@@ -1884,11 +1892,13 @@
                     <table class="table table-striped table-hover table-bordered" id="runningScanTable">
                         <thead>
                             <tr>
-                                <th>User</th>
-                                <th>Place</th>
-                                <th>Browser</th>
-                                <th>Platform</th>
-                                <th>Checked Time</th>
+                                @if(Auth::user()->hasRole('superadmin'))
+                                <th>{{ __('messages.management.dashboard.col_user') }}</th>
+                                @endif
+                                <th>{{ __('messages.management.dashboard.col_place') }}</th>
+                                <th>{{ __('messages.management.dashboard.col_browser') }}</th>
+                                <th>{{ __('messages.management.dashboard.col_platform') }}</th>
+                                <th>{{ __('messages.management.dashboard.col_checked_time') }}</th>
                             </tr>
                         </thead>
 
@@ -1912,8 +1922,8 @@
 
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="d-flex flex-column">
-                            <h5>Top 5 Places by Views</h5>
-                            <small>Based on places created/registered in selected period</small>
+                            <h5>{{ __('messages.management.dashboard.top_places_title') }}</h5>
+                            <small>{{ __('messages.management.dashboard.top_places_subtitle') }}</small>
                         </div>
 
                         <span class="badge badge-primary px-3 py-2" id="chartRangeLabel">
@@ -1936,7 +1946,7 @@
                     <div class="card analytics-card h-100">
 
                         <div class="card-header">
-                            <h5>User Growth</h5>
+                            <h5>{{ __('messages.management.dashboard.user_growth_title') }}</h5>
                         </div>
 
                         <div class="card-body">
@@ -2196,6 +2206,83 @@
         </div>
     </div>
 
+    {{-- REQUEST LIMIT MODAL --}}
+    @if (!Auth::user()->hasRole('superadmin'))
+    <div class="modal fade" id="requestLimitModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+            <div class="modal-content" style="border-radius:22px;overflow:hidden;border:none;box-shadow:0 20px 60px rgba(0,0,0,.15);">
+
+                <div class="modal-header border-0" style="background:linear-gradient(135deg,#2563eb,#3b82f6);color:white;padding:22px 26px;">
+                    <div>
+                        <h5 class="modal-title font-weight-bold mb-1">
+                            <i class="fas fa-arrow-circle-up mr-2"></i>Request Penambahan Limit
+                        </h5>
+                        <small style="opacity:.85;">Kirim permintaan ke admin untuk meningkatkan batas tempat Anda.</small>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" onclick="$('#requestLimitModal').modal('hide')" style="opacity:1;">&times;</button>
+                </div>
+
+                <div class="modal-body p-4">
+
+                    <div class="d-flex align-items-center gap-3 p-3 mb-4"
+                        style="background:#f0f9ff;border-radius:14px;border:1px solid #bae6fd;">
+                        <div style="width:40px;height:40px;border-radius:12px;background:#2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-map text-white" style="font-size:16px;"></i>
+                        </div>
+                        <div style="padding-left:4px;">
+                            <div style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;">Limit Saat Ini</div>
+                            <div style="font-size:20px;font-weight:800;color:#111827;" id="modalCurrentLimit">-</div>
+                        </div>
+                    </div>
+
+                    <div id="pendingAlert" class="alert alert-warning d-none" style="border-radius:14px;">
+                        <i class="fas fa-clock mr-2"></i>
+                        Anda sudah memiliki permintaan yang sedang diproses. Tunggu hasil review admin.
+                    </div>
+
+                    <div id="requestForm">
+                        <div class="form-group">
+                            <label class="font-weight-bold small" style="color:#374151;">
+                                Jumlah Limit yang Diinginkan <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" id="inputRequestedLimit" class="form-control"
+                                placeholder="Contoh: 10" min="1" max="9999"
+                                style="border-radius:12px;border:1px solid #e5e7eb;padding:12px 16px;font-weight:600;">
+                            <small class="text-muted">Masukkan total limit yang Anda inginkan, bukan tambahan.</small>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="font-weight-bold small" style="color:#374151;">
+                                Alasan Permintaan
+                            </label>
+                            <textarea id="inputReason" class="form-control" rows="3"
+                                placeholder="Jelaskan kebutuhan Anda…"
+                                style="border-radius:12px;border:1px solid #e5e7eb;padding:12px 16px;resize:none;"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer border-0 px-4 pb-4" id="requestFormFooter">
+                    <button type="button" class="btn btn-light btn-sm px-4" data-dismiss="modal"
+                        onclick="$('#requestLimitModal').modal('hide')"
+                        style="border-radius:10px;font-weight:600;">Batal</button>
+                    <button type="button" class="btn btn-primary btn-sm px-5" id="btnSubmitRequest"
+                        style="border-radius:10px;background:#2563eb;border:none;font-weight:700;">
+                        <i class="fas fa-paper-plane mr-1"></i>Kirim Permintaan
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- TUTORIAL FAB --}}
+    <button id="dashboardTutorialBtn" class="dashboard-tutorial-fab" title="Tutorial" onclick="showDashboardTutorialModal()">
+        <i class="fas fa-question"></i>
+    </button>
+
     @push('script')
         <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
@@ -2245,14 +2332,26 @@
                 }
             });
 
+            const i18nDashboard = {
+                recapTitle:    @json(__('messages.management.dashboard.swal_recap_title')),
+                recapText:     @json(__('messages.management.dashboard.swal_recap_text')),
+                recapConfirm:  @json(__('messages.management.dashboard.swal_recap_confirm')),
+                sending:       @json(__('messages.management.dashboard.sending')),
+                successTitle:  @json(__('messages.management.common.swal_success')),
+                recapSuccess:  @json(__('messages.management.dashboard.swal_recap_success')),
+                failedTitle:   @json(__('messages.management.dashboard.swal_failed')),
+                recapError:    @json(__('messages.management.dashboard.swal_recap_error')),
+                sendRecap:     @json(__('messages.management.dashboard.send_recap')),
+            };
+
             $(document).on('click', '#btnSendRecapToday', function() {
 
                 Swal.fire({
-                    title: 'Send Today Recap?',
-                    text: 'Today running scan summary will be sent.',
+                    title: i18nDashboard.recapTitle,
+                    text: i18nDashboard.recapText,
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Send Now'
+                    confirmButtonText: i18nDashboard.recapConfirm
                 }).then((result) => {
 
                     if (!result.isConfirmed) return;
@@ -2270,7 +2369,7 @@
                                 .prop('disabled', true)
                                 .html(`
                         <span class="spinner-border spinner-border-sm mr-1"></span>
-                        Sending...
+                        ${i18nDashboard.sending}
                     `);
                         },
 
@@ -2278,9 +2377,8 @@
 
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Success',
-                                text: res.message ??
-                                    'Today recap sent successfully.'
+                                title: i18nDashboard.successTitle,
+                                text: res.message ?? i18nDashboard.recapSuccess
                             });
                         },
 
@@ -2288,8 +2386,8 @@
 
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Failed',
-                                text: 'Unable to send recap.'
+                                title: i18nDashboard.failedTitle,
+                                text: i18nDashboard.recapError
                             });
                         },
 
@@ -2299,7 +2397,7 @@
                                 .prop('disabled', false)
                                 .html(`
                         <i class="fas fa-paper-plane mr-1"></i>
-                        Send Recap Today
+                        ${i18nDashboard.sendRecap}
                     `);
                         }
                     });
@@ -2309,7 +2407,7 @@
             function initRunningScanTable() {
 
                 runningScanTable = $('#runningScanTable').DataTable({
-                    processing: true,
+                    processing: false,
                     serverSide: true,
                     ordering: false,
                     responsive: true,
@@ -2328,11 +2426,8 @@
                         }
                     },
 
-                    columns: [{
-                            data: 'user_name',
-                            name: 'user_name'
-                        },
-
+                    columns: [
+                        ...(isSuperAdmin ? [{ data: 'user_name', name: 'user_name' }] : []),
                         {
                             data: 'place_name',
                             name: 'place_name'
@@ -3516,5 +3611,275 @@
                     });
             }
         </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/intro.js@7.2.0/minified/intro.min.js"></script>
+        <script>
+            const dashboardTutorialSteps = {
+                id: [
+                    {
+                        element: '#dashboardHeaderSection',
+                        intro: '<strong>Selamat Datang di Dashboard!</strong><br>Halaman ini menampilkan gambaran umum analytics platform dan data real-time seluruh aktivitas dalam satu tampilan.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#placeLimitChip',
+                        intro: '<strong>Batas Tempat</strong><br>Menampilkan batas akses tempat akun Anda berdasarkan paket langganan yang aktif.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#filterInfoChip',
+                        intro: '<strong>Info Filter</strong><br>Menampilkan rentang tanggal filter yang sedang aktif. Semua statistik dan chart mengikuti filter ini.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#dashboardDateRange',
+                        intro: '<strong>Pilih Rentang Tanggal</strong><br>Klik di sini untuk memilih rentang tanggal kustom. Semua statistik, chart, dan peta akan diperbarui otomatis sesuai tanggal yang dipilih.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#statsWrapper',
+                        intro: '<strong>Kartu Statistik</strong><br>Metrik utama secara sekilas: total pengguna, tempat, event, komentar, galeri, blog, dan analitik waktu check-in.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#runningScanHeader',
+                        intro: '<strong>Tabel Running Scan</strong><br>Tabel real-time yang menampilkan aktivitas check-in dan scan pengguna terbaru. Data diperbarui setiap 10 detik secara otomatis.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#topPlacesSection',
+                        intro: '<strong>Chart Top Tempat</strong><br>Bar chart yang menampilkan tempat paling banyak dikunjungi dalam rentang tanggal yang dipilih. Gunakan filter tanggal untuk mengubah periode analitik.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#mapSection',
+                        intro: '<strong>Peta Analitik Lokasi</strong><br>Peta interaktif yang menampilkan distribusi tempat di seluruh wilayah Indonesia. Klik bubble atau area untuk menjelajah lebih dalam (Provinsi → Kabupaten → Kecamatan → Desa).',
+                        position: 'top'
+                    }
+                ],
+                en: [
+                    {
+                        element: '#dashboardHeaderSection',
+                        intro: '<strong>Welcome to Dashboard!</strong><br>This page provides an overview of all platform analytics and real-time activity data in one place.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#placeLimitChip',
+                        intro: '<strong>Place Limit</strong><br>Shows your current place access limit based on your active subscription plan.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#filterInfoChip',
+                        intro: '<strong>Filter Info</strong><br>Displays the currently active date range filter. All statistics and charts follow this filter.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#dashboardDateRange',
+                        intro: '<strong>Date Range Picker</strong><br>Click here to select a custom date range. All stats, charts, and map data will automatically reload based on the selected dates.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#statsWrapper',
+                        intro: '<strong>Statistics Cards</strong><br>Key metrics at a glance: total users, places, events, comments, gallery, blogs, and check-in time analytics.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#runningScanHeader',
+                        intro: '<strong>Running Scan Table</strong><br>Real-time table showing recent user check-in and scan activity. Data refreshes automatically every 10 seconds.',
+                        position: 'bottom'
+                    },
+                    {
+                        element: '#topPlacesSection',
+                        intro: '<strong>Top Places Chart</strong><br>Bar chart displaying the most-visited places within the selected date range. Use the date filter to change the analytics period.',
+                        position: 'top'
+                    },
+                    {
+                        element: '#mapSection',
+                        intro: '<strong>Location Analytics Map</strong><br>Interactive map showing place distribution across Indonesian regions. Click bubbles or areas to drill down (Province → Regency → District → Village).',
+                        position: 'top'
+                    }
+                ]
+            };
+
+            function startDashboardTutorial(lang) {
+                const steps = dashboardTutorialSteps[lang] ?? dashboardTutorialSteps['en'];
+
+                const validSteps = steps.filter(step => {
+                    const el = document.querySelector(step.element);
+                    return el && el.offsetParent !== null;
+                });
+
+                introJs()
+                    .setOptions({
+                        steps: validSteps,
+                        nextLabel: lang === 'id' ? 'Lanjut ›' : 'Next ›',
+                        prevLabel: lang === 'id' ? '‹ Kembali' : '‹ Back',
+                        doneLabel: lang === 'id' ? 'Selesai' : 'Done',
+                        showBullets: true,
+                        showProgress: true,
+                        exitOnOverlayClick: false,
+                        scrollToElement: false,
+                        overlayOpacity: 0.5
+                    })
+                    .onbeforechange(function(el) {
+                        if (el) {
+                            setTimeout(function() {
+                                el.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'nearest'
+                                });
+                            }, 50);
+                        }
+                    })
+                    .oncomplete(function() {
+                        localStorage.setItem('dashboard_tutorial_seen', '1');
+                    })
+                    .onexit(function() {
+                        localStorage.setItem('dashboard_tutorial_seen', '1');
+                    })
+                    .start();
+            }
+
+            function showDashboardTutorialModal() {
+                Swal.fire({
+                    title: '👋 Welcome',
+                    html: `
+                        <p class="text-muted mb-4">
+                            Please choose your preferred tutorial language
+                            or skip the tutorial.
+                        </p>
+
+                        <div class="row">
+
+                            <div class="col-6 mb-3">
+                                <button
+                                    id="dashboard-lang-id"
+                                    class="btn btn-primary btn-block py-3">
+                                    🇮🇩<br>
+                                    <strong>Bahasa Indonesia</strong>
+                                </button>
+                            </div>
+
+                            <div class="col-6 mb-3">
+                                <button
+                                    id="dashboard-lang-en"
+                                    class="btn btn-outline-primary btn-block py-3">
+                                    🇺🇸<br>
+                                    <strong>English</strong>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <button
+                            id="dashboard-skip"
+                            class="btn btn-link text-muted">
+                            Skip Tutorial
+                        </button>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: function() {
+                        document.getElementById('dashboard-lang-id').addEventListener('click', function() {
+                            localStorage.setItem('dashboard_tutorial_lang', 'id');
+                            Swal.close();
+                            startDashboardTutorial('id');
+                        });
+                        document.getElementById('dashboard-lang-en').addEventListener('click', function() {
+                            localStorage.setItem('dashboard_tutorial_lang', 'en');
+                            Swal.close();
+                            startDashboardTutorial('en');
+                        });
+                        document.getElementById('dashboard-skip').addEventListener('click', function() {
+                            localStorage.setItem('dashboard_tutorial_seen', '1');
+                            Swal.close();
+                        });
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const seen = localStorage.getItem('dashboard_tutorial_seen');
+                if (!seen) {
+                    setTimeout(function() {
+                        showDashboardTutorialModal();
+                    }, 800);
+                }
+            });
+        </script>
+
+        @if (!Auth::user()->hasRole('superadmin'))
+        <script>
+            function openRequestLimitModal() {
+                // Show current limit in modal
+                const currentLimitText = document.getElementById('placeLimitText')?.innerText ?? '-';
+                document.getElementById('modalCurrentLimit').innerText = currentLimitText;
+
+                // Reset form state
+                document.getElementById('pendingAlert').classList.add('d-none');
+                document.getElementById('requestForm').classList.remove('d-none');
+                document.getElementById('requestFormFooter').classList.remove('d-none');
+                document.getElementById('inputRequestedLimit').value = '';
+                document.getElementById('inputReason').value = '';
+
+                // Check if already has pending request
+                $.get('{{ route('place-limit-request.check-pending') }}', function (res) {
+                    if (res.has_pending) {
+                        document.getElementById('pendingAlert').classList.remove('d-none');
+                        document.getElementById('requestForm').classList.add('d-none');
+                        document.getElementById('requestFormFooter').classList.add('d-none');
+                    }
+                });
+
+                $('#requestLimitModal').modal('show');
+            }
+
+            $('#btnSubmitRequest').on('click', function () {
+                const limit  = $('#inputRequestedLimit').val().trim();
+                const reason = $('#inputReason').val().trim();
+
+                if (!limit || parseInt(limit) < 1) {
+                    Swal.fire({ icon: 'warning', title: 'Isian tidak valid', text: 'Masukkan jumlah limit yang valid.' });
+                    return;
+                }
+
+                const $btn = $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-1"></span>Mengirim...');
+
+                $.ajax({
+                    url: '{{ route('place-limit-request.store') }}',
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        requested_limit: limit,
+                        reason: reason,
+                    },
+                    success: function (res) {
+                        $('#requestLimitModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Permintaan Terkirim!',
+                            text: res.message,
+                            timer: 3000,
+                            showConfirmButton: false,
+                        });
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: xhr.responseJSON?.message ?? 'Terjadi kesalahan, coba lagi.',
+                        });
+                    },
+                    complete: function () {
+                        $btn.prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i>Kirim Permintaan');
+                    }
+                });
+            });
+        </script>
+        @endif
     @endpush
 @endsection

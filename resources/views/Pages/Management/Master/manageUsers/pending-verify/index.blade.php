@@ -119,7 +119,7 @@
     <div class="container-fluid">
 
         <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Management Pending Users Verify
+            {{ __('messages.management.pending_verify.title') }}
         </h1>
 
         {{-- FILTER CARD --}}
@@ -127,26 +127,26 @@
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Refine pending verify users by name, email, address, and phone.
+                        {{ __('messages.management.pending_verify.filter_subtitle') }}
                     </small>
                 </div>
 
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mt-3 mt-md-0">
                     <select class="form-control form-control-sm" id="sort-order" style="min-width: 220px;">
-                        <option value="">Sort by</option>
-                        <option value="name">Name</option>
-                        <option value="email">Email</option>
-                        <option value="address">Address</option>
-                        <option value="phone">Phone</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="name">{{ __('messages.management.pending_verify.sort_name') }}</option>
+                        <option value="email">{{ __('messages.management.pending_verify.sort_email') }}</option>
+                        <option value="address">{{ __('messages.management.pending_verify.sort_address') }}</option>
+                        <option value="phone">{{ __('messages.management.pending_verify.sort_phone') }}</option>
                     </select>
 
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters"
                         style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">
-                        Clear Filters
+                        {{ __('messages.management.common.clear_filters') }}
                     </button>
                 </div>
             </div>
@@ -156,29 +156,29 @@
 
                     <div class="col-md-4 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Name
+                            {{ __('messages.management.pending_verify.filter_name') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-name"
-                            placeholder="Search name">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Email
+                            {{ __('messages.management.pending_verify.filter_email') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-email"
-                            placeholder="Search email">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-4 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Phone
+                            {{ __('messages.management.pending_verify.filter_phone') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-phone"
-                            placeholder="Search phone">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                 </div>
@@ -187,11 +187,11 @@
 
                     <div class="col-md-4 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Address
+                            {{ __('messages.management.pending_verify.filter_address') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-address"
-                            placeholder="Search address">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                 </div>
@@ -206,11 +206,11 @@
 
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Pending Users Verify Table
+                        {{ __('messages.management.pending_verify.table_title') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Manage user verification and account actions.
+                        {{ __('messages.management.pending_verify.table_subtitle') }}
                     </small>
                 </div>
 
@@ -222,7 +222,7 @@
                             id="columnVisibilityDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
                             <i class="fas fa-columns mr-1"></i>
-                            Columns
+                            {{ __('messages.management.common.columns') }}
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-right p-3 shadow" aria-labelledby="columnVisibilityDropdown"
@@ -233,7 +233,7 @@
                                     data-column="0" checked>
 
                                 <label class="custom-control-label" for="toggle-name">
-                                    Name
+                                    {{ __('messages.management.pending_verify.col_name') }}
                                 </label>
                             </div>
 
@@ -242,7 +242,7 @@
                                     data-column="1" checked>
 
                                 <label class="custom-control-label" for="toggle-phone">
-                                    Phone
+                                    {{ __('messages.management.pending_verify.col_phone') }}
                                 </label>
                             </div>
 
@@ -251,7 +251,7 @@
                                     data-column="2" checked>
 
                                 <label class="custom-control-label" for="toggle-email">
-                                    Email
+                                    {{ __('messages.management.pending_verify.col_email') }}
                                 </label>
                             </div>
 
@@ -260,7 +260,7 @@
                                     data-column="3" checked>
 
                                 <label class="custom-control-label" for="toggle-address">
-                                    Address
+                                    {{ __('messages.management.pending_verify.col_address') }}
                                 </label>
                             </div>
 
@@ -297,13 +297,13 @@
 
                         <thead class="thead-light">
                             <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Address</th>
+                                <th>{{ __('messages.management.pending_verify.col_name') }}</th>
+                                <th>{{ __('messages.management.pending_verify.col_phone') }}</th>
+                                <th>{{ __('messages.management.pending_verify.col_email') }}</th>
+                                <th>{{ __('messages.management.pending_verify.col_address') }}</th>
                                 {{-- <th>Status</th> --}}
                                 {{-- <th>Blocked</th> --}}
-                                <th class="text-center">Action</th>
+                                <th class="text-center">{{ __('messages.management.common.action') }}</th>
                             </tr>
                         </thead>
 
@@ -319,6 +319,19 @@
 
     @push('script')
         <script>
+            const i18nPendingVerify = {
+                swalTitle:         @json(__('messages.management.common.swal_are_you_sure')),
+                swalCancel:        @json(__('messages.management.common.swal_no_cancel')),
+                verifyText:        @json(__('messages.management.pending_verify.swal_verify_text')),
+                verifyConfirm:     @json(__('messages.management.pending_verify.swal_verify_confirm')),
+                unapproveText:     @json(__('messages.management.pending_verify.swal_unapprove_text')),
+                unapproveConfirm:  @json(__('messages.management.pending_verify.swal_unapprove_confirm')),
+                blockText:         @json(__('messages.management.pending_verify.swal_block_text')),
+                blockConfirm:      @json(__('messages.management.pending_verify.swal_block_confirm')),
+                unblockText:       @json(__('messages.management.pending_verify.swal_unblock_text')),
+                unblockConfirm:    @json(__('messages.management.pending_verify.swal_unblock_confirm')),
+            };
+
             $(document).ready(function() {
 
                 $('#columnVisibilityDropdown')
@@ -640,12 +653,12 @@
                         confirmButton: "btn btn-success",
                         cancelButton: "btn btn-danger"
                     },
-                    title: "Are you sure?",
-                    text: "Verify this account",
+                    title: i18nPendingVerify.swalTitle,
+                    text: i18nPendingVerify.verifyText,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, Verify it!",
-                    cancelButtonText: "No, cancel!",
+                    confirmButtonText: i18nPendingVerify.verifyConfirm,
+                    cancelButtonText: i18nPendingVerify.swalCancel,
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -701,12 +714,12 @@
                         confirmButton: "btn btn-success",
                         cancelButton: "btn btn-danger"
                     },
-                    title: "Are you sure?",
-                    text: "UnApprove to User",
+                    title: i18nPendingVerify.swalTitle,
+                    text: i18nPendingVerify.unapproveText,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, UnApprove it!",
-                    cancelButtonText: "No, cancel!",
+                    confirmButtonText: i18nPendingVerify.unapproveConfirm,
+                    cancelButtonText: i18nPendingVerify.swalCancel,
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -832,12 +845,12 @@
                         confirmButton: "btn btn-success",
                         cancelButton: "btn btn-danger"
                     },
-                    title: "Are you sure?",
-                    text: "Block User",
+                    title: i18nPendingVerify.swalTitle,
+                    text: i18nPendingVerify.blockText,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, Block This User!",
-                    cancelButtonText: "No, cancel!",
+                    confirmButtonText: i18nPendingVerify.blockConfirm,
+                    cancelButtonText: i18nPendingVerify.swalCancel,
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -881,12 +894,12 @@
                         confirmButton: "btn btn-success",
                         cancelButton: "btn btn-danger"
                     },
-                    title: "Are you sure?",
-                    text: "UnBlock User",
+                    title: i18nPendingVerify.swalTitle,
+                    text: i18nPendingVerify.unblockText,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Yes, UnBlock This User!",
-                    cancelButtonText: "No, cancel!",
+                    confirmButtonText: i18nPendingVerify.unblockConfirm,
+                    cancelButtonText: i18nPendingVerify.swalCancel,
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {

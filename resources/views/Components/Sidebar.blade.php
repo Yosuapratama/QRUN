@@ -63,28 +63,33 @@
                          href="{{ route('users.pending') }}">@lang('messages.navigation_admin.manage_users.pending_approved') <b
                              style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{ $pendingUser }}</b></a> --}}
                      <a class="collapse-item {{ Route::is('pending-verify.index') ? 'active' : '' }}"
-                         href="{{ route('pending-verify.index') }}">@lang('messages.navigation_admin.manage_users.pending_verify') <b
-                             style="background-color: #4e73df; padding:4px; color:white; border-radius:5px">{{ $pendingVerified }}</b></a>
+                         href="{{ route('pending-verify.index') }}">@lang('messages.navigation_admin.manage_users.pending_verify')
+                         @if($pendingVerified > 0)
+                             <span class="badge badge-danger" style="font-size:10px;border-radius:8px;padding:3px 7px;">{{ $pendingVerified }}</span>
+                         @endif
+                     </a>
                      <a class="collapse-item {{ Route::is('users-limit.index') ? 'active' : '' }}"
                          href="{{ route('users-limit.index') }}">@lang('messages.navigation_admin.manage_users.users_limit')</a>
                  </div>
              </div>
          </li>
          <li
-             class="nav-item {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') ? 'active' : '' }}">
+             class="nav-item {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') || Route::is('history-scan.index') ? 'active' : '' }}">
              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                  aria-expanded="true" aria-controls="collapseUtilities">
                  <i class="fas fa-fw fa-map"></i>
                  <span>@lang('messages.navigation_admin.manage_place.manage_place')</span>
              </a>
              <div id="collapseUtilities"
-                 class="collapse {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') ? 'show' : '' }}"
+                 class="collapse {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') || Route::is('history-scan.index') ? 'show' : '' }}"
                  aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
                      <a class="collapse-item {{ Route::is('place') ? 'active' : '' }}"
                          href="{{ route('place') }}">@lang('messages.navigation_admin.manage_place.manage_place')</a>
                      <a class="collapse-item {{ Route::is('place.getDeleted') ? 'active' : '' }}"
                          href="{{ route('place.getDeleted') }}">@lang('messages.navigation_admin.manage_place.deleted_place')</a>
+                     <a class="collapse-item {{ Route::is('history-scan.index') ? 'active' : '' }}"
+                         href="{{ route('history-scan.index') }}">History Scan</a>
                      {{-- <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
                          href="{{ route('place.create') }}">@lang('messages.navigation_admin.manage_place.create_place')</a> --}}
                  </div>
@@ -196,7 +201,7 @@
          <div class="sidebar-heading">
              @lang('messages.navigation_admin.settings.index')
          </div>
-         <li class="nav-item {{ Route::is('settings.general') || Route::is('place-limit.index') || Route::is('settings.log-activity') ? 'active' : '' }} ">
+         <li class="nav-item {{ Route::is('settings.general') || Route::is('place-limit.index') || Route::is('settings.log-activity') || Route::is('place-limit-request.index') ? 'active' : '' }} ">
              <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages2"
                  aria-expanded="true" aria-controls="collapsePages">
                  <i class="fas fa-fw fa-cog"></i>
@@ -205,22 +210,31 @@
                  </span>
              </a>
              <div id="collapsePages2"
-                 class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') || Route::is('settings.log-activity') ? 'show' : '' }}"
+                 class="collapse {{ Route::is('settings.general') || Route::is('place-limit.index') || Route::is('settings.log-activity') || Route::is('place-limit-request.index') ? 'show' : '' }}"
                  aria-labelledby="headingPages" data-parent="#accordionSidebar">
                  <div class="bg-white py-2 collapse-inner rounded">
-                     <a class="collapse-item  {{ Route::is('settings.general') ? 'active' : '' }}"
+                     <a class="collapse-item {{ Route::is('settings.general') ? 'active' : '' }}"
                          href="{{ route('settings.general') }}"> @lang('messages.navigation_admin.settings.general')
                      </a>
-                     {{-- <a class="collapse-item">Roles</a> --}}
                      <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}"
                          href="{{ route('place-limit.index') }}">
                          @lang('messages.navigation_admin.settings.place_limit')
                      </a>
+                     <a class="collapse-item {{ Route::is('place-limit-request.index') ? 'active' : '' }}"
+                         href="{{ route('place-limit-request.index') }}"
+                         style="display:flex;align-items:center;justify-content:space-between;">
+                         <span>Limit Requests</span>
+                         @php
+                             $pendingRequestCount = \App\Models\PlaceLimitRequest::where('status','pending')->count();
+                         @endphp
+                         @if ($pendingRequestCount > 0)
+                             <span class="badge badge-danger" style="font-size:10px;border-radius:8px;padding:3px 7px;">{{ $pendingRequestCount }}</span>
+                         @endif
+                     </a>
                      <a class="collapse-item {{ Route::is('settings.log-activity') ? 'active' : '' }}"
-                     href="{{route('settings.log-activity')}}">
-                     @lang('messages.navigation_admin.settings.log_activity')
-                 </a>
-                     {{-- <a class="collapse-item {{ Route::is('place-limit.index') ? 'active' : '' }}" href="{{route('place-limit.index')}}">Place Limit</a> --}}
+                         href="{{ route('settings.log-activity') }}">
+                         @lang('messages.navigation_admin.settings.log_activity')
+                     </a>
                  </div>
              </div>
          </li>
@@ -231,21 +245,22 @@
 
          @if ($limitUser > 1)
              <li
-                 class="nav-item {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') ? 'active' : '' }}">
+                 class="nav-item {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') || Route::is('history-scan.index') ? 'active' : '' }}">
                  <a class="nav-link collapsed" href="#" data-toggle="collapse"
                      data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
                      <i class="fas fa-fw fa-map"></i>
                      <span>Manage Place</span>
                  </a>
                  <div id="collapseUtilities"
-                     class="collapse {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') ? 'show' : '' }}"
+                     class="collapse {{ Route::is('place') || Route::is('place.getDeleted') || Route::is('place.create') || Route::is('history-scan.index') ? 'show' : '' }}"
                      aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                      <div class="bg-white py-2 collapse-inner rounded ">
                          <a class="collapse-item {{ Route::is('place') ? 'active' : '' }}"
-                             href="{{ route('place') }}">Manage
-                             Place</a>
+                             href="{{ route('place') }}">@lang('messages.navigation_admin.manage_place.manage_place')</a>
                          <a class="collapse-item {{ Route::is('place.getDeleted') ? 'active' : '' }}"
-                             href="{{ route('place.getDeleted') }}">Deleted Place</a>
+                             href="{{ route('place.getDeleted') }}">@lang('messages.navigation_admin.manage_place.deleted_place')</a>
+                         <a class="collapse-item {{ Route::is('history-scan.index') ? 'active' : '' }}"
+                             href="{{ route('history-scan.index') }}">@lang('messages.navigation_admin.history_scan')</a>
                          {{-- <a class="collapse-item {{ Route::is('place.create') ? 'active' : '' }}"
                              href="{{ route('place.create') }}">Create Place</a> --}}
                      </div>
@@ -269,21 +284,33 @@
                  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
                      aria-expanded="true" aria-controls="collapsePages">
                      <i class="fas  fa-comment fa-fw"></i>
-                     <span>Manage Comments</span>
+                     <span>@lang('messages.navigation_admin.manage_comments.manage_comments')</span>
                  </a>
                  <div id="collapsePages3" class="collapse {{ Route::is('comments.admin') ? 'show' : '' }}"
                      aria-labelledby="headingPages" data-parent="#accordionSidebar">
                      <div class="bg-white py-2 collapse-inner rounded">
                          <a class="collapse-item {{ Route::is('comments.admin') ? 'active' : '' }}"
-                             href="{{ route('comments.admin') }}">Manage Comments</a>
+                             href="{{ route('comments.admin') }}">@lang('messages.navigation_admin.manage_comments.manage_comments')</a>
                      </div>
                  </div>
              </li>
          @else
-             <li class="nav-item {{ Route::is('place.myplace') ? 'active' : '' }}">
-                 <a class="nav-link" href="{{ route('place.myplace') }}">
+             <li class="nav-item {{ Route::is('place.myplace') || Route::is('history-scan.my') ? 'active' : '' }}">
+                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMyPlace"
+                     aria-expanded="true" aria-controls="collapseMyPlace">
                      <i class="fas fa-fw fa-map"></i>
-                     <span>@lang('messages.navigation_admin.my_place')</span></a>
+                     <span>@lang('messages.navigation_admin.manage_place.manage_place')</span>
+                 </a>
+                 <div id="collapseMyPlace"
+                     class="collapse {{ Route::is('place.myplace') || Route::is('history-scan.my') ? 'show' : '' }}"
+                     aria-labelledby="headingMyPlace" data-parent="#accordionSidebar">
+                     <div class="bg-white py-2 collapse-inner rounded">
+                         <a class="collapse-item {{ Route::is('place.myplace') ? 'active' : '' }}"
+                             href="{{ route('place.myplace') }}">@lang('messages.navigation_admin.my_place')</a>
+                         <a class="collapse-item {{ Route::is('history-scan.my') ? 'active' : '' }}"
+                             href="{{ route('history-scan.my') }}">History Scan</a>
+                     </div>
+                 </div>
              </li>
              <li class="nav-item {{ Route::is('event') ? 'active' : '' }}">
                  <a class="nav-link collapsed {{ Route::is('event') ? 'active' : '' }}" href="#"

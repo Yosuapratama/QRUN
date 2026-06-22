@@ -63,11 +63,11 @@
 
             <div>
                 <h2 class="font-weight-bold text-dark mb-1">
-                    Advertise Form
+                    {{ __('messages.management.advertise.form_title') }}
                 </h2>
 
                 <p class="text-muted mb-0">
-                    Manage advertisement banner & publishing settings
+                    {{ __('messages.management.advertise.form_subtitle') }}
                 </p>
             </div>
 
@@ -75,7 +75,7 @@
 
                 <i class="fas fa-arrow-left mr-2"></i>
 
-                Back to Advertise
+                {{ __('messages.management.advertise.back_btn') }}
 
             </a>
 
@@ -134,11 +134,11 @@
                         <div class="card-header bg-white border-0 pt-4 pb-0">
 
                             <h4 class="font-weight-bold text-dark mb-1">
-                                Advertise Information
+                                {{ __('messages.management.advertise.info_section_title') }}
                             </h4>
 
                             <p class="text-muted small mb-0">
-                                Configure advertisement detail & placement
+                                {{ __('messages.management.advertise.info_section_subtitle') }}
                             </p>
 
                         </div>
@@ -149,7 +149,7 @@
                             <div class="form-group mb-4">
 
                                 <label class="form-label font-weight-semibold">
-                                    Ads Title <span class="text-danger">*</span>
+                                    {{ __('messages.management.advertise.field_title_ads') }} <span class="text-danger">*</span>
                                 </label>
 
                                 <input required type="text" class="form-control custom-input" name="title"
@@ -162,7 +162,7 @@
                             <div class="form-group mb-4">
 
                                 <label class="form-label font-weight-semibold">
-                                    Display Duration (Seconds) <span class="text-danger">*</span>
+                                    {{ __('messages.management.advertise.field_time') }} <span class="text-danger">*</span>
                                 </label>
 
                                 <input required type="number" class="form-control custom-input" name="time"
@@ -174,7 +174,7 @@
                             <div class="form-group">
 
                                 <label class="form-label font-weight-semibold">
-                                    Place Target <span class="text-danger">*</span>
+                                    {{ __('messages.management.advertise.field_place') }} <span class="text-danger">*</span>
                                 </label>
 
                                 @php
@@ -193,7 +193,7 @@
                                 </select>
 
                                 <small class="text-muted">
-                                    You can select multiple places
+                                    {{ __('messages.management.advertise.multi_hint') }}
                                 </small>
 
                             </div>
@@ -208,11 +208,11 @@
                         <div class="card-header bg-white border-0 pt-4 pb-0">
 
                             <h4 class="font-weight-bold text-dark mb-1">
-                                Advertise Gallery <span class="text-danger">*</span>
+                                {{ __('messages.management.advertise.gallery_section_title') }} <span class="text-danger">*</span>
                             </h4>
 
                             <p class="text-muted small mb-0">
-                                Upload multiple advertisement images
+                                {{ __('messages.management.advertise.gallery_section_subtitle') }}
                             </p>
 
                         </div>
@@ -227,15 +227,15 @@
                                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
 
                                     <h5 class="font-weight-bold mb-2">
-                                        Upload Advertisement Images
+                                        {{ __('messages.management.advertise.upload_title') }}
                                     </h5>
 
                                     <p class="text-muted mb-1">
-                                        Drag & drop or click to upload
+                                        {{ __('messages.management.advertise.drag_drop') }}
                                     </p>
 
                                     <small class="text-muted">
-                                        PNG, JPG up to 5MB
+                                        {{ __('messages.management.advertise.file_hint') }}
                                     </small>
 
                                 </div>
@@ -259,7 +259,7 @@
                         <div class="card-header bg-white border-0 pt-4">
 
                             <h5 class="font-weight-bold mb-0">
-                                Publish Settings
+                                {{ __('messages.management.advertise.publish_section') }}
                             </h5>
 
                         </div>
@@ -272,11 +272,11 @@
                                 <div>
 
                                     <h6 class="mb-1 font-weight-bold">
-                                        Active Ads
+                                        {{ __('messages.management.advertise.active_ads') }}
                                     </h6>
 
                                     <small class="text-muted">
-                                        Show advertisement in application
+                                        {{ __('messages.management.advertise.active_ads_desc') }}
                                     </small>
 
                                 </div>
@@ -298,11 +298,11 @@
                                 <div>
 
                                     <h6 class="mb-1 font-weight-bold">
-                                        Blocking Ads
+                                        {{ __('messages.management.advertise.blocking_ads') }}
                                     </h6>
 
                                     <small class="text-muted">
-                                        The user can't clicked the close button until the time runs out
+                                        {{ __('messages.management.advertise.blocking_ads_desc') }}
                                     </small>
 
                                 </div>
@@ -326,7 +326,7 @@
 
                                 <i class="fas fa-save mr-2"></i>
 
-                                Save Advertisement
+                                {{ __('messages.management.advertise.save_btn') }}
 
                             </button>
 
@@ -527,7 +527,7 @@
             $(document).ready(function() {
 
                 $('#place_id').select2({
-                    placeholder: 'Select places'
+                    placeholder: @json(__('messages.management.advertise.select_places'))
                 });
 
             });
@@ -619,7 +619,7 @@
 
                     Swal.fire({
                         icon: 'error',
-                        title: 'Upload Failed',
+                        title: @json(__('messages.management.gallery_form.swal_upload_failed')),
                         text: 'Image upload failed'
                     });
 

@@ -61,7 +61,7 @@
     <div class="container-fluid">
 
         <h1 class="h3 text-gray-800 font-weight-bold m-2">
-            Deleted Place
+            {{ __('messages.management.deleted_place.title') }}
         </h1>
 
         {{-- FILTERS --}}
@@ -69,24 +69,23 @@
             <div class="card-header py-3 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
                 <div>
                     <h6 class="m-0 font-weight-bold text-primary">
-                        Filters
+                        {{ __('messages.management.common.filters') }}
                     </h6>
 
                     <small class="text-secondary">
-                        Refine deleted place list by title, place code,
-                        creator, location, and deleted date.
+                        {{ __('messages.management.deleted_place.filter_subtitle') }}
                     </small>
                 </div>
 
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mt-3 mt-md-0">
                     <select class="form-control form-control-sm" id="sort-order" style="min-width: 220px;">
-                        <option value="">Sort by</option>
-                        <option value="views">Views</option>
-                        <option value="name">Name</option>
-                        <option value="place_code">Place Code</option>
+                        <option value="">{{ __('messages.management.common.sort_by') }}</option>
+                        <option value="views">{{ __('messages.management.deleted_place.sort_views') }}</option>
+                        <option value="name">{{ __('messages.management.deleted_place.sort_name') }}</option>
+                        <option value="place_code">{{ __('messages.management.deleted_place.sort_place_code') }}</option>
                     </select>
                     <button class="btn btn-outline-secondary btn-sm" id="clear-filters"
-                        style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">Clear Filters</button>
+                        style="height: calc(1.5em + 0.75rem + 2px); min-width: 140px;">{{ __('messages.management.common.clear_filters') }}</button>
                 </div>
             </div>
 
@@ -96,61 +95,61 @@
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Title
+                            {{ __('messages.management.deleted_place.filter_title') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-title"
-                            placeholder="Search title">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Place Code
+                            {{ __('messages.management.deleted_place.filter_place_code') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-place-code"
-                            placeholder="Search place code">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Description
+                            {{ __('messages.management.deleted_place.filter_description') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-description"
-                            placeholder="Search description">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Created By
+                            {{ __('messages.management.deleted_place.filter_created_by') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-creator"
-                            placeholder="Search creator">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                 </div>
 
                 <div class="row">
 
                     <div class="col-md-3 mb-3">
-                        <label>Province</label>
+                        <label>{{ __('messages.management.place.filter_province') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-province"></select>
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <label>Regency</label>
+                        <label>{{ __('messages.management.place.filter_regency') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-regency" disabled></select>
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <label>District</label>
+                        <label>{{ __('messages.management.place.filter_district') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-district"
                             disabled></select>
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <label>Village</label>
+                        <label>{{ __('messages.management.place.filter_village') }}</label>
                         <select class="form-control form-control-sm select2-location" id="filter-village" disabled></select>
                     </div>
                 </div>
@@ -159,11 +158,11 @@
 
                     <div class="col-md-3 mb-3">
                         <label class="small font-weight-bold text-dark">
-                            Deleted Date Range
+                            {{ __('messages.management.deleted_place.filter_deleted_range') }}
                         </label>
 
                         <input type="text" class="form-control form-control-sm" id="filter-deleted-range"
-                            placeholder="Select date range">
+                            placeholder="{{ __('messages.management.common.search') }}">
                     </div>
                 </div>
             </div>
@@ -174,11 +173,11 @@
 
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">
-                    Deleted Place Table
+                    {{ __('messages.management.deleted_place.table_title') }}
                 </h6>
 
                 <small class="text-secondary">
-                    View deleted places and restore them.
+                    {{ __('messages.management.deleted_place.table_subtitle') }}
                 </small>
             </div>
 
@@ -189,13 +188,13 @@
 
                         <thead class="thead-light">
                             <tr>
-                                <th>Title</th>
-                                <th>Place Code</th>
-                                <th>Views</th>
-                                <th>Description</th>
-                                <th>Created By</th>
-                                <th>Deleted At</th>
-                                <th>Action</th>
+                                <th>{{ __('messages.management.deleted_place.col_title') }}</th>
+                                <th>{{ __('messages.management.deleted_place.col_place_code') }}</th>
+                                <th>{{ __('messages.management.deleted_place.col_views') }}</th>
+                                <th>{{ __('messages.management.deleted_place.col_description') }}</th>
+                                <th>{{ __('messages.management.deleted_place.col_created_by') }}</th>
+                                <th>{{ __('messages.management.deleted_place.col_deleted_at') }}</th>
+                                <th>{{ __('messages.management.common.action') }}</th>
                             </tr>
                         </thead>
 
@@ -211,6 +210,15 @@
         <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
         <script>
+            const i18nDeletedPlace = {
+                codeCopied:      @json(__('messages.management.deleted_place.code_copied')),
+                restoreTitle:    @json(__('messages.management.deleted_place.swal_restore_title')),
+                restoreText:     @json(__('messages.management.deleted_place.swal_restore_text')),
+                restoreConfirm:  @json(__('messages.management.deleted_place.swal_restore_confirm')),
+                swalCancel:      @json(__('messages.management.common.swal_no_cancel')),
+                swalSuccess:     @json(__('messages.management.common.swal_success')),
+            };
+
             $(document).ready(function() {
 
                 let deletedAtStart = '';
@@ -441,7 +449,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Place code copied',
+                            title: i18nDeletedPlace.codeCopied,
                             text: placeCode,
                             showConfirmButton: false,
                             timer: 1800,
@@ -464,7 +472,7 @@
                             toast: true,
                             position: 'top-end',
                             icon: 'success',
-                            title: 'Place code copied',
+                            title: i18nDeletedPlace.codeCopied,
                             text: placeCode,
                             showConfirmButton: false,
                             timer: 1800,
@@ -617,11 +625,12 @@
                     let id = $(this).data('id');
 
                     Swal.fire({
-                        title: 'Restore Place?',
-                        text: 'This place will be restored.',
+                        title: i18nDeletedPlace.restoreTitle,
+                        text: i18nDeletedPlace.restoreText,
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: 'Yes'
+                        confirmButtonText: i18nDeletedPlace.restoreConfirm,
+                        cancelButtonText: i18nDeletedPlace.swalCancel
                     }).then((result) => {
 
                         if (result.isConfirmed) {
@@ -638,7 +647,7 @@
                                 success: function(response) {
 
                                     Swal.fire(
-                                        'Success',
+                                        i18nDeletedPlace.swalSuccess,
                                         response.message ??
                                         'Place restored successfully',
                                         'success'

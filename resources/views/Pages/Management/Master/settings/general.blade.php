@@ -57,7 +57,7 @@
     <!-- Begin Page Content -->
     <div class="container-fluid">
         <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">General Settings</h1>
+        <h1 class="h3 text-gray-800 font-weight-bold m-2">{{ __('messages.management.settings.title') }}</h1>
         {{-- VALIDATION ERRORS --}}
         @if ($errors->any())
             <script>
@@ -100,15 +100,15 @@
             @csrf
             <div class="card shadow mb-3">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Running Text</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.settings.running_text_section') }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="setting-item">
 
                         <div>
-                            <h6 class="mb-1">Running Text</h6>
+                            <h6 class="mb-1">{{ __('messages.management.settings.running_text_label') }}</h6>
                             <small class="text-muted">
-                                Enable or disable running text globally
+                                {{ __('messages.management.settings.running_text_desc') }}
                             </small>
                         </div>
 
@@ -120,13 +120,13 @@
 
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Running Text Title<span class="text-danger">*</span></label>
+                        <label class="form-label">{{ __('messages.management.settings.running_text_title') }}<span class="text-danger">*</span></label>
                         <input required type="text" name="title_running_text" value="{{ $runningText->title ?? '' }}"
                             class="form-control" placeholder="Enter Running Text...">
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Disabled After <small>(Set to 0 for unlimited duration)</small><span
+                        <label class="form-label">{{ __('messages.management.settings.disabled_after') }} <small>({{ __('messages.management.settings.disabled_after_hint') }})</small><span
                                 class="text-danger">*</span></label>
                         <input min="0" value="{{ $runningText->disabled_after ?? 11 }}" required type="number"
                             value="" placeholder="Enter in Second..." name="disabled_after" class="form-control">
@@ -136,15 +136,15 @@
 
             <div class="card shadow">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Global Ads Settings</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.settings.ads_section') }}</h6>
                 </div>
                 <div class="card-body">
                     <div class="setting-item">
 
                         <div>
-                            <h6 class="mb-1">Ads Active</h6>
+                            <h6 class="mb-1">{{ __('messages.management.settings.ads_active') }}</h6>
                             <small class="text-muted">
-                                Show global ads on application
+                                {{ __('messages.management.settings.ads_active_desc') }}
                             </small>
                         </div>
 
@@ -157,9 +157,9 @@
                     <div class="setting-item">
 
                         <div>
-                            <h6 class="mb-1">Merge Advertise Users</h6>
+                            <h6 class="mb-1">{{ __('messages.management.settings.merge_advertise') }}</h6>
                             <small class="text-muted">
-                                Combine global ads with advertise users
+                                {{ __('messages.management.settings.merge_advertise_desc') }}
                             </small>
                         </div>
 
@@ -173,9 +173,9 @@
                     <div class="setting-item">
 
                         <div>
-                            <h6 class="mb-1">Blocking Ads</h6>
+                            <h6 class="mb-1">{{ __('messages.management.settings.blocking_ads') }}</h6>
                             <small class="text-muted">
-                                Prevent users from closing ads
+                                {{ __('messages.management.settings.blocking_ads_desc') }}
                             </small>
                         </div>
 
@@ -186,21 +186,21 @@
 
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Ads Title<span class="text-danger">*</span></label>
+                        <label class="form-label">{{ __('messages.management.settings.ads_title') }}<span class="text-danger">*</span></label>
                         <input required type="text" name="title_ads" value="{{ $adsSettings->title ?? '' }}"
                             class="form-control" placeholder="Enter Title...">
                     </div>
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Ads Images</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.settings.ads_images_section') }}</h6>
                         </div>
 
                         <div class="card-body">
 
                             <!-- ========== UPLOAD SECTION ========== -->
                             <div class="mb-4">
-                                <label class="form-label fw-bold text-muted">Upload New Images</label>
+                                <label class="form-label fw-bold text-muted">{{ __('messages.management.settings.upload_images') }}</label>
 
                                 <div class="dropzone-drag-area d-flex align-items-center justify-content-center flex-column text-center"
                                     id="uploadZone"
@@ -213,15 +213,15 @@
                                         </div>
 
                                         <h5 class="font-weight-bold mb-2 text-dark">
-                                            Upload Images
+                                            {{ __('messages.management.settings.upload_images') }}
                                         </h5>
 
                                         <p class="mb-1 text-muted">
-                                            Drag & drop images here
+                                            {{ __('messages.management.settings.drag_drop') }}
                                         </p>
 
                                         <small class="text-secondary">
-                                            or click to browse files
+                                            {{ __('messages.management.settings.click_browse') }}
                                         </small>
 
                                     </div>
@@ -230,7 +230,7 @@
 
                             <!-- ========== PREVIEW SECTION ========== -->
                             <div class="mb-2">
-                                <label class="form-label fw-bold text-muted">Existing Images</label>
+                                <label class="form-label fw-bold text-muted">{{ __('messages.management.settings.existing_images') }}</label>
 
                                 <div id="imagePreviewGrid" class="image-grid"></div>
                             </div>
@@ -238,7 +238,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Time<span class="text-danger">*</span></label>
+                        <label class="form-label">{{ __('messages.management.settings.ads_time') }}<span class="text-danger">*</span></label>
                         <input required type="number" name="time_ads" value="{{ $adsSettings->time ?? '' }}"
                             class="form-control" placeholder="Enter Time...">
                     </div>
@@ -246,11 +246,11 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-warning" id="submitBtn">
-                        <span class="submit-text">Save Data</span>
+                        <span class="submit-text">{{ __('messages.management.settings.save_data') }}</span>
 
                         <span class="submit-loading d-none">
                             <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
-                            Saving...
+                            {{ __('messages.management.settings.saving') }}
                         </span>
                     </button>
                 </div>
@@ -260,7 +260,7 @@
 
         <div class="card shadow mb-3 mt-3">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Settings</h6>
+                <h6 class="m-0 font-weight-bold text-primary">{{ __('messages.management.settings.title') }}</h6>
             </div>
             <div class="card-body">
                 <div class="alert alert-primary">

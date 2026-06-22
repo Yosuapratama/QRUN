@@ -16,10 +16,10 @@
         <div class="page-header-wrapper mb-3">
             <div>
                 <h1 class="page-title mb-2">
-                    <i class="fas fa-map-pin text-primary mr-3"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }} / Object
+                    <i class="fas fa-map-pin text-primary mr-3"></i>{{ $isEdit ? __('messages.management.place_form.title_update') : __('messages.management.place_form.title_create') }}
                 </h1>
                 <p class="page-subtitle mb-0">
-                    Add a new location to the directory with detailed information, location details, and content editor.
+                    {{ __('messages.management.place_form.subtitle_form') }}
                 </p>
             </div>
         </div>
@@ -30,7 +30,7 @@
                 <div class="d-flex align-items-center">
                     <i class="fas fa-check-circle mr-3"></i>
                     <div>
-                        <strong>Success!</strong>
+                        <strong>{{ __('messages.management.place_form.success_label') }}</strong>
                         <span class="d-block">{{ session()->get('success') }}</span>
                     </div>
                 </div>
@@ -43,7 +43,7 @@
                 <div class="d-flex align-items-start">
                     <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
                     <div>
-                        <strong>Please fix the following errors:</strong>
+                        <strong>{{ __('messages.management.place_form.error_label') }}</strong>
                         <ul class="mb-0 mt-2 pl-3">
                             @foreach ($errors->all() as $error)
                                 <li class="mb-1">{{ $error }}</li>
@@ -78,9 +78,9 @@
                         <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
                             <span class="badge badge-primary-light badge-icon mr-3">1</span>
                             <div>
-                                <div>Basic Information</div>
+                                <div>{{ __('messages.management.place_form.section1_title') }}</div>
                                 <small class="section-description">
-                                    Enter the name and description of the place
+                                    {{ __('messages.management.place_form.section1_desc') }}
                                 </small>
                             </div>
                         </h5>
@@ -90,13 +90,13 @@
                                 <a href="{{ route('place.detailGlobal', $Place->place_code) }}" target="_blank"
                                     class="btn btn-outline-primary btn-sm mr-2">
                                     <i class="fas fa-external-link-alt mr-1"></i>
-                                    Live Preview
+                                    {{ __('messages.management.place_form.live_preview') }}
                                 </a>
 
                                 <a href="{{ route('place.print', $Place->place_code) }}" target="_blank"
                                     class="btn btn-primary btn-sm">
                                     <i class="fas fa-qrcode mr-1"></i>
-                                    Print QR Code
+                                    {{ __('messages.management.place_form.print_qr') }}
                                 </a>
                             </div>
                         @endcan
@@ -110,7 +110,7 @@
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">
-                                Title <span class="text-danger">*</span>
+                                {{ __('messages.management.place_form.field_title') }} <span class="text-danger">*</span>
                             </label>
 
                             <input required class="form-control" id="placeTitle" name="title" type="text"
@@ -125,7 +125,7 @@
 
                         <div class="col-md-6 mb-4">
                             <label class="form-label">
-                                Contact Person
+                                {{ __('messages.management.place_form.field_contact') }}
                             </label>
 
                             <input class="form-control" name="phone_num" type="number"
@@ -141,7 +141,7 @@
 
                         <div class="col-12 mb-4">
                             <label class="form-label">
-                                Description <span class="text-danger">*</span>
+                                {{ __('messages.management.place_form.field_desc') }} <span class="text-danger">*</span>
                             </label>
 
                             <textarea id="descriptionArea" required class="form-control" rows="3" name="description"
@@ -165,9 +165,8 @@
                 <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
                     <span class="badge badge-primary-light badge-icon mr-3">2</span>
                     <div>
-                        <div>Location Information</div>
-                        <small class="section-description">Select the province, city, district, and village where
-                            the place is located</small>
+                        <div>{{ __('messages.management.place_form.section2_title') }}</div>
+                        <small class="section-description">{{ __('messages.management.place_form.section2_desc') }}</small>
                     </div>
                 </h5>
             </div>
@@ -181,49 +180,49 @@
 
                             <div class="col-md-6 mb-4">
                                 <label class="form-label">
-                                    Province <span class="text-danger">*</span>
+                                    {{ __('messages.management.place_form.field_province') }} <span class="text-danger">*</span>
                                 </label>
 
                                 <select id="provinceDataSelect" name="reg_province" class="form-control select2"
                                     required data-intro="Select the province where the place is located."
                                     data-title="Province">
-                                    <option value="">Select Province</option>
+                                    <option value="">{{ __('messages.management.place_form.sel_province') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label class="form-label">
-                                    City / Regency <span class="text-danger">*</span>
+                                    {{ __('messages.management.place_form.field_regency') }} <span class="text-danger">*</span>
                                 </label>
 
                                 <select id="regencyDataSelect" name="reg_regency" class="form-control select2" required
                                     data-intro="Select the city or regency where the place is located."
                                     data-title="City / Regency">
-                                    <option value="">Select Regency</option>
+                                    <option value="">{{ __('messages.management.place_form.sel_regency') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label class="form-label">
-                                    District <span class="text-danger">*</span>
+                                    {{ __('messages.management.place_form.field_district') }} <span class="text-danger">*</span>
                                 </label>
 
                                 <select id="districtDataSelect" name="reg_district" class="form-control select2"
                                     required data-intro="Select the district where the place is located."
                                     data-title="District">
-                                    <option value="">Select District</option>
+                                    <option value="">{{ __('messages.management.place_form.sel_district') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label class="form-label">
-                                    Village <span class="text-danger">*</span>
+                                    {{ __('messages.management.place_form.field_village') }} <span class="text-danger">*</span>
                                 </label>
 
                                 <select id="villagesDataSelect" name="reg_village" class="form-control select2"
                                     required data-intro="Select the village where the place is located."
                                     data-title="Village">
-                                    <option value="">Select Village</option>
+                                    <option value="">{{ __('messages.management.place_form.sel_village') }}</option>
                                 </select>
                             </div>
 
@@ -239,9 +238,8 @@
                 <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
                     <span class="badge badge-primary-light badge-icon mr-3">3</span>
                     <div>
-                        <div>Content Editor</div>
-                        <small class="section-description">Write detailed content about the place including text,
-                            images, and formatting</small>
+                        <div>{{ __('messages.management.place_form.section3_title') }}</div>
+                        <small class="section-description">{{ __('messages.management.place_form.section3_desc') }}</small>
                     </div>
                 </h5>
             </div>
@@ -254,7 +252,7 @@
                         <div class="d-flex align-items-center mb-3">
                             <i class="fas fa-edit text-primary mr-2"></i>
                             <h5 class="mb-0 font-weight-bold">
-                                Content Editor
+                                {{ __('messages.management.place_form.content_heading') }}
                             </h5>
                         </div>
 
@@ -274,9 +272,8 @@
                 <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
                     <span class="badge badge-primary-light badge-icon mr-3">4</span>
                     <div>
-                        <div>Settings</div>
-                        <small class="section-description">Configure options for how visitors can interact with this
-                            place</small>
+                        <div>{{ __('messages.management.place_form.section4_title') }}</div>
+                        <small class="section-description">{{ __('messages.management.place_form.section4_desc') }}</small>
                     </div>
                 </h5>
             </div>
@@ -286,11 +283,11 @@
 
                     <div>
                         <h6 class="font-weight-bold mb-2">
-                            <i class="fas fa-comments text-primary mr-2"></i>Enable Comments
+                            <i class="fas fa-comments text-primary mr-2"></i>{{ __('messages.management.place_form.comment_heading') }}
                         </h6>
 
                         <small class="text-muted d-block">
-                            Allow visitors to leave comments and engage with this place.
+                            {{ __('messages.management.place_form.comment_desc') }}
                         </small>
                     </div>
 
@@ -306,14 +303,14 @@
                 <div
                     class="card-footer bg-white p-4 d-flex justify-content-between align-items-center border-top border-light">
                     <small class="text-muted">
-                        <i class="fas fa-asterisk text-danger mr-1"></i> Required fields
+                        <i class="fas fa-asterisk text-danger mr-1"></i> {{ __('messages.management.place_form.required_fields') }}
                     </small>
                     <div class="d-flex gap-3">
                         <button type="reset" class="btn btn-secondary btn-sm reset-btn">
-                            <i class="fas fa-redo mr-2"></i>Reset
+                            <i class="fas fa-redo mr-2"></i>{{ __('messages.management.place_form.reset_btn') }}
                         </button>
                         <button type="submit" class="btn btn-primary submit-btn shadow-sm">
-                            <i class="fas fa-save mr-2"></i>{{ $isEdit ? 'Update Place' : 'Create Place' }}
+                            <i class="fas fa-save mr-2"></i>{{ $isEdit ? __('messages.management.place_form.update_btn') : __('messages.management.place_form.create_btn') }}
                         </button>
                     </div>
                 </div>
@@ -324,11 +321,56 @@
 
 </div>
 
+{{-- TUTORIAL FAB --}}
+<button id="dashboardTutorialBtn" class="dashboard-tutorial-fab" title="Tutorial">
+    <i class="fas fa-question"></i>
+</button>
 @push('css')
     @include('Pages.Management.Master.place.components.style')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
 
     <style>
+
+        
+            /* ==========================================================================
+               | TUTORIAL FAB
+               |========================================================================== */
+
+            .dashboard-tutorial-fab {
+                position: fixed;
+                bottom: 72px;
+                right: 20px;
+                z-index: 9999;
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                color: #fff;
+                border: none;
+                box-shadow: 0 6px 20px rgba(37, 99, 235, .35);
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: .2s ease;
+            }
+
+            .dashboard-tutorial-fab:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 28px rgba(37, 99, 235, .45);
+            }
+
+            @media (max-width: 768px) {
+                .dashboard-tutorial-fab {
+                    width: 40px;
+                    height: 40px;
+                    bottom: 68px;
+                    right: 14px;
+                    font-size: 14px;
+                    box-shadow: 0 4px 14px rgba(37, 99, 235, .3);
+                }
+            }
         /* Background blur */
         .introjs-overlay {
             backdrop-filter: blur(6px);
@@ -395,9 +437,22 @@
     </style>
 @endpush
 
+
+
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/intro.js/minified/intro.min.js"></script>
     <script>
+        const i18nPlaceForm = {
+            swalUploading:    @json(__('messages.management.place_form.swal_uploading')),
+            swalWait:         @json(__('messages.management.place_form.swal_wait')),
+            swalUploadComplete: @json(__('messages.management.place_form.swal_upload_complete')),
+            swalUploadDone:   @json(__('messages.management.place_form.swal_upload_done')),
+            swalUploadFailed: @json(__('messages.management.place_form.swal_upload_failed')),
+            swalServerError:  @json(__('messages.management.place_form.swal_server_error')),
+            swalInvalidFile:  @json(__('messages.management.place_form.swal_invalid_file')),
+            swalInvalidPdf:   @json(__('messages.management.place_form.swal_invalid_pdf')),
+        };
+
         let selectedProvince = "{{ old('reg_province', $Place->province_id ?? ($Place->reg_province ?? '')) }}";
         let selectedRegency = "{{ old('reg_regency', $Place->regency_id ?? ($Place->reg_regency ?? '')) }}";
         let selectedDistrict = "{{ old('reg_district', $Place->district_id ?? ($Place->reg_district ?? '')) }}";
@@ -405,6 +460,10 @@
         let summernoteReady = false;
 
         $(document).ready(async function() {
+
+            $(document).on('click', '#dashboardTutorialBtn', function() {
+                showTutorialLanguageModal();
+            });
 
             $(document).on('click', '.note-modal .close', function() {
                 $(this).closest('.note-modal').modal('hide');
@@ -1370,8 +1429,8 @@
                                         formData.append('pdf', file);
 
                                         Swal.fire({
-                                            title: 'Uploading...',
-                                            text: 'Please wait...',
+                                            title: i18nPlaceForm.swalUploading,
+                                            text: i18nPlaceForm.swalWait,
                                             showConfirmButton: false,
                                             allowOutsideClick: false,
                                             didOpen: () => {
@@ -1403,8 +1462,8 @@
 
                                                     Swal.fire({
                                                         icon: 'success',
-                                                        title: 'Upload Complete',
-                                                        text: 'PDF uploaded successfully.'
+                                                        title: i18nPlaceForm.swalUploadComplete,
+                                                        text: i18nPlaceForm.swalUploadDone
                                                     });
 
                                                     let iframe =
@@ -1438,7 +1497,7 @@
 
                                                     Swal.fire({
                                                         icon: 'error',
-                                                        title: 'Upload Failed',
+                                                        title: i18nPlaceForm.swalUploadFailed,
                                                         text: response
                                                             .error ||
                                                             'Unknown error'
@@ -1450,8 +1509,8 @@
 
                                                 Swal.fire({
                                                     icon: 'error',
-                                                    title: 'Upload Failed',
-                                                    text: 'Server error.'
+                                                    title: i18nPlaceForm.swalUploadFailed,
+                                                    text: i18nPlaceForm.swalServerError
                                                 });
                                             }
                                         });
@@ -1460,8 +1519,8 @@
 
                                         Swal.fire({
                                             icon: 'error',
-                                            title: 'Invalid File',
-                                            text: 'Please upload a valid PDF.'
+                                            title: i18nPlaceForm.swalInvalidFile,
+                                            text: i18nPlaceForm.swalInvalidPdf
                                         });
                                     }
                                 });

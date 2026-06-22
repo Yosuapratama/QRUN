@@ -14,6 +14,8 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\LogActivitiesController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
+use App\Http\Controllers\HistoryScanController;
+use App\Http\Controllers\PlaceLimitRequestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersHasLimitController;
@@ -107,6 +109,13 @@ Route::group(['prefix' => 'management'], function () {
                 Route::delete('/{id}/delete', [PlaceLimitController::class, 'destroy'])->name('place-limit.destroy');
             });
 
+            Route::prefix('place-limit-request')->group(function () {
+                Route::get('/', [PlaceLimitRequestController::class, 'index'])->name('place-limit-request.index');
+                Route::post('/{id}/approve', [PlaceLimitRequestController::class, 'approve'])->name('place-limit-request.approve');
+                Route::post('/{id}/reject', [PlaceLimitRequestController::class, 'reject'])->name('place-limit-request.reject');
+            });
+
+
             Route::prefix('pending-verify')->group(function () {
                 Route::get('/', [UsersController::class, 'pendingVerify'])->name('pending-verify.index');
                 Route::post('/{id}/verify', [UsersController::class, 'verifyAccountManual'])->name('pending-verify.verify');
@@ -177,7 +186,14 @@ Route::group(['prefix' => 'management'], function () {
         });
 
         Route::middleware(['checkUserLimitPermissions'])->group(function () {
+
             Route::group(['prefix' => 'place'], function () {
+
+                Route::prefix('history-scan')->group(function () {
+                    Route::get('/', [HistoryScanController::class, 'index'])->name('history-scan.index');
+                    Route::get('/export', [HistoryScanController::class, 'export'])->name('history-scan.export');
+                });
+                
                 Route::get('/', [PlaceController::class, 'index'])->name('place');
                 Route::get('/edit/{place_code}', [PlaceController::class, 'editPlace'])->name('place.edit');
                 Route::get('/detail/{place_code}', [PlaceController::class, 'show'])->name('place.detail');
@@ -195,8 +211,6 @@ Route::group(['prefix' => 'management'], function () {
                 Route::get('/search/districts', [PlaceController::class, 'searchDistricts'])->name('place.search.districts');
                 Route::get('/search/villages', [PlaceController::class, 'searchVillages'])->name('place.search.villages');
             });
-
-            
         });
         //Create Middleware For User Has Logged In
         Route::middleware(['checkLogin'])->group(function () {
@@ -204,12 +218,17 @@ Route::group(['prefix' => 'management'], function () {
                 Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
                 Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
             });
-            
+
             Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
             Route::get('/print-barcode/{placeCode}', [PlaceController::class, 'print'])->name('place.print');
 
             Route::get('/my-place', [PlaceController::class, 'returnMyPlaceView'])->name('place.myplace');
             Route::post('/my-place/update', [PlaceController::class, 'updatePlace'])->name('place.update');
+
+            Route::prefix('my-history-scan')->group(function () {
+                Route::get('/', [HistoryScanController::class, 'myIndex'])->name('history-scan.my');
+                Route::get('/export', [HistoryScanController::class, 'myExport'])->name('history-scan.my-export');
+            });
             Route::post('/store', [PlaceController::class, 'store'])->name('place.store');
             Route::get('/get-detail-data/{code}', [PlaceController::class, 'getDetailPlaceData'])->name('place.getDetailPlaceData');
 
@@ -231,6 +250,9 @@ Route::group(['prefix' => 'management'], function () {
 
             Route::post('/file/upload', [FileController::class, 'uploadFile'])->name('file.upload');
             Route::get('getlocationdata', [DashboardController::class, 'getLocation'])->name('getLocation');
+
+            Route::post('/place-limit-request/store', [PlaceLimitRequestController::class, 'store'])->name('place-limit-request.store');
+            Route::get('/place-limit-request/check-pending', [PlaceLimitRequestController::class, 'checkPending'])->name('place-limit-request.check-pending');
         });
     });
 });
