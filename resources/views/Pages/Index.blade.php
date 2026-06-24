@@ -70,18 +70,38 @@
     }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {{-- Preconnect only to the two highest-impact origins (fonts + asset CDN);
+         keep the rest as cheaper dns-prefetch to stay under the 4-preconnect budget --}}
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+
+    {{-- Preload the LCP hero image so the browser fetches it early --}}
+    <link rel="preload" as="image" href="{{ asset('home.webp') }}" type="image/webp" fetchpriority="high">
+
+    {{-- Google Fonts loaded non-render-blocking (display=swap keeps text visible) --}}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"></noscript>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    {{-- Font Awesome (loaded non-render-blocking, swapped in once ready) --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
 
     {{-- TOASTR CSS --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+        media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"></noscript>
 
-    {{-- JQUERY --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    {{-- JQUERY (deferred — DOM-ready handlers below wait for it) --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
 
     {{-- TOASTR JS --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" defer></script>
 
     <style>
         * { font-family: 'Inter', sans-serif; }
@@ -193,6 +213,7 @@
         </script>
     @endif
 
+    <main>
     {{-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════ --}}
     <section class="relative min-h-[92vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900">
         <div class="absolute inset-0 hero-grid"></div>
@@ -254,8 +275,12 @@
                 {{-- Right: hero image --}}
                 <div class="relative flex justify-center lg:justify-end">
                     <div class="relative w-full max-w-md">
-                        <img src="{{ asset('home.jpg') }}" alt="Qrun Platform"
-                            class="w-full rounded-2xl shadow-2xl shadow-black/40 ring-1 ring-white/10 object-cover">
+                        <picture>
+                            <source srcset="{{ asset('home.webp') }}" type="image/webp">
+                            <img src="{{ asset('home.webp') }}" alt="Qrun Platform" width="901" height="663"
+                                fetchpriority="high" decoding="async"
+                                class="w-full rounded-2xl shadow-2xl shadow-black/40 ring-1 ring-white/10 object-cover">
+                        </picture>
 
                         {{-- Floating badge --}}
                         <div class="absolute -bottom-5 -left-5 glass text-white text-sm font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5">
@@ -354,8 +379,8 @@
             {{-- How-to video --}}
             <div class="reveal">
                 <div class="rounded-2xl overflow-hidden shadow-2xl bg-gray-900 ring-1 ring-black/10">
-                    <iframe width="100%" height="420"
-                        src="https://www.youtube.com/embed/W5IUwH-tk8g?si=_2OtIl56GzFtULGh"
+                    <iframe width="100%" height="420" loading="lazy"
+                        src="https://www.youtube-nocookie.com/embed/W5IUwH-tk8g?si=_2OtIl56GzFtULGh"
                         title="Cara Pakai Qrun" frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="block"></iframe>
@@ -490,8 +515,8 @@
                 </p>
             </div>
             <div class="reveal rounded-2xl overflow-hidden shadow-2xl bg-gray-900 ring-1 ring-gray-200">
-                <iframe width="100%" height="440"
-                    src="https://www.youtube.com/embed/cwQX8Ov0A_M?si=RdtQLg3E1EPhuCf9"
+                <iframe width="100%" height="440" loading="lazy"
+                    src="https://www.youtube-nocookie.com/embed/cwQX8Ov0A_M?si=RdtQLg3E1EPhuCf9"
                     title="Qrun Online" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="block"></iframe>
@@ -546,6 +571,7 @@
                     <article class="blog-card bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm reveal">
                         <div class="relative overflow-hidden h-52">
                             <img src="{{ asset($blog->image_url) }}" alt="{{ $blog->title }}"
+                                width="400" height="208" loading="lazy" decoding="async"
                                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
                         </div>
                         <div class="p-6">
@@ -621,7 +647,7 @@
                 class="absolute -top-12 right-0 text-white/70 hover:text-white text-2xl transition-colors">
                 <i class="fas fa-times"></i>
             </button>
-            <img id="modalImage" src="/placeholder.svg" alt=""
+            <img id="modalImage" alt="" loading="lazy"
                 class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl">
             <div class="text-center mt-5">
                 <h3 id="modalTitle" class="text-white text-lg font-semibold"></h3>
@@ -629,10 +655,11 @@
         </div>
     </div>
 
+    </main>
+
     {{-- Footer --}}
     @include('Components.FooterHome')
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         const i18n = {
             loadMore:          @json(__('messages.home.gallery_load_more')),
@@ -698,6 +725,7 @@
             const item = e.target.closest('.gallery-item');
             if (item) {
                 modalImage.src = item.dataset.image;
+                modalImage.alt = item.dataset.title;
                 modalTitle.textContent = item.dataset.title;
                 modal.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
@@ -710,7 +738,9 @@
         }
 
         closeModalBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        // Close when clicking anywhere outside the image itself (backdrop,
+        // the wrapper around the image, or the title area).
+        modal.addEventListener('click', e => { if (!e.target.closest('#modalImage')) closeModal(); });
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
         });
@@ -768,7 +798,8 @@
             });
         }
 
-        $(document).ready(function() {
+        {{-- jQuery is deferred, so it is ready by DOMContentLoaded --}}
+        window.addEventListener('DOMContentLoaded', function() {
             loadGallery();
             $('#load-more').on('click', function() { loadGallery(); });
         });

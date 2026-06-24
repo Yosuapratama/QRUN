@@ -659,7 +659,7 @@
                     ]
                 });
 
-                $(document).on('click', '#userModal .close', function() {
+                $(document).on('click', '#userModal [data-dismiss="modal"]', function() {
                     $('#userModal').modal('hide');
                 });
                 /* ------------------------------

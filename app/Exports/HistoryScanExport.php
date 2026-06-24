@@ -106,18 +106,27 @@ class HistoryScanExport implements
     {
         $data = [
             $this->no++,
-            "\t" . ($row->place_code ?? '-'),
-            optional($row->place)->title ?? '-',
+            "\t" . $this->clean($row->place_code ?? '-'),
+            $this->clean(optional($row->place)->title ?? '-'),
         ];
         if ($this->isSuperAdmin) {
-            $data[] = optional($row->user)->name ?? 'Guest';
-            $data[] = optional($row->user)->email ?? '-';
+            $data[] = $this->clean(optional($row->user)->name ?? 'Guest');
+            $data[] = $this->clean(optional($row->user)->email ?? '-');
         }
-        $data[] = $row->device_type ?? '-';
-        $data[] = $row->platform ?? '-';
-        $data[] = $row->browser ?? '-';
+        $data[] = $this->clean($row->device_type ?? '-');
+        $data[] = $this->clean($row->platform ?? '-');
+        $data[] = $this->clean($row->browser ?? '-');
         $data[] = $row->checked_at ? $row->checked_at->format('Y-m-d H:i:s') : '-';
         return $data;
+    }
+
+    /**
+     * Strip illegal XML control characters that make the .xlsx unreadable
+     * ("format or extension is not valid") while keeping tab, LF and CR.
+     */
+    private function clean($value): string
+    {
+        return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/u', '', (string) $value);
     }
 
     public function registerEvents(): array

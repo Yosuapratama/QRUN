@@ -168,7 +168,6 @@ class PlaceController extends Controller
                             </a>
 
                             <a 
-                                target='_blank' 
                                 href='$editUrl' 
                                 class='dropdown-item'
                             >

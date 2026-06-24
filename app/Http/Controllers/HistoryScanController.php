@@ -96,8 +96,9 @@ class HistoryScanController extends Controller
     {
         /** @var \App\Models\User $exporter */
         $exporter = Auth::user();
+        $isSuperAdmin = $exporter->hasRole('superadmin');
         $filename = 'history-scan-' . now()->format('Ymd-His') . '.xlsx';
-        return Excel::download(new HistoryScanExport($request, false, $exporter->hasRole('superadmin')), $filename);
+        return Excel::download(new HistoryScanExport($request, !$isSuperAdmin, $isSuperAdmin), $filename);
     }
 
     // Regular user — only their own place

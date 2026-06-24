@@ -7,6 +7,10 @@ use App\Http\Controllers\AuthGoogleController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EbookController;
+use App\Http\Controllers\EbookAssignmentController;
+use App\Http\Controllers\EbookCategoryController;
+use App\Http\Controllers\EbookPlaceController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FileController;
@@ -24,10 +28,31 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
+Route::get('/sitemap.xml', function () {
+    return response(
+        File::get(public_path('sitemap.xml')),
+        200,
+        ['Content-Type' => 'application/xml']
+    );
+});
+
+
 Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
 Route::get('/contact', [AuthController::class, 'contactPage'])->name('contact');
 Route::get('/blog', [AuthController::class, 'blogPage'])->name('blog');
 Route::get('/blog/{slug}', [AuthController::class, 'detailBlog'])->name('blog.detail');
+
+// Route::get('/ebook', [AuthController::class, 'ebookPage'])->name('ebook');
+Route::get('/ebook/{slug}', [AuthController::class, 'detailEbook'])->name('ebook.detail');
+
+// Public: visitor scans a location QR to browse its ebooks
+Route::get('/ebook-place/{code}', [EbookPlaceController::class, 'scan'])->name('ebook-place.scan');
+Route::get('/ebook-place/{code}/ebooks', [EbookPlaceController::class, 'scanData'])->name('ebook-place.scan.data');
+
+// Public: server-side read-gating (unlock a locked ebook). CSRF protected.
+Route::post('/ebook-place/{code}/unlock/start', [EbookPlaceController::class, 'unlockStart'])->name('ebook-place.unlock.start');
+Route::post('/ebook-place/{code}/unlock/complete', [EbookPlaceController::class, 'unlockComplete'])->name('ebook-place.unlock.complete');
+Route::post('/ebook-place/{code}/unlock/review', [EbookPlaceController::class, 'unlockReview'])->name('ebook-place.unlock.review');
 
 Route::get('/blog-ajax/search', [AuthController::class, 'search'])->name('blog.search');
 Route::get('/blog-ajax/load-more', [AuthController::class, 'loadMore'])->name('blog.loadMore');
@@ -46,6 +71,17 @@ Route::group(['prefix' => 'management'], function () {
                 Artisan::call('migration:sync');
                 return back()->with('success', 'Migration status synced successfully!');
             })->name('migration.sync');
+
+            // Run pending migrations from the browser (shared hosting without CLI).
+            // Superadmin only; --force so it runs in production without a prompt.
+            Route::get('/sync/migrate', function () {
+                if (!auth()->check() || !auth()->user()->hasRole('superadmin')) {
+                    abort(403);
+                }
+                Artisan::call('migrate', ['--force' => true]);
+                return response('<pre style="font-family:monospace;padding:16px;">'
+                    . e(Artisan::output()) . '</pre>');
+            })->name('migrate.run');
 
             Route::get('/sync/advertise', function () {
                 Artisan::call('advertise:sync-images');
@@ -161,6 +197,45 @@ Route::group(['prefix' => 'management'], function () {
                 Route::delete('/{id}/delete', [BlogController::class, 'destroy'])->name('blog.destroy');
             });
 
+            Route::prefix('ebook')->group(function () {
+                Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
+                Route::get('/create', [EbookController::class, 'create'])->name('ebook.create');
+                Route::post('/store', [EbookController::class, 'store'])->name('ebook.store');
+                Route::get('/{id}/edit', [EbookController::class, 'edit'])->name('ebook.edit');
+                Route::get('/{id}/detail', [EbookController::class, 'show'])->name('ebook.detail');
+                Route::get('/{id}/reviews/export/preview', [EbookController::class, 'reviewsExportPreview'])->name('ebook.reviews.preview');
+                Route::get('/{id}/reviews/export', [EbookController::class, 'reviewsExport'])->name('ebook.reviews.export');
+                Route::post('/update', [EbookController::class, 'update'])->name('ebook.update');
+                Route::delete('/{id}/delete', [EbookController::class, 'destroy'])->name('ebook.destroy');
+            });
+
+            Route::prefix('ebook-place')->group(function () {
+                Route::get('/', [EbookPlaceController::class, 'index'])->name('ebook-place.index');
+                Route::get('/create', [EbookPlaceController::class, 'create'])->name('ebook-place.create');
+                Route::post('/store', [EbookPlaceController::class, 'store'])->name('ebook-place.store');
+                Route::get('/{id}/detail', [EbookPlaceController::class, 'show'])->name('ebook-place.detail');
+                Route::get('/{id}/connected-ebooks', [EbookPlaceController::class, 'connectedEbooks'])->name('ebook-place.connected');
+                Route::get('/{id}/reviews/export/preview', [EbookPlaceController::class, 'reviewsExportPreview'])->name('ebook-place.reviews.preview');
+                Route::get('/{id}/reviews/export', [EbookPlaceController::class, 'reviewsExport'])->name('ebook-place.reviews.export');
+                Route::get('/{id}/edit', [EbookPlaceController::class, 'edit'])->name('ebook-place.edit');
+                Route::post('/update', [EbookPlaceController::class, 'update'])->name('ebook-place.update');
+                Route::delete('/{id}/delete', [EbookPlaceController::class, 'destroy'])->name('ebook-place.destroy');
+                Route::get('/{code}/print', [EbookPlaceController::class, 'print'])->name('ebook-place.print');
+            });
+
+            Route::prefix('ebook-category')->group(function () {
+                Route::get('/', [EbookCategoryController::class, 'index'])->name('ebook-category.index');
+                Route::post('/store', [EbookCategoryController::class, 'store'])->name('ebook-category.store');
+                Route::post('/update', [EbookCategoryController::class, 'update'])->name('ebook-category.update');
+                Route::delete('/{id}/delete', [EbookCategoryController::class, 'destroy'])->name('ebook-category.destroy');
+            });
+
+            Route::prefix('ebook-assignment')->group(function () {
+                Route::get('/', [EbookAssignmentController::class, 'index'])->name('ebook-assignment.index');
+                Route::get('/{id}/ebooks', [EbookAssignmentController::class, 'show'])->name('ebook-assignment.show');
+                Route::post('/store', [EbookAssignmentController::class, 'store'])->name('ebook-assignment.store');
+            });
+
             Route::group(['prefix' => 'settings'], function () {
                 Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
                 Route::post('/general/store', [SettingsController::class, 'store'])->name('settings.store');
@@ -181,6 +256,7 @@ Route::group(['prefix' => 'management'], function () {
             Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds'])->name('upload.ads');
             Route::post('/file/upload/gallery', [FileController::class, 'uploadImageGallery'])->name('upload.gallery');
             Route::post('/file/upload/blog', [FileController::class, 'uploadImageBlog'])->name('upload.blog');
+            Route::post('/file/upload/ebook', [FileController::class, 'uploadImageEbook'])->name('upload.ebook');
             Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace'])->name('upload.place.ads');
             Route::post('/file/upload/ads/bulk', [FileController::class, 'bulkUploadImageAds'])->name('upload.ads.bulk');
         });

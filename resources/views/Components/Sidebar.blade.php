@@ -157,6 +157,33 @@
             </div>
         </li>
 
+        {{-- Manage Ebook --}}
+
+        @php
+            $ebookActive = Route::is('ebook.index') || Route::is('ebook-place.index') || Route::is('ebook-category.index') || Route::is('ebook-assignment.index');
+        @endphp
+        <li class="nav-item {{ $ebookActive ? 'active' : '' }} ">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePagesebook"
+                aria-expanded="true" aria-controls="collapsePages">
+              <i class="fas fa-book"></i>
+                <span>@lang('messages.navigation_admin.manage_ebook.manage_ebook')</span>
+            </a>
+            <div id="collapsePagesebook" class="collapse {{ $ebookActive ? 'show' : '' }}"
+                aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">E-Book QR System</h6>
+                    <a class="collapse-item {{ Route::is('ebook.index') ? 'active' : '' }}"
+                        href="{{ route('ebook.index') }}">@lang('messages.navigation_admin.manage_ebook.manage_ebook')</a>
+                    <a class="collapse-item {{ Route::is('ebook-place.index') ? 'active' : '' }}"
+                        href="{{ route('ebook-place.index') }}">Lokasi Ebook</a>
+                    <a class="collapse-item {{ Route::is('ebook-assignment.index') ? 'active' : '' }}"
+                        href="{{ route('ebook-assignment.index') }}">Assignment</a>
+                    <a class="collapse-item {{ Route::is('ebook-category.index') ? 'active' : '' }}"
+                        href="{{ route('ebook-category.index') }}">Kategori Ebook</a>
+                </div>
+            </div>
+        </li>
+
          {{-- Manage Advertise --}}
 
          <li class="nav-item {{Route::is('advertise.index') ? 'active' : ''}} ">

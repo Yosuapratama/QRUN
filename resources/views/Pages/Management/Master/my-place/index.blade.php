@@ -309,6 +309,8 @@
             }
             .introjs-overlay { backdrop-filter: blur(6px); background: rgba(0,0,0,.35) !important; }
             .introjs-helperLayer { border-radius: 18px !important; box-shadow: 0 0 0 9999px rgba(0,0,0,.15); }
+            /* Center the welcome (no-element) step in the viewport, not the document */
+            .introjsFloatingElement { position: fixed !important; left: 50% !important; top: 50% !important; }
             .introjs-button { border-radius: 10px !important; }
             .introjs-skipbutton {
                 position: absolute !important; top: 10px !important; right: 10px !important;
@@ -361,7 +363,7 @@
                     if (label.includes('picture')) $(this).addClass('tour-image');
                     if (label.includes('video')) $(this).addClass('tour-video');
                 });
-                $('.note-btn[data-name="pdfButton"]').addClass('tour-pdf');
+                $('.note-btn').has('.fa-file-pdf').addClass('tour-pdf');
             }
 
             function showMyPlaceTutorialModal() {

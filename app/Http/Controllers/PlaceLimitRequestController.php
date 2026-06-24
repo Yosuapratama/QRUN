@@ -26,9 +26,9 @@ class PlaceLimitRequestController extends Controller
                 ->addIndexColumn()
                 ->editColumn('status', function ($row) {
                     $map = [
-                        'pending'  => ['bg-warning',  'fa-clock',       'Pending'],
-                        'approved' => ['bg-success',  'fa-check-circle','Approved'],
-                        'rejected' => ['bg-danger',   'fa-times-circle','Rejected'],
+                        'pending'  => ['bg-warning text-white',  'fa-clock',       'Pending'],
+                        'approved' => ['bg-success text-white',  'fa-check-circle','Approved'],
+                        'rejected' => ['bg-danger text-white',   'fa-times-circle','Rejected'],
                     ];
                     [$bg, $icon, $label] = $map[$row->status] ?? ['bg-secondary', 'fa-circle', $row->status];
                     return "<span class='badge {$bg}'><i class='fas {$icon} mr-1'></i>{$label}</span>";

@@ -50,6 +50,9 @@ return [
         'manage_blog' => [
             'manage_blog' => 'Kelola Blog',
         ],
+        'manage_ebook' => [
+            'manage_ebook' => 'Kelola Ebook',
+        ],
         'report' => [
             'message' => 'Laporan',
         ],

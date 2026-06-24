@@ -200,4 +200,23 @@ class FileController extends Controller
         // return the result
         return response()->json(["image_url" => $path])->header('Content-Type', 'application/json');;
     }
+
+    public function uploadImageEbook(Request $request)
+    {
+        $request->validate([
+            'file' => 'mimes:png,jpg,jpeg,gif,webp|max:5000'
+        ]);
+
+        if ($request->file('file')) {
+            $file = $request->file('file');
+
+            $path = "ebooks/" . time() . '_' . $file->getClientOriginalName();
+
+            $publicPath = public_path($path);
+
+            $file->move(dirname($publicPath), basename($publicPath));
+        }
+
+        return response()->json(["image_url" => $path])->header('Content-Type', 'application/json');;
+    }
 }

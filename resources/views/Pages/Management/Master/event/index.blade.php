@@ -1982,6 +1982,11 @@
                         position: 'right'
                     },
                     {
+                        element: '#filter-place-code',
+                        intro: '<strong>Cari Berdasarkan Place Code</strong><br>Masukkan kode tempat (place code) untuk menyaring event berdasarkan lokasinya.',
+                        position: 'right'
+                    },
+                    {
                         element: '#filter-status',
                         intro: '<strong>Filter Status</strong><br>Pilih <em>Active</em> untuk menampilkan event yang sedang berjalan, atau <em>Inactive</em> untuk yang sudah tidak aktif.',
                         position: 'right'
@@ -2066,6 +2071,11 @@
                     {
                         element: '#filter-title',
                         intro: '<strong>Search by Title</strong><br>Type a keyword to filter the event table in real-time.',
+                        position: 'right'
+                    },
+                    {
+                        element: '#filter-place-code',
+                        intro: '<strong>Search by Place Code</strong><br>Enter a place code to filter events by their location.',
                         position: 'right'
                     },
                     {

@@ -5,7 +5,11 @@
 
             {{-- Logo --}}
             <a href="{{ route('homes') }}" class="flex-shrink-0 flex items-center">
-                <img src="{{ asset('qrun-logo-fullwidth.png') }}" alt="QRUN Logo" class="h-8 w-auto">
+                <picture>
+                    <source srcset="{{ asset('qrun-logo-fullwidth.webp') }}" type="image/webp">
+                    <img src="{{ asset('qrun-logo-fullwidth.png') }}" alt="QRUN Logo" width="121" height="36"
+                        fetchpriority="high" class="h-8 w-auto">
+                </picture>
             </a>
 
             {{-- Desktop links --}}

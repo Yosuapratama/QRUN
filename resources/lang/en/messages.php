@@ -50,6 +50,9 @@ return [
         'manage_blog' => [
             'manage_blog' => 'Manage Blog',
         ],
+        'manage_ebook' => [
+            'manage_ebook' => 'Manage Ebook',
+        ],
         'report' => [
             'message' => 'Report',
         ],
