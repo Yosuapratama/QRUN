@@ -7,6 +7,10 @@ use App\Http\Controllers\AuthGoogleController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EbookController;
+use App\Http\Controllers\EbookAssignmentController;
+use App\Http\Controllers\EbookCategoryController;
+use App\Http\Controllers\EbookPlaceController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FileController;
@@ -14,6 +18,8 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\LogActivitiesController;
 use App\Http\Controllers\PlaceController;
 use App\Http\Controllers\PlaceLimitController;
+use App\Http\Controllers\HistoryScanController;
+use App\Http\Controllers\PlaceLimitRequestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersHasLimitController;
@@ -22,10 +28,31 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
+Route::get('/sitemap.xml', function () {
+    return response(
+        File::get(public_path('sitemap.xml')),
+        200,
+        ['Content-Type' => 'application/xml']
+    );
+});
+
+
 Route::get('/', [AuthController::class, 'redirectToLogin'])->name('homes');
 Route::get('/contact', [AuthController::class, 'contactPage'])->name('contact');
 Route::get('/blog', [AuthController::class, 'blogPage'])->name('blog');
 Route::get('/blog/{slug}', [AuthController::class, 'detailBlog'])->name('blog.detail');
+
+// Route::get('/ebook', [AuthController::class, 'ebookPage'])->name('ebook');
+Route::get('/ebook/{slug}', [AuthController::class, 'detailEbook'])->name('ebook.detail');
+
+// Public: visitor scans a location QR to browse its ebooks
+Route::get('/ebook-place/{code}', [EbookPlaceController::class, 'scan'])->name('ebook-place.scan');
+Route::get('/ebook-place/{code}/ebooks', [EbookPlaceController::class, 'scanData'])->name('ebook-place.scan.data');
+
+// Public: server-side read-gating (unlock a locked ebook). CSRF protected.
+Route::post('/ebook-place/{code}/unlock/start', [EbookPlaceController::class, 'unlockStart'])->name('ebook-place.unlock.start');
+Route::post('/ebook-place/{code}/unlock/complete', [EbookPlaceController::class, 'unlockComplete'])->name('ebook-place.unlock.complete');
+Route::post('/ebook-place/{code}/unlock/review', [EbookPlaceController::class, 'unlockReview'])->name('ebook-place.unlock.review');
 
 Route::get('/blog-ajax/search', [AuthController::class, 'search'])->name('blog.search');
 Route::get('/blog-ajax/load-more', [AuthController::class, 'loadMore'])->name('blog.loadMore');
@@ -38,21 +65,57 @@ Route::get('set-locale/{locale}', [DashboardController::class, 'setLocale'])->na
 
 Route::group(['prefix' => 'management'], function () {
     Route::group(['prefix' => 'master'], function () {
-        // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
-        Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
+        Route::middleware(['checkLogin'])->group(function () {
 
+            Route::get('/sync/migration', function () {
+                Artisan::call('migration:sync');
+                return back()->with('success', 'Migration status synced successfully!');
+            })->name('migration.sync');
+
+            // Run pending migrations from the browser (shared hosting without CLI).
+            // Superadmin only; --force so it runs in production without a prompt.
+            Route::get('/sync/migrate', function () {
+                if (!auth()->check() || !auth()->user()->hasRole('superadmin')) {
+                    abort(403);
+                }
+                Artisan::call('migrate', ['--force' => true]);
+                return response('<pre style="font-family:monospace;padding:16px;">'
+                    . e(Artisan::output()) . '</pre>');
+            })->name('migrate.run');
+
+            Route::get('/sync/advertise', function () {
+                Artisan::call('advertise:sync-images');
+                return back()->with('success', 'Advertise images synced successfully!');
+            })->name('advertise.sync');
+
+            Route::get(
+                '/report/excel/place',
+                [PlaceController::class, 'reportExcelPlace']
+            )->name('report.excel.place');
+
+            Route::get('/dashboard/map-data', [DashboardController::class, 'getMapData'])->name('dashboard.map-data');
+            Route::get('/dashboard/stats', [DashboardController::class, 'getDashboardStats'])->name('dashboard.stats');
+            // This Route For User Has Logged in/Register, user/adminlocal dashboard and superadmin are different
+
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('checkLogin');
+            Route::get('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('checkLogin');
+            Route::get(
+                '/dashboard/running-scan-time',
+                [DashboardController::class, 'getRunningScanTimeNow']
+            )->name('dashboard.running-scan-time');
+            Route::post('/dashboard/send-recap-today', [DashboardController::class, 'sendRecapToday'])->name('dashboard.send-recap-today');
+            // This is administrator Menu to Manage Users of all 
+            Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
+        });
 
         // This is middleware/restricted access & checking is the user has role superadmin or not 
         Route::middleware(['IsSuperAdmin'])->group(function () {
-            // This is administrator Menu to Manage Users of all 
-            Route::get('/dashboard/data/chart', [DashboardController::class, 'getChartData'])->name('chart.data');
             Route::get('/dashboard/data/user-growth/chart', [DashboardController::class, 'userGrowth'])->name('chart.userGrowth');
 
             Route::group(['prefix' => 'users'], function () {
                 Route::get('/', [UsersController::class, 'index'])->name('users');
-                Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
-                Route::get('/pending-approval', [UsersController::class, 'pendingApproval'])->name('users.pending');
+                // Route::get('/blocked', [UsersController::class, 'indexBlocked'])->name('users.blocked');
+                // Route::get('/pending-approval', [UsersController::class, 'pendingApproval'])->name('users.pending');
 
                 Route::post('/store', [UsersController::class, 'store'])->name('users.store');
                 Route::put('/update', [UsersController::class, 'update'])->name('users.update');
@@ -81,6 +144,13 @@ Route::group(['prefix' => 'management'], function () {
                 Route::post('/{id}/update', [PlaceLimitController::class, 'update'])->name('place-limit.update');
                 Route::delete('/{id}/delete', [PlaceLimitController::class, 'destroy'])->name('place-limit.destroy');
             });
+
+            Route::prefix('place-limit-request')->group(function () {
+                Route::get('/', [PlaceLimitRequestController::class, 'index'])->name('place-limit-request.index');
+                Route::post('/{id}/approve', [PlaceLimitRequestController::class, 'approve'])->name('place-limit-request.approve');
+                Route::post('/{id}/reject', [PlaceLimitRequestController::class, 'reject'])->name('place-limit-request.reject');
+            });
+
 
             Route::prefix('pending-verify')->group(function () {
                 Route::get('/', [UsersController::class, 'pendingVerify'])->name('pending-verify.index');
@@ -127,18 +197,57 @@ Route::group(['prefix' => 'management'], function () {
                 Route::delete('/{id}/delete', [BlogController::class, 'destroy'])->name('blog.destroy');
             });
 
+            Route::prefix('ebook')->group(function () {
+                Route::get('/', [EbookController::class, 'index'])->name('ebook.index');
+                Route::get('/create', [EbookController::class, 'create'])->name('ebook.create');
+                Route::post('/store', [EbookController::class, 'store'])->name('ebook.store');
+                Route::get('/{id}/edit', [EbookController::class, 'edit'])->name('ebook.edit');
+                Route::get('/{id}/detail', [EbookController::class, 'show'])->name('ebook.detail');
+                Route::get('/{id}/reviews/export/preview', [EbookController::class, 'reviewsExportPreview'])->name('ebook.reviews.preview');
+                Route::get('/{id}/reviews/export', [EbookController::class, 'reviewsExport'])->name('ebook.reviews.export');
+                Route::post('/update', [EbookController::class, 'update'])->name('ebook.update');
+                Route::delete('/{id}/delete', [EbookController::class, 'destroy'])->name('ebook.destroy');
+            });
+
+            Route::prefix('ebook-place')->group(function () {
+                Route::get('/', [EbookPlaceController::class, 'index'])->name('ebook-place.index');
+                Route::get('/create', [EbookPlaceController::class, 'create'])->name('ebook-place.create');
+                Route::post('/store', [EbookPlaceController::class, 'store'])->name('ebook-place.store');
+                Route::get('/{id}/detail', [EbookPlaceController::class, 'show'])->name('ebook-place.detail');
+                Route::get('/{id}/connected-ebooks', [EbookPlaceController::class, 'connectedEbooks'])->name('ebook-place.connected');
+                Route::get('/{id}/reviews/export/preview', [EbookPlaceController::class, 'reviewsExportPreview'])->name('ebook-place.reviews.preview');
+                Route::get('/{id}/reviews/export', [EbookPlaceController::class, 'reviewsExport'])->name('ebook-place.reviews.export');
+                Route::get('/{id}/edit', [EbookPlaceController::class, 'edit'])->name('ebook-place.edit');
+                Route::post('/update', [EbookPlaceController::class, 'update'])->name('ebook-place.update');
+                Route::delete('/{id}/delete', [EbookPlaceController::class, 'destroy'])->name('ebook-place.destroy');
+                Route::get('/{code}/print', [EbookPlaceController::class, 'print'])->name('ebook-place.print');
+            });
+
+            Route::prefix('ebook-category')->group(function () {
+                Route::get('/', [EbookCategoryController::class, 'index'])->name('ebook-category.index');
+                Route::post('/store', [EbookCategoryController::class, 'store'])->name('ebook-category.store');
+                Route::post('/update', [EbookCategoryController::class, 'update'])->name('ebook-category.update');
+                Route::delete('/{id}/delete', [EbookCategoryController::class, 'destroy'])->name('ebook-category.destroy');
+            });
+
+            Route::prefix('ebook-assignment')->group(function () {
+                Route::get('/', [EbookAssignmentController::class, 'index'])->name('ebook-assignment.index');
+                Route::get('/{id}/ebooks', [EbookAssignmentController::class, 'show'])->name('ebook-assignment.show');
+                Route::post('/store', [EbookAssignmentController::class, 'store'])->name('ebook-assignment.store');
+            });
+
             Route::group(['prefix' => 'settings'], function () {
                 Route::get('/general', [SettingsController::class, 'generalIndex'])->name('settings.general');
                 Route::post('/general/store', [SettingsController::class, 'store'])->name('settings.store');
                 Route::get('/general/artisan/optimize', function () {
                     Artisan::call('optimize');
 
-                    return back();
+                    return back()->withSuccess('Application optimized successfully.');
                 })->name('artisan.optimize');
                 Route::get('/general/artisan/queue', function () {
                     Artisan::call('queue:restart');
 
-                    return back();
+                    return back()->withSuccess('Queue restarted successfully.');
                 })->name('artisan.queue');
 
                 Route::get('/log-activity', [LogActivitiesController::class, 'index'])->name('settings.log-activity');
@@ -147,33 +256,55 @@ Route::group(['prefix' => 'management'], function () {
             Route::post('/file/upload/ads', [FileController::class, 'uploadImageAds'])->name('upload.ads');
             Route::post('/file/upload/gallery', [FileController::class, 'uploadImageGallery'])->name('upload.gallery');
             Route::post('/file/upload/blog', [FileController::class, 'uploadImageBlog'])->name('upload.blog');
+            Route::post('/file/upload/ebook', [FileController::class, 'uploadImageEbook'])->name('upload.ebook');
             Route::post('/file/upload/place/ads', [FileController::class, 'uploadImageAdsPlace'])->name('upload.place.ads');
+            Route::post('/file/upload/ads/bulk', [FileController::class, 'bulkUploadImageAds'])->name('upload.ads.bulk');
         });
 
         Route::middleware(['checkUserLimitPermissions'])->group(function () {
+
             Route::group(['prefix' => 'place'], function () {
+
+                Route::prefix('history-scan')->group(function () {
+                    Route::get('/', [HistoryScanController::class, 'index'])->name('history-scan.index');
+                    Route::get('/export', [HistoryScanController::class, 'export'])->name('history-scan.export');
+                });
+                
                 Route::get('/', [PlaceController::class, 'index'])->name('place');
                 Route::get('/edit/{place_code}', [PlaceController::class, 'editPlace'])->name('place.edit');
+                Route::get('/detail/{place_code}', [PlaceController::class, 'show'])->name('place.detail');
                 Route::get('/deleted-place', [PlaceController::class, 'indexDeletedPlace'])->name('place.getDeleted');
                 Route::get('/create', [PlaceController::class, 'indexCreatePlace'])->name('place.create');
                 Route::delete('{place_code}/delete', [PlaceController::class, 'deletePlace'])->name('place.delete');
+                Route::post('/{id}/restore', [PlaceController::class, 'restorePlace'])->name('place.restore');
 
                 Route::get('/chart-data', [PlaceController::class, 'getPlaceChartData'])->name('place.chart-data');
 
-                Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
-            });
 
-            Route::group(['prefix' => 'event'], function () {
-                Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
-                Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
+                // AJAX Search endpoints for cascading location filters
+                Route::get('/search/provinces', [PlaceController::class, 'searchProvinces'])->name('place.search.provinces');
+                Route::get('/search/regencies', [PlaceController::class, 'searchRegencies'])->name('place.search.regencies');
+                Route::get('/search/districts', [PlaceController::class, 'searchDistricts'])->name('place.search.districts');
+                Route::get('/search/villages', [PlaceController::class, 'searchVillages'])->name('place.search.villages');
             });
         });
         //Create Middleware For User Has Logged In
         Route::middleware(['checkLogin'])->group(function () {
+            Route::group(['prefix' => 'event'], function () {
+                Route::get('/', [EventController::class, 'indexAdmin'])->name('event');
+                Route::post('/store-admin', [EventController::class, 'adminStore'])->name('event.adminStore');
+            });
+
+            Route::get('/fetchall', [PlaceController::class, 'fetchAll'])->name('place.getAll');
             Route::get('/print-barcode/{placeCode}', [PlaceController::class, 'print'])->name('place.print');
 
             Route::get('/my-place', [PlaceController::class, 'returnMyPlaceView'])->name('place.myplace');
             Route::post('/my-place/update', [PlaceController::class, 'updatePlace'])->name('place.update');
+
+            Route::prefix('my-history-scan')->group(function () {
+                Route::get('/', [HistoryScanController::class, 'myIndex'])->name('history-scan.my');
+                Route::get('/export', [HistoryScanController::class, 'myExport'])->name('history-scan.my-export');
+            });
             Route::post('/store', [PlaceController::class, 'store'])->name('place.store');
             Route::get('/get-detail-data/{code}', [PlaceController::class, 'getDetailPlaceData'])->name('place.getDetailPlaceData');
 
@@ -195,6 +326,9 @@ Route::group(['prefix' => 'management'], function () {
 
             Route::post('/file/upload', [FileController::class, 'uploadFile'])->name('file.upload');
             Route::get('getlocationdata', [DashboardController::class, 'getLocation'])->name('getLocation');
+
+            Route::post('/place-limit-request/store', [PlaceLimitRequestController::class, 'store'])->name('place-limit-request.store');
+            Route::get('/place-limit-request/check-pending', [PlaceLimitRequestController::class, 'checkPending'])->name('place-limit-request.check-pending');
         });
     });
 });
@@ -214,7 +348,7 @@ Route::group(['prefix' => 'auth'], function () {
 });
 
 // This is Public Route For Anonym Users
-Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detail');
+Route::get('/detail-place/{place_code}', [PlaceController::class, 'getDetailPlace'])->name('place.detailGlobal');
 Route::get('/detail-place/{place_code}/comments', [CommentController::class, 'index'])->name('comments.index');
 Route::post('/detail-place/{place_code}/comments/store', [CommentController::class, 'store'])->name('comments.storeco');
 Route::post('/detail-place/{place_code}/comments/{commentId}/delete', [CommentController::class, 'deleteCommentsByUser'])->middleware('checkLogin');

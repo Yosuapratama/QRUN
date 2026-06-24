@@ -1,575 +1,1789 @@
 @extends('TemplateLayout.AdminLayout')
 
 @section('content')
-    <!-- Main Content -->
+    @php
+        $isEdit = isset($Place);
+    @endphp
+
     @push('title')
-        <title>Create Place Admin - QRUN Website</title>
+        <title>{{ $isEdit ? 'Edit' : 'Create' }} Place Admin - QRUN Website</title>
     @endpush
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
-        <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Create Place/Object</h1>
-        @if (session()->has('success'))
-            <div class="alert alert-success">
-                {{ session()->get('success') }}
-            </div>
-        @endif
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </div>
-        @endif
-
-        <!-- DataTales Example -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Create Place Form</h6>
-            </div>
-            <div class="card-body">
-                {{-- Create Place Form --}}
-                <form action="{{ route('place.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label" for="title">Title<span class="text-danger">*</span></label>
-                        <input required class="form-control" name="title" type="text" id="title"
-                            value="{{ old('title') }}" placeholder="Place Title...">
-                        @error('title')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
-                    </div>
 
 
-                    <div class="mb-3">
-                        <label class="form-label" for="description">Description<span class="text-danger">*</span></label>
-                        <input required class="form-control" name="description" type="text" id="description"
-                            value="{{ old('description') }}" placeholder="Place Description...">
-                        @error('description')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
-                    </div>
+    <div class="container-fluid py-4">
 
-                    <div class="mb-3">
-                        <label class="form-label" for="phoneNum">Contact Person</label>
-                        <input class="form-control" name="phone_num" type="number" id="phoneNum"
-                            placeholder="Phone Number References..." value="{{ old('phone_num') }}">
-                        @error('phone_num')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="parent-container">
-                        <div class="d-flex flex-column flex-md-row mb-3 align-items-start">
-                            <div class="col-md-6 flex-grow-1 p-0">
-                                <label for="provinceDataSelect" class="me-2">Provinsi :
-                                </label>
-                                <select id="provinceDataSelect" name="reg_province" class="form-control select2">
-                                    <option value="">Select Province</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 flex-grow-1 p-0">
-                                <label for="regencyDataSelect" class="me-2">Kota/Kab :
-                                </label>
-                                <select id="regencyDataSelect" name="reg_regency" class="form-control select2">
-                                    <option value="">Select Regency</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="d-flex flex-column flex-md-row mb-3 align-items-start">
-                            <div class="col-md-6 flex-grow-1 p-0">
-                                <label for="districtDataSelect" class="me-2">Kecamatan :
-                                </label>
-                                <select id="districtDataSelect" name="reg_district" class="form-control select2">
-                                    <option value="">Select District</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 flex-grow-1 p-0">
-                                <label for="villagesDataSelect" class="me-2">Desa/Kel :
-                                </label>
-                                <select id="villagesDataSelect" name="reg_village" class="form-control select2">
-                                    <option value="">Select Village</option>
-                                </select>
-                            </div>
-                        </div>
-
-                    </div>
-
-
-                    <div class="mb-3">
-                        {{-- <textarea required class="form-control" name="content" id="summernote"></textarea>
-                        @error('content')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror --}}
-                        <textarea class="form-control" name="content" id="summernote">{{ old('content') }}</textarea>
-                        @error('content')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
-
-                    </div>
-                    <div class="slider-container mb-3">
-                        <label for="yesno-slider" class="slider-label">Turn on comment ? No / Yes</label>
-                        <input name="AllowComment" checked type="checkbox" id="yesno-slider" class="slider">
-                    </div>
-                    <button type="submit" class="btn btn-success btn-md">Create Place</button>
-                </form>
+        {{-- Page Heading --}}
+        <div class="page-header-wrapper mb-3">
+            <div>
+                <h1 class="page-title mb-2">
+                    <i class="fas fa-map-pin text-primary mr-3"></i>{{ $isEdit ? __('messages.management.place_form.title_update') : __('messages.management.place_form.title_create') }}
+                </h1>
+                <p class="page-subtitle mb-0">
+                    {{ __('messages.management.place_form.subtitle_form') }}
+                </p>
             </div>
         </div>
 
-    </div>
+        {{-- Success Alert --}}
+        @if (session()->has('success'))
+            <div class="alert alert-success alert-success-custom shadow-sm border-0 mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle mr-3"></i>
+                    <div>
+                        <strong>{{ __('messages.management.place_form.success_label') }}</strong>
+                        <span class="d-block">{{ session()->get('success') }}</span>
+                    </div>
+                </div>
+            </div>
+        @endif
 
-    @push('css')
-        <style>
-            .slider-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
+        {{-- Error Alert --}}
+        @if ($errors->any())
+            <div class="alert alert-danger alert-danger-custom shadow-sm border-0 mb-4" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
+                    <div>
+                        <strong>{{ __('messages.management.place_form.error_label') }}</strong>
+                        <ul class="mb-0 mt-2 pl-3">
+                            @foreach ($errors->all() as $error)
+                                <li class="mb-1">{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
 
-            /* Label styling */
-            .slider-label {
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
+        {{-- Main Form Card --}}
 
-            /* Slider styling */
-            .slider {
-                appearance: none;
-                width: 60px;
-                height: 24px;
-                border-radius: 50px;
-                background-color: #ccc;
-                outline: none;
-                transition: 0.4s;
-                position: relative;
-            }
+        <form action="{{ $isEdit ? route('place.update') : route('place.store') }}" method="POST">
+            @csrf
+            @if ($isEdit)
+                <input type="hidden" name="id" value="{{ $Place->id }}">
+            @endif
 
-            /* Slider before (circle inside the slider) */
-            .slider::before {
-                content: "";
-                position: absolute;
-                top: 5px;
-                left: 5px;
-                width: 18px;
-                height: 18px;
+            <div class="card form-card shadow-lg border-0" data-intro="Fill in the basic information of the place."
+                data-title="Basic Information">
+                {{-- <div class="card-header bg-white py-4 border-bottom border-light">
+                    <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                        <span class="badge badge-primary-light badge-icon mr-3">1</span>
+                        <div>
+                            <div>Basic Information</div>
+                            <small class="section-description">Enter the name and description of the place</small>
+                        </div>
+                    </h5>
+                </div> --}}
+                <div class="card-header bg-white py-4 border-bottom border-light">
+                    <div class="d-flex align-items-center flex-wrap w-100">
+                        <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                            <span class="badge badge-primary-light badge-icon mr-3">1</span>
+                            <div>
+                                <div>{{ __('messages.management.place_form.section1_title') }}</div>
+                                <small class="section-description">
+                                    {{ __('messages.management.place_form.section1_desc') }}
+                                </small>
+                            </div>
+                        </h5>
+
+                        @if (isset($Place))
+                            <div class="d-flex align-items-center ml-auto mt-3 mt-md-0">
+                                <a href="{{ route('place.detailGlobal', $Place->place_code) }}" target="_blank"
+                                    class="btn btn-outline-primary btn-sm mr-2">
+                                    <i class="fas fa-external-link-alt mr-1"></i>
+                                    {{ __('messages.management.place_form.live_preview') }}
+                                </a>
+
+                                <a href="{{ route('place.print', $Place->place_code) }}" target="_blank"
+                                    class="btn btn-primary btn-sm">
+                                    <i class="fas fa-qrcode mr-1"></i>
+                                    {{ __('messages.management.place_form.print_qr') }}
+                                </a>
+                            </div>
+                        @endcan
+                </div>
+            </div>
+            <div class="card-body p-4">
+                {{-- Basic Information --}}
+                <div class="form-section">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">
+                                {{ __('messages.management.place_form.field_title') }} <span class="text-danger">*</span>
+                            </label>
+
+                            <input required class="form-control" id="placeTitle" name="title" type="text"
+                                value="{{ old('title', $Place->title ?? '') }}" placeholder="Enter place title..."
+                                data-intro="Enter the place or object name. Use a clear and recognizable title."
+                                data-title="Place Title">
+
+                            @error('title')
+                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label">
+                                {{ __('messages.management.place_form.field_contact') }}
+                            </label>
+
+                            <input class="form-control" name="phone_num" type="number"
+                                value="{{ old('phone_num', $Place->phone_num ?? '') }}"
+                                placeholder="Enter contact phone number..."
+                                data-intro="Optional. Add a phone number so visitors can contact the manager or person in charge."
+                                data-title="Contact Person">
+
+                            @error('phone_num')
+                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 mb-4">
+                            <label class="form-label">
+                                {{ __('messages.management.place_form.field_desc') }} <span class="text-danger">*</span>
+                            </label>
+
+                            <textarea id="descriptionArea" required class="form-control" rows="3" name="description"
+                                placeholder="Short description about this place..." data-intro="Provide a brief description of the place."
+                                data-title="Place Description">{{ old('description', $Place->description ?? '') }}</textarea>
+
+                            @error('description')
+                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="card form-card shadow-lg border-0" data-intro="Fill in the location information of the place."
+            data-title="Location Information">
+
+            <div class="card-header bg-white py-4 border-bottom border-light">
+                <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                    <span class="badge badge-primary-light badge-icon mr-3">2</span>
+                    <div>
+                        <div>{{ __('messages.management.place_form.section2_title') }}</div>
+                        <small class="section-description">{{ __('messages.management.place_form.section2_desc') }}</small>
+                    </div>
+                </h5>
+            </div>
+
+            <div class="card-body p-4">
+                {{-- Location --}}
+                <div class="card-body p-0">
+                    <div class="location-wrapper mb-0">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">
+                                    {{ __('messages.management.place_form.field_province') }} <span class="text-danger">*</span>
+                                </label>
+
+                                <select id="provinceDataSelect" name="reg_province" class="form-control select2"
+                                    required data-intro="Select the province where the place is located."
+                                    data-title="Province">
+                                    <option value="">{{ __('messages.management.place_form.sel_province') }}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">
+                                    {{ __('messages.management.place_form.field_regency') }} <span class="text-danger">*</span>
+                                </label>
+
+                                <select id="regencyDataSelect" name="reg_regency" class="form-control select2" required
+                                    data-intro="Select the city or regency where the place is located."
+                                    data-title="City / Regency">
+                                    <option value="">{{ __('messages.management.place_form.sel_regency') }}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">
+                                    {{ __('messages.management.place_form.field_district') }} <span class="text-danger">*</span>
+                                </label>
+
+                                <select id="districtDataSelect" name="reg_district" class="form-control select2"
+                                    required data-intro="Select the district where the place is located."
+                                    data-title="District">
+                                    <option value="">{{ __('messages.management.place_form.sel_district') }}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">
+                                    {{ __('messages.management.place_form.field_village') }} <span class="text-danger">*</span>
+                                </label>
+
+                                <select id="villagesDataSelect" name="reg_village" class="form-control select2"
+                                    required data-intro="Select the village where the place is located."
+                                    data-title="Village">
+                                    <option value="">{{ __('messages.management.place_form.sel_village') }}</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card form-card shadow-lg border-0" data-intro="Fill in the content for the place."
+            data-title="Content Editor">
+            <div class="card-header bg-white py-4 border-bottom border-light">
+                <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                    <span class="badge badge-primary-light badge-icon mr-3">3</span>
+                    <div>
+                        <div>{{ __('messages.management.place_form.section3_title') }}</div>
+                        <small class="section-description">{{ __('messages.management.place_form.section3_desc') }}</small>
+                    </div>
+                </h5>
+            </div>
+
+            <div class="card-body p-4">
+                {{-- Content --}}
+                <div class="card-body p-0">
+                    <div class="mb-4">
+
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-edit text-primary mr-2"></i>
+                            <h5 class="mb-0 font-weight-bold">
+                                {{ __('messages.management.place_form.content_heading') }}
+                            </h5>
+                        </div>
+
+                        <textarea class="form-control" name="content" id="summernote"
+                            data-intro="Write detailed content about the place including text, images, and formatting." data-title="Content">{{ old('content', $Place->content ?? '') }}</textarea>
+
+                        @error('content')
+                            <small class="text-danger d-block mt-2">{{ $message }}</small>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card form-card shadow-lg border-0" data-intro="Configure the settings for the place."
+            data-title="Settings">
+            <div class="card-header bg-white py-4 border-bottom border-light">
+                <h5 class="m-0 font-weight-bold text-dark d-flex align-items-center">
+                    <span class="badge badge-primary-light badge-icon mr-3">4</span>
+                    <div>
+                        <div>{{ __('messages.management.place_form.section4_title') }}</div>
+                        <small class="section-description">{{ __('messages.management.place_form.section4_desc') }}</small>
+                    </div>
+                </h5>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="comment-toggle">
+
+                    <div>
+                        <h6 class="font-weight-bold mb-2">
+                            <i class="fas fa-comments text-primary mr-2"></i>{{ __('messages.management.place_form.comment_heading') }}
+                        </h6>
+
+                        <small class="text-muted d-block">
+                            {{ __('messages.management.place_form.comment_desc') }}
+                        </small>
+                    </div>
+
+                    <label class="switch mb-0">
+                        <input type="checkbox" name="AllowComment"
+                            {{ old('AllowComment', $Place->is_comment ?? true) ? 'checked' : '' }}
+                            data-intro="Enable or disable comments for this place." data-title="Enable Comments">
+                        <span class="slider-custom"></span>
+                    </label>
+
+                </div>
+                {{-- Submit Section --}}
+                <div
+                    class="card-footer bg-white p-4 d-flex justify-content-between align-items-center border-top border-light">
+                    <small class="text-muted">
+                        <i class="fas fa-asterisk text-danger mr-1"></i> {{ __('messages.management.place_form.required_fields') }}
+                    </small>
+                    <div class="d-flex gap-3">
+                        <button type="reset" class="btn btn-secondary btn-sm reset-btn">
+                            <i class="fas fa-redo mr-2"></i>{{ __('messages.management.place_form.reset_btn') }}
+                        </button>
+                        <button type="submit" class="btn btn-primary submit-btn shadow-sm">
+                            <i class="fas fa-save mr-2"></i>{{ $isEdit ? __('messages.management.place_form.update_btn') : __('messages.management.place_form.create_btn') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{{-- TUTORIAL FAB --}}
+<button id="dashboardTutorialBtn" class="dashboard-tutorial-fab" title="Tutorial">
+    <i class="fas fa-question"></i>
+</button>
+@push('css')
+    @include('Pages.Management.Master.place.components.style')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intro.js/minified/introjs.min.css">
+
+    <style>
+
+        
+            /* ==========================================================================
+               | TUTORIAL FAB
+               |========================================================================== */
+
+            .dashboard-tutorial-fab {
+                position: fixed;
+                bottom: 72px;
+                right: 20px;
+                z-index: 9999;
+                width: 44px;
+                height: 44px;
                 border-radius: 50%;
-                background-color: white;
-                transition: 0.4s;
+                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                color: #fff;
+                border: none;
+                box-shadow: 0 6px 20px rgba(37, 99, 235, .35);
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: .2s ease;
             }
 
-            /* When the slider is checked */
-            .slider:checked {
-                background-color: #4e73df;
+            .dashboard-tutorial-fab:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 28px rgba(37, 99, 235, .45);
             }
 
-            /* Move the circle when checked */
-            .slider:checked::before {
-                transform: translateX(26px);
-            }
-
-            /* Optional: Color the label based on the slider state */
-            .slider:checked+.slider-label {
-                color: #4CAF50;
-            }
-
-            .select2-container {
-                display: block !important;
-            }
-        </style>
-    @endpush
-
-    {{-- @push('script')
-        <script>
-            //Setup SummerNote (Content Textarea Box)
-            $(document).ready(function() {
-                $('#summernote').summernote({
-                    tabsize: 2,
-                    height: 300
-                });
-            });
-        </script>
-    @endpush --}}
-    @push('script')
-        <script>
-            // $(document).ready(function() {
-            //     $('#summernote').summernote();
-            // });
-
-            $(document).ready(function() {
-                var isInitedprovince = false;
-
-                // Show CV
-                function fetchLocation(province_id = null, regency_id = null, district_id = null, isFromRegency = false,
-                    isFromDistrict = false, isFromVillage = false) {
-                    $.ajax({
-                        url: "{{ route('getLocation') }}", // URL to your Laravel route
-                        data: {
-                            province_id: province_id, // Pass province_id dynamically
-                            regency_id: regency_id, // Pass regency_id dynamically
-                            district_id: district_id // Pass district_id dynamically
-                        },
-                        method: 'GET', // HTTP method (GET, POST, etc.)
-                        success: function(data) {
-                            console.log({
-                                datas: data
-                            });
-                            if (!isInitedprovince) {
-                                var provinceSelect = $('#provinceDataSelect');
-
-                                // Clear any existing options (if needed)
-                                provinceSelect.empty();
-
-                                // Add the default "Select Province" option
-                                provinceSelect.append('<option value="">Select Province</option>');
-
-                                // Populate the select2 dropdown with provinces data
-                                data.province.forEach(function(province) {
-                                    provinceSelect.append(
-                                        $('<option>', {
-                                            value: province
-                                                .id, // Assuming each province has an 'id'
-                                            text: province
-                                                .name // Assuming each province has a 'name'
-                                        })
-                                    );
-                                });
-
-                                // Re-initialize the select2 dropdown with the newly added options
-                                provinceSelect.select2({
-                                    placeholder: "Select a province",
-                                    allowClear: true,
-                                    // width: style,
-                                    // minimumResultsForSearch: Infinity, 
-                                });
-
-                                isInitedprovince = true;
-                            }
-
-
-                            if (!isFromRegency) {
-                                var regencySelect = $('#regencyDataSelect');
-
-                                // Clear any existing options (if needed)
-                                regencySelect.empty();
-
-                                // Add the default "Select Province" option
-                                regencySelect.append('<option value="">Select Regency</option>');
-
-                                // Populate the select2 dropdown with provinces data
-                                data.regency.forEach(function(province) {
-                                    regencySelect.append(
-                                        $('<option>', {
-                                            value: province
-                                                .id, // Assuming each province has an 'id'
-                                            text: province
-                                                .name // Assuming each province has a 'name'
-                                        })
-                                    );
-                                });
-
-                                regencySelect.select2({
-                                    placeholder: "Select a regency",
-                                    allowClear: true,
-                                });
-
-                            }
-
-                            if (!isFromDistrict) {
-                                var districtSelect = $('#districtDataSelect');
-
-                                // Clear any existing options (if needed)
-                                districtSelect.empty();
-
-                                // Add the default "Select Province" option
-                                districtSelect.append('<option value="">Select District</option>');
-
-                                // Populate the select2 dropdown with provinces data
-                                data.districts.forEach(function(province) {
-                                    districtSelect.append(
-                                        $('<option>', {
-                                            value: province
-                                                .id, // Assuming each province has an 'id'
-                                            text: province
-                                                .name // Assuming each province has a 'name'
-                                        })
-                                    );
-                                });
-
-                                // Re-initialize the select2 dropdown with the newly added options
-                                districtSelect.select2({
-                                    placeholder: "Select a district",
-                                    allowClear: true,
-                                });
-                            }
-                            //  villagesDataSelect
-                            if (!isFromVillage) {
-                                var villagesDataSelect = $('#villagesDataSelect');
-
-                                // Clear any existing options (if needed)
-                                villagesDataSelect.empty();
-
-                                // Add the default "Select Province" option
-                                villagesDataSelect.append('<option value="">Select Village</option>');
-
-                                // Populate the select2 dropdown with provinces data
-                                data.villages.forEach(function(province) {
-                                    villagesDataSelect.append(
-                                        $('<option>', {
-                                            value: province
-                                                .id, // Assuming each province has an 'id'
-                                            text: province
-                                                .name // Assuming each province has a 'name'
-                                        })
-                                    );
-                                });
-
-                                // Re-initialize the select2 dropdown with the newly added options
-                                villagesDataSelect.select2({
-                                    placeholder: "Select a village",
-                                    allowClear: true,
-                                });
-                                // Re-initialize the select2 dropdown with the newly added options
-
-                            }
-
-                            // 
-
-
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('AJAX Error:',
-                                error); // Log error to console if something went wrong
-                        }
-                    });
+            @media (max-width: 768px) {
+                .dashboard-tutorial-fab {
+                    width: 40px;
+                    height: 40px;
+                    bottom: 68px;
+                    right: 14px;
+                    font-size: 14px;
+                    box-shadow: 0 4px 14px rgba(37, 99, 235, .3);
                 }
+            }
+        /* Background blur */
+        .introjs-overlay {
+            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.35) !important;
+        }
 
-                fetchLocation();
+        /* Tooltip */
+        .custom-intro-tooltip {
+            border-radius: 18px !important;
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, .15) !important;
+            padding: 20px !important;
+        }
 
-                $("#provinceDataSelect").change(function() {
-                    // Get the current value of both #provinceDataSelect and #regencyDataSelect
-                    var provinceId = $("#provinceDataSelect").val();
-                    var regencyId = $("#regencyDataSelect").val();
-                    var districtSelect = $('#districtDataSelect').val();
-                    var villageSelect = $('#villagesDataSelect').val();
+        /* Highlight element */
+        .introjs-helperLayer {
+            border-radius: 18px !important;
+            box-shadow:
+                0 0 0 9999px rgba(0, 0, 0, .15);
+        }
 
-                    // Call the fetchLocation function with both provinceId and regencyId as parameters
-                    fetchLocation(provinceId, regencyId, districtSelect);
+        /* Buttons */
+        .introjs-button {
+            border-radius: 10px !important;
+        }
 
-                    // $("#regencyDataSelect").val(regencyId).trigger('change');
+        /* Tombol X */
+        .introjs-skipbutton {
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+
+            width: 32px;
+            height: 32px;
+
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50% !important;
+
+            background: #f8f9fc !important;
+            border: 1px solid #e3e6f0 !important;
+
+            color: #6c757d !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+
+            transition: all .2s ease;
+        }
+
+        .introjs-skipbutton:hover {
+            background: #eaecf4 !important;
+            color: #dc3545 !important;
+            transform: rotate(90deg);
+            text-decoration: none !important;
+        }
+
+        .introjs-skipbutton:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, .2);
+        }
+    </style>
+@endpush
+
+
+
+@push('script')
+    <script src="https://cdn.jsdelivr.net/npm/intro.js/minified/intro.min.js"></script>
+    <script>
+        const i18nPlaceForm = {
+            swalUploading:    @json(__('messages.management.place_form.swal_uploading')),
+            swalWait:         @json(__('messages.management.place_form.swal_wait')),
+            swalUploadComplete: @json(__('messages.management.place_form.swal_upload_complete')),
+            swalUploadDone:   @json(__('messages.management.place_form.swal_upload_done')),
+            swalUploadFailed: @json(__('messages.management.place_form.swal_upload_failed')),
+            swalServerError:  @json(__('messages.management.place_form.swal_server_error')),
+            swalInvalidFile:  @json(__('messages.management.place_form.swal_invalid_file')),
+            swalInvalidPdf:   @json(__('messages.management.place_form.swal_invalid_pdf')),
+        };
+
+        let selectedProvince = "{{ old('reg_province', $Place->province_id ?? ($Place->reg_province ?? '')) }}";
+        let selectedRegency = "{{ old('reg_regency', $Place->regency_id ?? ($Place->reg_regency ?? '')) }}";
+        let selectedDistrict = "{{ old('reg_district', $Place->district_id ?? ($Place->reg_district ?? '')) }}";
+        let selectedVillage = "{{ old('reg_village', $Place->village_id ?? ($Place->reg_village ?? '')) }}";
+        let summernoteReady = false;
+
+        $(document).ready(async function() {
+
+            $(document).on('click', '#dashboardTutorialBtn', function() {
+                showTutorialLanguageModal();
+            });
+
+            $(document).on('click', '.note-modal .close', function() {
+                $(this).closest('.note-modal').modal('hide');
+            });
+
+
+            // =========================
+            // TUTORIAL CHECK
+            // =========================
+
+            function bindSummernoteTutorialClasses() {
+
+                $('button[aria-label^="Bold"]')
+                    .addClass('tour-bold');
+
+                $('button[aria-label^="Italic"]')
+                    .addClass('tour-italic');
+
+                $('button[aria-label^="Underline"]')
+                    .addClass('tour-underline');
+
+                $('button[aria-label="Insert PDF"]')
+                    .addClass('tour-pdf');
+
+                $('button[aria-label="Style"]')
+                    .addClass('tour-style');
+
+                $('button[aria-label="Font Family"]')
+                    .addClass('tour-font-family');
+
+                $('button[aria-label="Font Size"]')
+                    .addClass('tour-font-size');
+
+                $('button[aria-label="Recent Color"]')
+                    .addClass('tour-color');
+
+                $('button[aria-label="Full Screen"]')
+                    .addClass('tour-fullscreen');
+                $('.note-btn').each(function() {
+
+                    const label = ($(this).attr('aria-label') || '').toLowerCase();
+
+                    if (label.startsWith('unordered')) {
+                        $(this).addClass('tour-ul');
+                    } else if (label.startsWith('ordered')) {
+                        $(this).addClass('tour-ol');
+                    }
+                    if (label.includes('link'))
+                        $(this).addClass('tour-link');
+
+                    if (label.includes('picture'))
+                        $(this).addClass('tour-image');
+
+                    if (label.includes('video'))
+                        $(this).addClass('tour-video');
                 });
-                $("#regencyDataSelect").change(function() {
-                    var provinceId = $("#provinceDataSelect").val();
-                    var regencyId = $("#regencyDataSelect").val();
-                    var districtSelect = $('#districtDataSelect').val();
-                    var villageSelect = $('#villagesDataSelect').val();
 
-                    $('#districtDataSelect').empty().append('<option value="">Select District</option>')
-                        .trigger('change');
-                    $('#villagesDataSelect').empty().append('<option value="">Select Village</option>').trigger(
-                        'change');
+                $('.note-btn[data-name="pdfButton"]')
+                    .addClass('tour-pdf');
 
+            }
 
-                    // Call the fetchLocation function with both provinceId and regencyId as parameters
-                    fetchLocation(provinceId, regencyId, districtSelect, true);
+            function startPlaceTutorial(lang = 'en') {
 
-                });
+                const tutorials = {
 
-                $("#districtDataSelect").change(function() {
-                    var provinceId = $("#provinceDataSelect").val();
-                    var regencyId = $("#regencyDataSelect").val();
-                    var districtSelect = $('#districtDataSelect').val();
-                    var villageSelect = $('#villagesDataSelect').val();
+                    id: {
 
-                    // Call the fetchLocation function with both provinceId and regencyId as parameters
-                    fetchLocation(provinceId, regencyId, districtSelect, true, true);
+                        nextLabel: 'Lanjut',
+                        prevLabel: 'Kembali',
+                        doneLabel: 'Selesai',
+                        skipLabel: 'X',
 
-                });
+                        steps: [
 
+                            {
+                                title: 'Selamat Datang 👋',
+                                intro: `
+                        <div class="text-left">
+                            <h5 class="mb-3">Tutorial Place Management</h5>
 
-                $(document).on('click', '.note-modal .close', function() {
-                    // This will close the Summernote modal (if it's part of the Summernote plugin)
-                    $('.note-modal').modal('hide');
-                });
+                            <p>
+                                Tutorial ini akan membantu Anda memahami seluruh fitur
+                                pada halaman Create / Edit Place.
+                            </p>
 
+                            <ul>
+                                <li>Mengisi informasi dasar</li>
+                                <li>Mengatur lokasi</li>
+                                <li>Menggunakan editor konten</li>
+                                <li>Mengelola komentar</li>
+                            </ul>
 
-                console.log("Initializing Summernote...");
+                            <p class="mb-0">
+                                Estimasi waktu: ±1 menit
+                            </p>
+                        </div>
+                    `
+                            },
 
-                // Initialize Summernote
-                $('#summernote').summernote({
-                    height: 300, // Set height of the editor
-                    popover: {
-                        image: [
-                            ['resize', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
-                            ['float', ['floatLeft', 'floatRight', 'floatNone']],
-                            ['remove', ['removeMedia']]
+                            {
+                                element: document.getElementById('placeTitle'),
+                                title: 'Judul Place',
+                                intro: 'Masukkan nama tempat, objek wisata, bangunan, atau lokasi yang ingin ditampilkan.'
+                            },
+
+                            {
+                                element: document.querySelector('[name="phone_num"]'),
+                                title: 'Nomor Kontak',
+                                intro: 'Nomor yang dapat dihubungi oleh pengunjung apabila diperlukan.'
+                            },
+
+                            {
+                                element: document.getElementById('descriptionArea'),
+                                title: 'Deskripsi Singkat',
+                                intro: 'Tuliskan ringkasan singkat mengenai tempat ini.'
+                            },
+
+                            {
+                                element: document.getElementById('provinceDataSelect'),
+                                title: 'Lokasi',
+                                intro: `
+                        Pilih lokasi secara berurutan:
+
+                        <br><br>
+
+                        • Provinsi<br>
+                        • Kabupaten / Kota<br>
+                        • Kecamatan<br>
+                        • Desa / Kelurahan
+                    `
+                            },
+
+                            {
+                                element: document.querySelector('.note-toolbar'),
+                                title: 'Toolbar Editor',
+                                intro: `
+                        Toolbar ini digunakan untuk memformat konten
+                        yang akan dibaca oleh pengunjung.
+                    `
+                            },
+                            {
+                                element: document.querySelector('.tour-style'),
+                                title: 'Heading & Style',
+                                intro: `
+        Gunakan menu ini untuk membuat judul dan subjudul.
+
+        <br><br>
+
+        Contoh:
+        <br>
+        • Heading 1 → Judul utama
+        <br>
+        • Heading 2 → Subjudul
+        <br>
+        • Paragraph → Teks biasa
+    `
+                            },
+
+                            {
+                                element: document.querySelector('.tour-font-family'),
+                                title: 'Jenis Font',
+                                intro: `
+        Mengubah jenis huruf yang digunakan
+        pada konten.
+    `
+                            },
+
+                            {
+                                element: document.querySelector('.tour-font-size'),
+                                title: 'Ukuran Font',
+                                intro: `
+        Mengatur besar kecilnya teks
+        agar lebih nyaman dibaca.
+    `
+                            },
+
+                            {
+                                element: document.querySelector('.tour-color'),
+                                title: 'Warna Teks',
+                                intro: `
+        Memberikan warna pada teks
+        untuk menyoroti informasi penting.
+    `
+                            },
+
+                            {
+                                element: document.querySelector('.tour-bold'),
+                                title: 'Bold',
+                                intro: 'Membuat teks menjadi tebal.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-italic'),
+                                title: 'Italic',
+                                intro: 'Membuat teks menjadi miring.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-underline'),
+                                title: 'Underline',
+                                intro: 'Menambahkan garis bawah pada teks.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-ul'),
+                                title: 'Bullet List',
+                                intro: 'Membuat daftar poin.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-ol'),
+                                title: 'Number List',
+                                intro: 'Membuat daftar bernomor.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-link'),
+                                title: 'Insert Link',
+                                intro: 'Menambahkan tautan website atau sumber referensi.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-image'),
+                                title: 'Insert Image',
+                                intro: 'Upload gambar untuk memperkaya konten.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-video'),
+                                title: 'Insert Video',
+                                intro: 'Tambahkan video YouTube menggunakan URL video.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-pdf'),
+                                title: 'Insert PDF',
+                                intro: 'Upload dokumen PDF agar dapat dibaca langsung oleh pengunjung.'
+                            },
+                            {
+                                element: document.querySelector('.tour-fullscreen'),
+                                title: 'Mode Layar Penuh',
+                                intro: `
+        Memperbesar editor ke layar penuh.
+
+        <br><br>
+
+        Sangat berguna saat menulis
+        artikel atau informasi yang panjang.
+    `
+                            },
+
+                            {
+                                element: document.querySelector('.note-editable'),
+                                title: 'Area Konten',
+                                intro: `
+                        Ini adalah bagian terpenting.
+
+                        <br><br>
+
+                        Anda dapat menambahkan:
+
+                        <br><br>
+
+                        ✅ Sejarah tempat<br>
+                        ✅ Informasi objek<br>
+                        ✅ Gambar<br>
+                        ✅ Video YouTube<br>
+                        ✅ PDF<br>
+                        ✅ Tabel<br>
+                        ✅ Format teks
+
+                        <br><br>
+
+                        Konten ini akan muncul saat QR Code dipindai pengunjung.
+                    `
+                            },
+
+                            {
+                                element: document.querySelector('.comment-toggle'),
+                                title: 'Komentar',
+                                intro: `
+                        Aktifkan fitur komentar jika ingin
+                        pengunjung dapat memberikan tanggapan.
+                    `
+                            },
+
+                            {
+                                element: document.querySelector('.submit-btn'),
+                                title: 'Simpan Data',
+                                intro: `
+                        Setelah semua informasi selesai diisi,
+                        klik tombol ini untuk menyimpan Place.
+                    `
+                            }
                         ]
                     },
-                    toolbar: [
-                        ['style'],
-                        ['insert', ['bold', 'underline', 'eraser']],
-                        // ['eraser'], 
-                        ['recentColor'],
-                        ['fontname'],
-                        ['color'],
-                        ['para', ['ul', 'ol', 'paragraph', 'height']],
-                        ['pdfButton'],
-                        ['table'],
-                        ['insert', ['link', 'picture', 'video']],
-                        ['insert', ['fullscreen', 'codeview', 'help']],
-                    ],
-                    buttons: {
-                        eraser: function(context) {
-                            return $('<button />')
-                                .addClass('note-btn btn btn-light btn-sm note-btn-bold')
-                                .html('<i class="note-icon-eraser"/>')
-                                .click(function(event) {
-                                    // Prevent default form submission or page reload
-                                    event.preventDefault();
 
-                                    // Clear formatting (remove bold, underline, etc.)
-                                    context.invoke('removeFormat');
-                                });
-                        },
-                        pdfButton: function(context) {
-                            var ui = $.summernote.ui;
-                            var button = ui.button({
-                                contents: '<i class="fas fa-file-alt text-black" style="font-weight:bold"></i> <span style="font-weight: bold;">PDF</span>',
-                                tooltip: 'Insert PDF',
-                                click: function() {
-                                    console.log("PDF button clicked...");
-                                    // Open file input dialog when button is clicked
-                                    var input = $(
-                                        '<input type="file" accept="application/pdf">');
-                                    input.on('change', function(e) {
-                                        var file = e.target.files[0];
-                                        if (file && file.type === 'application/pdf') {
-                                            var formData = new FormData();
-                                            formData.append('pdf', file);
-                                            Swal.fire({
-                                                title: 'Uploading...',
-                                                text: 'Please wait while the file is being uploaded.',
-                                                showConfirmButton: false,
-                                                allowOutsideClick: false, // Disable closing the alert by clicking outside
-                                                didOpen: () => {
-                                                    Swal
-                                                        .showLoading(); // Display the loading spinner
-                                                }
-                                            });
+                    en: {
 
-                                            // Make the file upload request
-                                            $.ajax({
-                                                url: "{{ route('file.upload') }}", // Change this to your server-side upload URL
-                                                type: 'POST',
-                                                headers: {
-                                                    'X-CSRF-TOKEN': $(
-                                                        'meta[name="csrf-token"]'
-                                                    ).attr('content')
-                                                },
-                                                data: formData,
-                                                contentType: false, // Don't set contentType for FormData
-                                                processData: false, // Don't process data (it's already in FormData format)
-                                                success: function(response) {
-                                                    var data = response;
-                                                    if (data.url) {
-                                                        Swal.fire({
-                                                            icon: 'success',
-                                                            title: 'Upload Complete!',
-                                                            text: 'The PDF was successfully uploaded.',
-                                                            showConfirmButton: true
-                                                        });
+                        nextLabel: 'Next',
+                        prevLabel: 'Back',
+                        doneLabel: 'Finish',
+                        skipLabel: 'X',
 
-                                                        // Create the iframe element with the URL of the uploaded PDF
-                                                        var iframe =
-                                                            document
-                                                            .createElement(
-                                                                'iframe');
-                                                        iframe.src = data
-                                                            .url; // URL returned by the server
-                                                        iframe.width =
-                                                            '100%';
-                                                        iframe.height =
-                                                            '400px';
-                                                        iframe.style
-                                                            .border =
-                                                            'none';
+                        steps: [
 
-                                                        console.log(iframe);
-                                                        // Insert the iframe into Summernote using insertNode
-                                                        $('#summernote')
-                                                            .summernote(
-                                                                'editor.insertNode',
-                                                                iframe);
+                            {
+                                title: 'Welcome 👋',
+                                intro: `
+                        <div class="text-left">
+                            <h5 class="mb-3">Place Management Tutorial</h5>
 
-                                                        // Force Summernote to refresh and re-render the content
-                                                        setTimeout(
-                                                            function() {
-                                                                $('#summernote')
-                                                                    .summernote(
-                                                                        'code',
-                                                                        $(
-                                                                            '#summernote'
-                                                                        )
-                                                                        .summernote(
-                                                                            'code'
-                                                                        )
-                                                                    );
-                                                                $('#summernote')
-                                                                    .focus(); // Focus the editor after insertion
-                                                            }, 100);
+                            <p>
+                                This tutorial will guide you through all major features
+                                of the Place Management page.
+                            </p>
 
-                                                        console.log(
-                                                            "Inserted iframe: ",
-                                                            iframe);
-                                                    } else {
-                                                        Swal.fire({
-                                                            icon: 'error',
-                                                            title: 'Upload Failed',
-                                                            text: 'File upload failed: ' +
-                                                                (response
-                                                                    .error ||
-                                                                    'Unknown error'
-                                                                ),
-                                                            showConfirmButton: true
-                                                        });
-                                                        // Swal.close();
-                                                    }
-                                                },
-                                                error: function() {
-                                                    Swal.fire({
-                                                        icon: 'error',
-                                                        title: 'Upload Failed',
-                                                        text: 'File upload failed: Server is during maintenance',
-                                                        showConfirmButton: true
-                                                    });
-                                                    // Swal.close();
-                                                }
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Upload Failed',
-                                                text: 'File upload failed: Please Upload A Valid PDF',
-                                                showConfirmButton: true
-                                            });
-                                            // Swal.close();
-                                        }
-                                    });
-                                    input.trigger('click');
-                                }
+                            <ul>
+                                <li>Basic information</li>
+                                <li>Location setup</li>
+                                <li>Content editor</li>
+                                <li>Comment settings</li>
+                            </ul>
+
+                            <p class="mb-0">
+                                Estimated duration: 1 minute
+                            </p>
+                        </div>
+                    `
+                            },
+
+                            {
+                                element: document.getElementById('placeTitle'),
+                                title: 'Place Title',
+                                intro: 'Enter the place or object name.'
+                            },
+
+                            {
+                                element: document.querySelector('[name="phone_num"]'),
+                                title: 'Contact Number',
+                                intro: 'Phone number visitors may contact.'
+                            },
+
+                            {
+                                element: document.getElementById('descriptionArea'),
+                                title: 'Short Description',
+                                intro: 'Provide a short summary about this place.'
+                            },
+
+                            {
+                                element: document.getElementById('provinceDataSelect'),
+                                title: 'Location',
+                                intro: `
+                        Select location sequentially:
+
+                        <br><br>
+
+                        • Province<br>
+                        • Regency / City<br>
+                        • District<br>
+                        • Village
+                    `
+                            },
+
+                            {
+                                element: document.querySelector('.note-toolbar'),
+                                title: 'Editor Toolbar',
+                                intro: 'Use this toolbar to format your content.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-style'),
+                                title: 'Heading & Style',
+                                intro: `
+        Use headings to organize content.
+
+        <br><br>
+
+        • Heading 1 → Main title
+        <br>
+        • Heading 2 → Subtitle
+        <br>
+        • Paragraph → Regular text
+    `
+                            },
+
+                            {
+                                element: document.querySelector('.tour-font-family'),
+                                title: 'Font Family',
+                                intro: 'Change the font type used in the content.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-font-size'),
+                                title: 'Font Size',
+                                intro: 'Adjust text size for better readability.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-color'),
+                                title: 'Text Color',
+                                intro: 'Highlight important information using colors.'
+                            },
+
+
+                            {
+                                element: document.querySelector('.tour-bold'),
+                                title: 'Bold',
+                                intro: 'Make text bold.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-italic'),
+                                title: 'Italic',
+                                intro: 'Make text italic.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-underline'),
+                                title: 'Underline',
+                                intro: 'Underline selected text.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-ul'),
+                                title: 'Bullet List',
+                                intro: 'Create unordered lists.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-ol'),
+                                title: 'Number List',
+                                intro: 'Create ordered lists.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-link'),
+                                title: 'Insert Link',
+                                intro: 'Insert website URLs or references.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-image'),
+                                title: 'Insert Image',
+                                intro: 'Upload images to enrich content.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-video'),
+                                title: 'Insert Video',
+                                intro: 'Embed YouTube videos using video URLs.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-pdf'),
+                                title: 'Insert PDF',
+                                intro: 'Upload PDF documents for visitors.'
+                            },
+
+                            {
+                                element: document.querySelector('.tour-fullscreen'),
+                                title: 'Fullscreen Mode',
+                                intro: `
+        Expand the editor to fullscreen.
+
+        <br><br>
+
+        Useful when writing long articles
+        or detailed information.
+    `
+                            },
+                            {
+                                element: document.querySelector('.note-editable'),
+                                title: 'Content Area',
+                                intro: `
+                        This is the most important section.
+
+                        <br><br>
+
+                        You can add:
+
+                        <br><br>
+
+                        ✅ Place history<br>
+                        ✅ Object descriptions<br>
+                        ✅ Images<br>
+                        ✅ YouTube videos<br>
+                        ✅ PDF documents<br>
+                        ✅ Tables<br>
+                        ✅ Rich text formatting
+
+                        <br><br>
+
+                        Visitors will see this content after scanning the QR Code.
+                    `
+                            },
+
+                            {
+                                element: document.querySelector('.comment-toggle'),
+                                title: 'Comments',
+                                intro: 'Enable or disable visitor comments.'
+                            },
+
+                            {
+                                element: document.querySelector('.submit-btn'),
+                                title: 'Save',
+                                intro: 'Click here to save the place.'
+                            }
+                        ]
+                    }
+                };
+
+
+                const config = tutorials[lang] || tutorials.en;
+
+                const steps = config.steps.filter(step => {
+                    return !step.element || $(step.element).length > 0;
+                });
+
+                $('.note-toolbar button').each(function() {
+                    console.log({
+                        text: $(this).text().trim(),
+                        aria: $(this).attr('aria-label'),
+                        title: $(this).attr('title'),
+                        class: $(this).attr('class')
+                    });
+
+                });
+                introJs()
+                    .setOptions({
+
+                        steps: steps,
+
+                        nextLabel: config.nextLabel,
+                        prevLabel: config.prevLabel,
+                        doneLabel: config.doneLabel,
+                        skipLabel: config.skipLabel,
+
+                        showBullets: true,
+                        showProgress: true,
+
+                        exitOnOverlayClick: false,
+                        disableInteraction: false,
+
+                        scrollToElement: true,
+                        scrollTo: 'element',
+
+                        tooltipClass: 'custom-intro-tooltip'
+                    })
+
+                    .oncomplete(function() {
+
+                        localStorage.setItem(
+                            'place_tutorial_seen',
+                            'true'
+                        );
+
+                    })
+
+                    .onexit(function() {
+
+                        localStorage.setItem(
+                            'place_tutorial_seen',
+                            'true'
+                        );
+
+                    })
+
+                    .start();
+            }
+
+            function showTutorialLanguageModal() {
+
+                Swal.fire({
+
+                    title: '👋 Welcome',
+                    html: `
+
+                        <p class="text-muted mb-4">
+                            Please choose your preferred tutorial language
+                            or skip the tutorial.
+                        </p>
+
+                        <div class="row">
+
+                            <div class="col-6 mb-3">
+                                <button
+                                    id="tutorial-lang-id"
+                                    class="btn btn-primary btn-block py-3">
+
+                                    🇮🇩<br>
+                                    <strong>Bahasa Indonesia</strong>
+
+                                </button>
+                            </div>
+
+                            <div class="col-6 mb-3">
+                                <button
+                                    id="tutorial-lang-en"
+                                    class="btn btn-outline-primary btn-block py-3">
+
+                                    🇺🇸<br>
+                                    <strong>English</strong>
+
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <button
+                            id="tutorial-skip"
+                            class="btn btn-link text-muted">
+
+                            Skip Tutorial
+
+                        </button>
+
+                    `,
+
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+
+                    didOpen: () => {
+
+                        $('#tutorial-lang-id').on('click', function() {
+
+                            localStorage.setItem(
+                                'place_tutorial_lang',
+                                'id'
+                            );
+
+                            Swal.close();
+
+                            waitSummernoteReady(() => {
+
+                                startPlaceTutorial('id');
+
                             });
-                            return button.render();
-                        }
+
+                        });
+                        $('#tutorial-lang-en').on('click', function() {
+
+                            localStorage.setItem(
+                                'place_tutorial_lang',
+                                'en'
+                            );
+
+                            Swal.close();
+
+                            waitSummernoteReady(() => {
+
+                                startPlaceTutorial('en');
+
+                            });
+
+                        });
+
+                        $('#tutorial-skip').on('click', function() {
+
+                            localStorage.setItem(
+                                'place_tutorial_seen',
+                                'true'
+                            );
+
+                            Swal.close();
+
+                        });
 
                     }
 
                 });
 
+            }
 
+            function waitSummernoteReady(callback) {
 
+                let interval = setInterval(() => {
 
+                    console.log(
+                        'waiting...',
+                        summernoteReady,
+                        $('.note-editor').length,
+                        $('.note-editable').length
+                    );
+
+                    const editorExists =
+                        $('.note-editor').length > 0 &&
+                        $('.note-editable').length > 0;
+
+                    if (summernoteReady && editorExists) {
+
+                        clearInterval(interval);
+
+                        callback();
+                    }
+
+                }, 200);
+            }
+
+            const needTutorial = !localStorage.getItem('place_tutorial_seen');
+
+            if (needTutorial) {
+
+                setTimeout(() => {
+
+                    $('.note-btn[data-event="bold"]').addClass('tour-bold');
+                    $('.note-btn[data-event="italic"]').addClass('tour-italic');
+                    $('.note-btn[data-event="underline"]').addClass('tour-underline');
+
+                    $('.note-btn[data-event="insertUnorderedList"]').addClass('tour-ul');
+                    $('.note-btn[data-event="insertOrderedList"]').addClass('tour-ol');
+
+                    $('.note-btn[data-event="showLinkDialog"]').addClass('tour-link');
+                    $('.note-btn[data-event="showImageDialog"]').addClass('tour-image');
+                    $('.note-btn[data-event="showVideoDialog"]').addClass('tour-video');
+
+                    $('.note-btn[data-name="pdfButton"]').addClass('tour-pdf');
+
+                }, 500);
+
+                setTimeout(() => {
+
+                    showTutorialLanguageModal();
+
+                }, 1200);
+            }
+
+            $('form').on('reset', function() {
+
+                setTimeout(async () => {
+
+                    // =========================
+                    // TEXT INPUT / TEXTAREA
+                    // =========================
+                    $(this).find('input[type="text"], input[type="number"], textarea')
+                        .val('');
+
+                    // =========================
+                    // SUMMERNOTE RESET
+                    // =========================
+                    $('#summernote').summernote('reset');
+                    $('#summernote').summernote('code', '');
+
+                    // =========================
+                    // SELECT2 RESET
+                    // =========================
+                    $('#provinceDataSelect').val(null).trigger('change');
+                    $('#regencyDataSelect').empty()
+                        .append('<option value="">Select Regency</option>')
+                        .trigger('change');
+
+                    $('#districtDataSelect').empty()
+                        .append('<option value="">Select District</option>')
+                        .trigger('change');
+
+                    $('#villagesDataSelect').empty()
+                        .append('<option value="">Select Village</option>')
+                        .trigger('change');
+
+                    // =========================
+                    // CHECKBOX RESET
+                    // =========================
+                    $('input[name="AllowComment"]').prop('checked', true);
+
+                    // =========================
+                    // RELOAD PROVINCE
+                    // =========================
+                    let initialData = await fetchLocation();
+
+                    fillSelect(
+                        '#provinceDataSelect',
+                        initialData.province,
+                        'Select Province'
+                    );
+
+                    initSelect2(
+                        '#provinceDataSelect',
+                        'Select Province'
+                    );
+
+                }, 10);
             });
-        </script>
-    @endpush
-    <!-- End of Main Content -->
+
+            function makeIframeResponsive() {
+
+                $('.note-editable iframe').each(function() {
+
+                    $(this).css({
+                        width: '100%',
+                        maxWidth: '100%',
+                        height: 'auto',
+                        minHeight: '220px',
+                        border: '0',
+                        borderRadius: '12px',
+                        display: 'block'
+                    });
+
+                    // remove fixed size bawaan youtube embed
+                    $(this).removeAttr('width');
+                    $(this).removeAttr('height');
+
+                    // ratio 16:9
+                    this.style.aspectRatio = '16 / 9';
+                });
+            }
+            // =========================
+            // SUMMERNOTE
+            // =========================
+
+            function sanitizePastedContent(html) {
+
+                let wrapper = $('<div>').html(html);
+
+                // remove style/class/id
+                wrapper.find('*').each(function() {
+
+                    $(this)
+                        .removeAttr('style')
+                        .removeAttr('class')
+                        .removeAttr('id')
+                        .removeAttr('width')
+                        .removeAttr('height');
+
+                    // convert h1-h6 ke p
+                    if (/^h[1-6]$/i.test(this.tagName)) {
+                        $(this).replaceWith(
+                            `<p>${$(this).html()}</p>`
+                        );
+                    }
+
+                    // buang empty paragraph
+                    if ($(this).html()?.trim() === '&nbsp;') {
+                        $(this).remove();
+                    }
+                });
+
+                // normalize break
+                wrapper.find('br + br').remove();
+
+                return wrapper.html();
+            }
+
+            $('#summernote').summernote({
+
+                placeholder: 'Write detailed information about this place...',
+                height: 500,
+
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'italic', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['custom', ['pdfButton']],
+                    ['insert', ['link', 'picture', 'video']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+
+                popover: {
+                    image: [
+                        ['resize', ['resizeFull', 'resizeHalf', 'resizeQuarter', 'resizeNone']],
+                        ['float', ['floatLeft', 'floatRight', 'floatNone']],
+                        ['remove', ['removeMedia']]
+                    ]
+                },
+
+                callbacks: {
+                    onMediaDelete: function() {
+                        makeIframeResponsive();
+                    },
+
+                    onPaste: function(e) {
+
+                        e.preventDefault();
+
+                        let clipboardData =
+                            (e.originalEvent || e).clipboardData ||
+                            window.clipboardData;
+
+                        let text = clipboardData.getData('text/html');
+
+                        // fallback kalau bukan html
+                        if (!text) {
+                            text = clipboardData.getData('text/plain');
+                            document.execCommand('insertText', false, text);
+                            return;
+                        }
+
+                        // sanitize html
+                        let cleanHtml = sanitizePastedContent(text);
+
+                        $('#summernote').summernote(
+                            'pasteHTML',
+                            cleanHtml
+                        );
+                    },
+                    onInit: function() {
+
+                        summernoteReady = true;
+
+                        bindSummernoteTutorialClasses();
+
+                        $('.note-editable').css({
+                            textAlign: 'left',
+                            minHeight: '320px'
+                        });
+
+                        $('.note-editor').addClass('shadow-sm');
+
+                        makeIframeResponsive();
+
+                        $('.note-btn[data-event="bold"]').addClass('tour-bold');
+                        $('.note-btn[data-event="italic"]').addClass('tour-italic');
+                        $('.note-btn[data-event="underline"]').addClass('tour-underline');
+
+                        $('.note-btn[data-event="insertUnorderedList"]').addClass('tour-ul');
+                        $('.note-btn[data-event="insertOrderedList"]').addClass('tour-ol');
+
+                        $('.note-btn[data-event="showLinkDialog"]').addClass('tour-link');
+                        $('.note-btn[data-event="showImageDialog"]').addClass('tour-image');
+                        $('.note-btn[data-event="showVideoDialog"]').addClass('tour-video');
+
+                        $('.note-btn[data-name="pdfButton"]').addClass('tour-pdf');
+                    }
+                },
+
+                buttons: {
+
+                    pdfButton: function(context) {
+
+                        let ui = $.summernote.ui;
+
+                        let button = ui.button({
+
+                            contents: `
+                    <i class="fas fa-file-pdf text-danger"></i>
+                    <span class="ml-1 font-weight-bold">PDF</span>
+                `,
+
+                            tooltip: 'Insert PDF',
+
+                            click: function() {
+
+                                let input = $(
+                                    '<input type="file" accept="application/pdf">');
+
+                                input.on('change', function(e) {
+
+                                    let file = e.target.files[0];
+
+                                    if (file && file.type ===
+                                        'application/pdf') {
+
+                                        let formData = new FormData();
+
+                                        formData.append('pdf', file);
+
+                                        Swal.fire({
+                                            title: i18nPlaceForm.swalUploading,
+                                            text: i18nPlaceForm.swalWait,
+                                            showConfirmButton: false,
+                                            allowOutsideClick: false,
+                                            didOpen: () => {
+                                                Swal.showLoading();
+                                            }
+                                        });
+
+                                        $.ajax({
+
+                                            url: "{{ route('file.upload') }}",
+
+                                            type: 'POST',
+
+                                            headers: {
+                                                'X-CSRF-TOKEN': $(
+                                                    'meta[name="csrf-token"]'
+                                                ).attr('content')
+                                            },
+
+                                            data: formData,
+
+                                            contentType: false,
+                                            processData: false,
+
+                                            success: function(
+                                                response) {
+
+                                                if (response.url) {
+
+                                                    Swal.fire({
+                                                        icon: 'success',
+                                                        title: i18nPlaceForm.swalUploadComplete,
+                                                        text: i18nPlaceForm.swalUploadDone
+                                                    });
+
+                                                    let iframe =
+                                                        document
+                                                        .createElement(
+                                                            'iframe'
+                                                        );
+
+                                                    iframe.src =
+                                                        response
+                                                        .url;
+                                                    iframe.width =
+                                                        '100%';
+                                                    iframe.height =
+                                                        '500px';
+
+                                                    iframe.style
+                                                        .border =
+                                                        'none';
+                                                    iframe.style
+                                                        .borderRadius =
+                                                        '12px';
+
+                                                    $('#summernote')
+                                                        .summernote(
+                                                            'editor.insertNode',
+                                                            iframe
+                                                        );
+
+                                                } else {
+
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: i18nPlaceForm.swalUploadFailed,
+                                                        text: response
+                                                            .error ||
+                                                            'Unknown error'
+                                                    });
+                                                }
+                                            },
+
+                                            error: function() {
+
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: i18nPlaceForm.swalUploadFailed,
+                                                    text: i18nPlaceForm.swalServerError
+                                                });
+                                            }
+                                        });
+
+                                    } else {
+
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: i18nPlaceForm.swalInvalidFile,
+                                            text: i18nPlaceForm.swalInvalidPdf
+                                        });
+                                    }
+                                });
+
+                                input.trigger('click');
+                            }
+                        });
+
+                        return button.render();
+                    }
+                }
+            });
+
+            let isInitedProvince = false;
+            let isAutoSelecting = true;
+
+            async function fetchLocation(
+                province_id = null,
+                regency_id = null,
+                district_id = null
+            ) {
+
+                return $.ajax({
+                    url: "{{ route('getLocation') }}",
+                    method: 'GET',
+                    data: {
+                        province_id: province_id,
+                        regency_id: regency_id,
+                        district_id: district_id
+                    }
+                });
+            }
+
+            function initSelect2(el, placeholder) {
+
+                if ($(el).hasClass("select2-hidden-accessible")) {
+                    $(el).select2('destroy');
+                }
+
+                $(el).select2({
+                    placeholder: placeholder,
+                    allowClear: true,
+                    width: '100%'
+                });
+            }
+
+            function fillSelect(el, data, placeholder) {
+
+                $(el).empty();
+
+                $(el).append(
+                    `<option value="">${placeholder}</option>`
+                );
+
+                data.forEach(function(item) {
+
+                    $(el).append(
+                        $('<option>', {
+                            value: item.id,
+                            text: item.name
+                        })
+                    );
+                });
+            }
+
+            // =========================
+            // INITIAL LOAD
+            // =========================
+
+            let initialData = await fetchLocation();
+
+            // province
+            fillSelect(
+                '#provinceDataSelect',
+                initialData.province,
+                'Select Province'
+            );
+
+            initSelect2(
+                '#provinceDataSelect',
+                'Select Province'
+            );
+
+            // auto province
+            if (selectedProvince) {
+
+                $('#provinceDataSelect')
+                    .val(selectedProvince)
+                    .trigger('change.select2');
+
+                // load regency
+                let regencyData = await fetchLocation(
+                    selectedProvince
+                );
+
+                fillSelect(
+                    '#regencyDataSelect',
+                    regencyData.regency,
+                    'Select Regency'
+                );
+
+                initSelect2(
+                    '#regencyDataSelect',
+                    'Select Regency'
+                );
+
+                if (selectedRegency) {
+
+                    $('#regencyDataSelect')
+                        .val(selectedRegency)
+                        .trigger('change.select2');
+
+                    // load district
+                    let districtData = await fetchLocation(
+                        selectedProvince,
+                        selectedRegency
+                    );
+
+                    fillSelect(
+                        '#districtDataSelect',
+                        districtData.districts,
+                        'Select District'
+                    );
+
+                    initSelect2(
+                        '#districtDataSelect',
+                        'Select District'
+                    );
+
+                    if (selectedDistrict) {
+
+                        $('#districtDataSelect')
+                            .val(selectedDistrict)
+                            .trigger('change.select2');
+
+                        // load village
+                        let villageData = await fetchLocation(
+                            selectedProvince,
+                            selectedRegency,
+                            selectedDistrict
+                        );
+
+                        fillSelect(
+                            '#villagesDataSelect',
+                            villageData.villages,
+                            'Select Village'
+                        );
+
+                        initSelect2(
+                            '#villagesDataSelect',
+                            'Select Village'
+                        );
+
+                        if (selectedVillage) {
+
+                            $('#villagesDataSelect')
+                                .val(selectedVillage)
+                                .trigger('change.select2');
+                        }
+                    }
+                }
+            }
+
+            isAutoSelecting = false;
+
+            // =========================
+            // PROVINCE CHANGE
+            // =========================
+
+            $('#provinceDataSelect').on('change', async function() {
+
+                if (isAutoSelecting) return;
+
+                let provinceId = $(this).val();
+
+                fillSelect('#regencyDataSelect', [], 'Select Regency');
+                fillSelect('#districtDataSelect', [], 'Select District');
+                fillSelect('#villagesDataSelect', [], 'Select Village');
+
+                if (!provinceId) return;
+
+                let data = await fetchLocation(provinceId);
+
+                fillSelect(
+                    '#regencyDataSelect',
+                    data.regency,
+                    'Select Regency'
+                );
+
+                initSelect2(
+                    '#regencyDataSelect',
+                    'Select Regency'
+                );
+            });
+
+            // =========================
+            // REGENCY CHANGE
+            // =========================
+
+            $('#regencyDataSelect').on('change', async function() {
+
+                if (isAutoSelecting) return;
+
+                let provinceId = $('#provinceDataSelect').val();
+                let regencyId = $(this).val();
+
+                fillSelect('#districtDataSelect', [], 'Select District');
+                fillSelect('#villagesDataSelect', [], 'Select Village');
+
+                if (!regencyId) return;
+
+                let data = await fetchLocation(
+                    provinceId,
+                    regencyId
+                );
+
+                fillSelect(
+                    '#districtDataSelect',
+                    data.districts,
+                    'Select District'
+                );
+
+                initSelect2(
+                    '#districtDataSelect',
+                    'Select District'
+                );
+            });
+
+            // =========================
+            // DISTRICT CHANGE
+            // =========================
+
+            $('#districtDataSelect').on('change', async function() {
+
+                if (isAutoSelecting) return;
+
+                let provinceId = $('#provinceDataSelect').val();
+                let regencyId = $('#regencyDataSelect').val();
+                let districtId = $(this).val();
+
+                fillSelect('#villagesDataSelect', [], 'Select Village');
+
+                if (!districtId) return;
+
+                let data = await fetchLocation(
+                    provinceId,
+                    regencyId,
+                    districtId
+                );
+
+                fillSelect(
+                    '#villagesDataSelect',
+                    data.villages,
+                    'Select Village'
+                );
+
+                initSelect2(
+                    '#villagesDataSelect',
+                    'Select Village'
+                );
+            });
+
+        });
+    </script>
+@endpush
 @endsection

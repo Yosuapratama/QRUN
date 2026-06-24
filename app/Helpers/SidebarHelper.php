@@ -19,6 +19,14 @@ class SidebarHelper
         return User::whereNotNull('email_verified_at')->whereNull('approved_at')->get()->count();
     }
 
+    public static function getPendingApprovedUser(){
+        return User::whereNull('approved_at')->whereNotNull('email_verified_at')->count();
+    }
+
+    public static function getPendingVerifiedUsers(){
+        return User::whereNull('email_verified_at')->count();
+    }
+
     public static function getActiveUser(){
         return User::whereNotNull('email_verified_at')->whereNotNull('approved_at')->get()->count();
     }

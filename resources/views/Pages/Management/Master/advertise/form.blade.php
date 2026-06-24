@@ -1,341 +1,687 @@
 @extends('TemplateLayout.AdminLayout')
 
 @section('content')
-    <!-- Main Content -->
     @push('title')
         <title>Form Advertise - QRUN Website</title>
+
+        {{-- TOASTR CSS --}}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+        {{-- JQUERY --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+        {{-- TOASTR JS --}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <style>
+            .toast-success {
+                background-color: #28a745 !important;
+            }
+
+            .toast-error {
+                background-color: #dc3545 !important;
+            }
+
+            .toast-info {
+                background-color: #17a2b8 !important;
+            }
+
+            .toast-warning {
+                background-color: #ffc107 !important;
+                color: #000 !important;
+            }
+
+            .toast {
+                opacity: 1 !important;
+            }
+        </style>
+
+        <script>
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                newestOnTop: true,
+                positionClass: "toast-top-right",
+
+                timeOut: 8000,
+                extendedTimeOut: 8000,
+
+                showDuration: 300,
+                hideDuration: 300,
+
+                preventDuplicates: true,
+            };
+        </script>
     @endpush
 
-    <!-- Begin Page Content -->
     <div class="container-fluid">
-        <!-- Page Heading -->
-        <h1 class="h3 text-gray-800 font-weight-bold m-2">Advertise Form</h1>
-        @if (session()->has('success'))
-            <div class="alert alert-success">
-                {{ session()->get('success') }}
+
+
+
+        {{-- PAGE HEADER --}}
+        <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+
+            <div>
+                <h2 class="font-weight-bold text-dark mb-1">
+                    {{ __('messages.management.advertise.form_title') }}
+                </h2>
+
+                <p class="text-muted mb-0">
+                    {{ __('messages.management.advertise.form_subtitle') }}
+                </p>
             </div>
-        @endif
+
+            <a href="{{ route('advertise.index') }}" class="modern-back-btn">
+
+                <i class="fas fa-arrow-left mr-2"></i>
+
+                {{ __('messages.management.advertise.back_btn') }}
+
+            </a>
+
+        </div>
+
+        {{-- VALIDATION ERRORS --}}
         @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $err)
-                        <li>{{ $err }}</li>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    @foreach ($errors->all() as $error)
+                        toastr.error(@json($error), 'Error');
                     @endforeach
-                </ul>
-            </div>
+
+                });
+            </script>
         @endif
-        <!-- DataTales Example -->
-        <a href="{{ route('advertise.index') }}" class="btn btn-primary m-2">Back</a>
 
-        <form action="{{ route('advertise.storeOrUpdate') }}" method="POST" class="card" id="formDropzone"
-            enctype="multipart/form-data" novalidate>
+        {{-- STATUS SUCCESS --}}
+        @if (session()->has('status'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('status')), 'Success');
+
+                });
+            </script>
+        @endif
+
+        {{-- SUCCESS --}}
+        @if (session()->has('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+
+                    toastr.success(@json(session('success')), 'Success');
+
+                });
+            </script>
+        @endif
+
+        {{-- FORM --}}
+        <form action="{{ route('advertise.storeOrUpdate') }}" method="POST" id="advertiseForm">
+
             @csrf
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Ads Settings</h6>
-                </div>
-                <input type="hidden" name="id" value="{{ $adsSettings->id ?? '' }}">
-                <div class="card-body">
-                    <div class="slider-container mb-3">
-                        <label for="running-text-info" class="slider-label">Turn on Ads ?</label>
-                        <input class="slider" name="is_active" id="running-text-info" type="checkbox"
-                            @if ($adsSettings) {{ $adsSettings->is_active ? 'checked' : '' }} @endif>
-                    </div>
-                    <div class="form-group">
-                        <label for="place_id" class="slider-label">Add Place (Can Multiple)<span
-                                class="text-danger">*</span></label>
-                        <select class="form-control" id="place_id" name="places[]" multiple>
-                            {{-- <option value="">Select Place...</option> --}}
-                            @foreach ($placeId as $place)
-                                <option value="{{ $place->id }}" @if ($adsSettings && in_array($place->id, $adsSettings->places->pluck('id')->toArray())) selected @endif>
-                                    {{ $place->place_code }} | {{ $place->title }} | {{ $place->creator_id }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('places')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Ads Title<span class="text-danger">*</span></label>
-                        <input required type="text" name="title" value="{{ $adsSettings->title ?? '' }}"
-                            class="form-control" placeholder="Enter Title...">
-                        @error('title')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
-                    </div>
+            <input type="hidden" name="id" value="{{ $adsSettings->id ?? '' }}">
 
-                    <div class="mb-4">
-                        <label class="form-label text-muted opacity-75 fw-medium" for="formImage">Image<span
-                                class="text-danger">*</span></label>
-                        <div class="dropzone-drag-area" id="previews">
-                            <div class="dz-message text-muted opacity-50" data-dz-message>
-                                <span>Drag file here to upload</span>
-                            </div>
-                            <div class="d-none" id="dzPreviewContainer">
-                                <div class="dz-preview dz-file-preview">
-                                    <div class="dz-photo">
-                                        <img class="dz-thumbnail" data-dz-thumbnail>
-                                    </div>
-                                    <button class="dz-delete border-0 p-0" type="button" data-dz-remove>
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="times">
-                                            <path fill="#FFFFFF"
-                                                d="M13.41,12l4.3-4.29a1,1,0,1,0-1.42-1.42L12,10.59,7.71,6.29A1,1,0,0,0,6.29,7.71L10.59,12l-4.3,4.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0L12,13.41l4.29,4.3a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Z">
-                                            </path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+            <div class="row">
+
+                {{-- LEFT --}}
+                <div class="col-lg-8">
+
+                    {{-- INFORMATION --}}
+                    <div class="card border-0 shadow-sm rounded-xl mb-4">
+
+                        <div class="card-header bg-white border-0 pt-4 pb-0">
+
+                            <h4 class="font-weight-bold text-dark mb-1">
+                                {{ __('messages.management.advertise.info_section_title') }}
+                            </h4>
+
+                            <p class="text-muted small mb-0">
+                                {{ __('messages.management.advertise.info_section_subtitle') }}
+                            </p>
+
                         </div>
-                        <div class="invalid-feedback fw-bold">Please upload an image.</div>
-                        @error('image_url')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
+
+                        <div class="card-body pt-4">
+
+                            {{-- TITLE --}}
+                            <div class="form-group mb-4">
+
+                                <label class="form-label font-weight-semibold">
+                                    {{ __('messages.management.advertise.field_title_ads') }} <span class="text-danger">*</span>
+                                </label>
+
+                                <input required type="text" class="form-control custom-input" name="title"
+                                    value="{{ $adsSettings->title ?? (old('title') ?? '') }}"
+                                    placeholder="Example: Summer Promo Banner">
+
+                            </div>
+
+                            {{-- TIME --}}
+                            <div class="form-group mb-4">
+
+                                <label class="form-label font-weight-semibold">
+                                    {{ __('messages.management.advertise.field_time') }} <span class="text-danger">*</span>
+                                </label>
+
+                                <input required type="number" class="form-control custom-input" name="time"
+                                    value="{{ $adsSettings->time ?? (old('time') ?? '') }}" placeholder="Example: 10">
+
+                            </div>
+
+                            {{-- PLACE --}}
+                            <div class="form-group">
+
+                                <label class="form-label font-weight-semibold">
+                                    {{ __('messages.management.advertise.field_place') }} <span class="text-danger">*</span>
+                                </label>
+
+                                @php
+                                    $selectedPlaces = old(
+                                        'places',
+                                        $adsSettings ? $adsSettings->places->pluck('id')->toArray() : [],
+                                    );
+                                @endphp
+                                <select required class="form-control" id="place_id" name="places[]" multiple>
+                                    @foreach ($placeId as $place)
+                                        <option value="{{ $place->id }}"
+                                            {{ in_array($place->id, $selectedPlaces) ? 'selected' : '' }}>
+                                            {{ $place->place_code }} — {{ $place->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                <small class="text-muted">
+                                    {{ __('messages.management.advertise.multi_hint') }}
+                                </small>
+
+                            </div>
+
+                        </div>
+
                     </div>
 
-                    <input type="hidden" id="image_url" name="image_url">
+                    {{-- IMAGE --}}
+                    <div class="card border-0 shadow-sm rounded-xl mb-4">
 
-                    <div class="form-group">
-                        <label class="form-label">Time<span class="text-danger">*</span></label>
-                        <input required type="number" name="time" value="{{ $adsSettings->time ?? '' }}"
-                            class="form-control" placeholder="Enter Time...">
+                        <div class="card-header bg-white border-0 pt-4 pb-0">
 
-                        @error('time')
-                            <p class="text-danger mt-2 mb-2">{{ $message }}</p>
-                        @enderror
+                            <h4 class="font-weight-bold text-dark mb-1">
+                                {{ __('messages.management.advertise.gallery_section_title') }} <span class="text-danger">*</span>
+                            </h4>
+
+                            <p class="text-muted small mb-0">
+                                {{ __('messages.management.advertise.gallery_section_subtitle') }}
+                            </p>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{-- DROPZONE --}}
+                            <div id="imageDropzone" class="modern-dropzone">
+
+                                <div class="dropzone-content">
+
+                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+
+                                    <h5 class="font-weight-bold mb-2">
+                                        {{ __('messages.management.advertise.upload_title') }}
+                                    </h5>
+
+                                    <p class="text-muted mb-1">
+                                        {{ __('messages.management.advertise.drag_drop') }}
+                                    </p>
+
+                                    <small class="text-muted">
+                                        {{ __('messages.management.advertise.file_hint') }}
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                            {{-- PREVIEW --}}
+                            <div class="row mt-4" id="imagePreviewWrapper"></div>
+
+                        </div>
+
                     </div>
-                    <!-- Dropzone Form -->
+
                 </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-warning">Save Data</button>
+
+                {{-- RIGHT --}}
+                <div class="col-lg-4">
+
+                    <div class="card border-0 shadow-sm rounded-xl sticky-top" style="top:20px;">
+
+                        <div class="card-header bg-white border-0 pt-4">
+
+                            <h5 class="font-weight-bold mb-0">
+                                {{ __('messages.management.advertise.publish_section') }}
+                            </h5>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            {{-- ACTIVE --}}
+                            <div class="setting-box mb-3">
+
+                                <div>
+
+                                    <h6 class="mb-1 font-weight-bold">
+                                        {{ __('messages.management.advertise.active_ads') }}
+                                    </h6>
+
+                                    <small class="text-muted">
+                                        {{ __('messages.management.advertise.active_ads_desc') }}
+                                    </small>
+
+                                </div>
+
+                                <label class="modern-switch">
+
+                                    <input type="checkbox" name="is_active" value="1"
+                                        @if ($adsSettings?->is_active) checked @endif>
+
+                                    <span class="modern-slider"></span>
+
+                                </label>
+
+                            </div>
+
+                            {{-- BLOCK --}}
+                            <div class="setting-box">
+
+                                <div>
+
+                                    <h6 class="mb-1 font-weight-bold">
+                                        {{ __('messages.management.advertise.blocking_ads') }}
+                                    </h6>
+
+                                    <small class="text-muted">
+                                        {{ __('messages.management.advertise.blocking_ads_desc') }}
+                                    </small>
+
+                                </div>
+
+                                <label class="modern-switch">
+
+                                    <input type="checkbox" name="is_block" value="1"
+                                        @if ($adsSettings?->is_block) checked @endif>
+
+                                    <span class="modern-slider"></span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer bg-white border-0 pb-4">
+
+                            <button class="btn btn-primary btn-block py-3 font-weight-bold rounded-lg">
+
+                                <i class="fas fa-save mr-2"></i>
+
+                                {{ __('messages.management.advertise.save_btn') }}
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
 
         </form>
 
     </div>
+
     @push('css')
         <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/dropzone.min.css" rel="stylesheet">
+
         <style>
-            .h1 {
-                letter-spacing: -0.02em;
+            body {
+                background: #F9FAFB;
             }
 
-            .dropzone {
-                overflow-y: auto;
-                border: 0;
-                background: transparent;
+            .rounded-xl {
+                border-radius: 20px;
             }
 
-            .dz-preview {
-                width: 100%;
-                margin: 0 !important;
-                height: 100%;
-                padding: 15px;
-                position: absolute !important;
-                top: 0;
+            .modern-back-btn {
+                display: inline-flex;
+                align-items: center;
+                padding: 12px 18px;
+                border-radius: 14px;
+                background: #fff;
+                border: 1px solid #E5E7EB;
+                color: #111827;
+                font-weight: 600;
+                transition: .25s;
+                text-decoration: none !important;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
             }
 
-            .dz-photo {
-                height: 100%;
-                width: 100%;
-                overflow: hidden;
-                border-radius: 12px;
-                background: #eae7e2;
+            .modern-back-btn:hover {
+                background: #4F46E5;
+                color: white;
+                border-color: #4F46E5;
+                transform: translateY(-1px);
             }
 
-            .dz-drag-hover .dropzone-drag-area {
-                border-style: solid;
-                border-color: #86b7fe;
-                ;
+            .custom-input {
+                height: 55px;
+                border-radius: 14px;
+                border: 1px solid #E5E7EB;
+                padding: 0 18px;
+                font-size: 15px;
+                transition: .2s;
             }
 
-            .dz-thumbnail {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+            .custom-input:focus {
+                border-color: #4F46E5;
+                box-shadow: none;
             }
 
-            .dz-image {
-                width: 90px !important;
-                height: 90px !important;
-                border-radius: 6px !important;
-            }
-
-            .dz-remove {
-                display: none !important;
-            }
-
-            .dz-delete {
-                width: 24px;
-                height: 24px;
-                background: rgba(0, 0, 0, 0.57);
-                position: absolute;
-                opacity: 0;
-                transition: all 0.2s ease;
-                top: 30px;
-                right: 30px;
-                border-radius: 100px;
-                z-index: 9999;
+            .modern-dropzone {
+                border: 2px dashed #D1D5DB;
+                border-radius: 20px;
+                min-height: 260px;
+                background: #FAFAFA;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-            }
-
-            .dz-delete>svg {
-                transform: scale(0.75);
+                transition: .25s;
                 cursor: pointer;
+                position: relative;
             }
 
-            .dz-preview:hover .dz-delete,
-            .dz-preview:hover .dz-remove-image {
-                opacity: 1;
+            .modern-dropzone:hover {
+                border-color: #4F46E5;
+                background: #F5F3FF;
             }
 
-            .dz-message {
-                height: 100%;
-                margin: 0 !important;
+            .dropzone-content {
+                text-align: center;
+                pointer-events: none;
+            }
+
+            .upload-icon {
+                font-size: 48px;
+                color: #6366F1;
+                margin-bottom: 15px;
+            }
+
+            .setting-box {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 18px;
+                border: 1px solid #ECECEC;
+                border-radius: 16px;
+            }
+
+            .image-card {
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .image-card img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                border-radius: 16px;
+                border: 1px solid #ECECEC;
+            }
+
+            .remove-image {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 36px;
+                height: 36px;
+                border: none;
+                border-radius: 50%;
+                background: #EF4444;
+                color: white;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
             }
 
-            .dropzone-drag-area {
-                height: 300px;
+            .remove-image:hover {
+                transform: scale(1.05);
+            }
+
+            .modern-switch {
                 position: relative;
-                padding: 0 !important;
-                border-radius: 10px;
-                border: 3px dashed #dbdeea;
+                display: inline-block;
+                width: 58px;
+                height: 32px;
             }
 
-            .was-validated .form-control:valid {
-                border-color: #dee2e6 !important;
-                background-image: none;
+            .modern-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .modern-slider {
+                position: absolute;
+                cursor: pointer;
+                inset: 0;
+                background: #D1D5DB;
+                transition: .4s;
+                border-radius: 999px;
+            }
+
+            .modern-slider:before {
+                position: absolute;
+                content: "";
+                height: 24px;
+                width: 24px;
+                left: 4px;
+                top: 4px;
+                background: white;
+                transition: .4s;
+                border-radius: 50%;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            }
+
+            .modern-switch input:checked+.modern-slider {
+                background: #4F46E5;
+            }
+
+            .modern-switch input:checked+.modern-slider:before {
+                transform: translateX(26px);
+            }
+
+            .select2-container .select2-selection--multiple {
+                min-height: 55px !important;
+                border-radius: 14px !important;
+                border: 1px solid #E5E7EB !important;
+                padding: 6px !important;
+            }
+
+            .select2-container--default .select2-selection--multiple .select2-selection__choice {
+                background: #EEF2FF !important;
+                border: none !important;
+                color: #4338CA !important;
+                border-radius: 10px !important;
+                padding: 4px 10px !important;
             }
         </style>
     @endpush
 
     @push('script')
-        <!-- Scripts -->
-        {{-- <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script> --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
+
         <script>
             $(document).ready(function() {
-                $('#place_id').select2();
+
+                $('#place_id').select2({
+                    placeholder: @json(__('messages.management.advertise.select_places'))
+                });
+
             });
         </script>
+
         <script>
             Dropzone.autoDiscover = false;
-            var myDropzone = new Dropzone('#formDropzone', {
-                url: "{{ route('upload.place.ads') }}", // Ensure the URL is correct
-                previewTemplate: $('#dzPreviewContainer').html(),
-                addRemoveLinks: true,
-                autoProcessQueue: true, // Prevent auto-upload, we will trigger it manually
+
+            let uploadedImages = [];
+
+            /*
+            |--------------------------------------------------------------------------
+            | PRELOAD EXISTING IMAGES
+            |--------------------------------------------------------------------------
+            */
+
+            @if ($adsSettings && $adsSettings->images->count())
+
+                uploadedImages = [
+
+                    @foreach ($adsSettings->images as $image)
+
+                        "{{ $image->image_url }}",
+                    @endforeach
+
+                ];
+            @endif
+
+            renderPreview();
+
+            /*
+            |--------------------------------------------------------------------------
+            | DROPZONE
+            |--------------------------------------------------------------------------
+            */
+
+            let myDropzone = new Dropzone("#imageDropzone", {
+
+                url: "{{ route('upload.place.ads') }}",
+
+                paramName: "file",
+
+                clickable: '#imageDropzone',
+
+                acceptedFiles: ".jpg,.jpeg,.png",
+
                 uploadMultiple: false,
-                parallelUploads: 1,
-                maxFiles: 1,
-                acceptedFiles: '.jpeg, .jpg, .png, .gif',
-                thumbnailWidth: 900,
-                thumbnailHeight: 600,
-                previewsContainer: "#previews",
-                timeout: 5000, // Set timeout to 0 to prevent timeout issues
+
+                parallelUploads: 10,
+
+                previewsContainer: false,
+
+                maxFilesize: 5,
+
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+
                 init: function() {
-                    // window.location.reload();
-                    var dz = this;
-                    console.log("success go to inited");
-                    var existingImage;
 
-                    @if ($adsSettings)
-                        existingImage = "{{ asset($adsSettings->image_url) ?? '' }}";
-                        $('#image_url').val(existingImage); // Set the URL in the hidden input
-                    @endif
+                    // prevent multiple chooser glitch
+                    this.hiddenFileInput.removeAttribute('multiple');
 
-                    if (existingImage) {
-                        // Construct the full URL for the image using the `asset` helper
+                },
 
-                        var thumb = {
-                            name: existingImage,
-                            size: 0,
-                            dataURL: existingImage
-                        };
+                sending: function() {
 
-                        dz.files.push(thumb);
-
-                        // Call the default addedfile event handler
-                        dz.emit('addedfile', thumb);
-
-                        dz.createThumbnailFromUrl(thumb,
-                            dz.options.thumbnailWidth, dz.options.thumbnailHeight,
-                            dz.options.thumbnailMethod, true,
-                            function(thumbnail) {
-                                dz.emit('thumbnail', thumb, thumbnail);
-                            });
-
-
-                        // Make sure that there is no progress bar, etc...
-                        dz.emit('complete', thumb);
-
-
-                        // If you use the maxFiles option, make sure you adjust it to the
-                        // correct amount:
-
-
-                    }
-
-                    this.on('sending', function(file, xhr, formData) {
-                        var token = $('meta[name="csrf-token"]').attr('content');
-                        formData.append('_token', token);
-                        Swal.fire({
-                            title: 'Uploading...',
-                            text: 'Please wait while we upload your file.',
-                            didOpen: () => {
-                                Swal.showLoading(); // Show the loading spinner
-                            },
-                            allowOutsideClick: false, // Prevent closing the modal by clicking outside
-                            showConfirmButton: false // Hide the confirm button
-                        });
-                    });
-
-                    // When file is added to Dropzone
-                    this.on('addedfile', function(file) {
-                        // Check if thumb exists before trying to remove it
-                        if (thumb) {
-                            dz.removeFile(thumb);
+                    Swal.fire({
+                        title: 'Uploading...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
                         }
-                        // Remove invalid class and hide error message if any
-                        $('.dropzone-drag-area').removeClass('is-invalid').next('.invalid-feedback').hide();
                     });
 
+                },
 
-                    // Handle file upload success
-                    this.on('success', function(file, response) {
-                        // Assuming the response contains the URL of the uploaded file
-                        var imageUrl = response.image_url; // Adjust this according to your API response
-                        $('#image_url').val(imageUrl); // Set the URL in the hidden input
+                success: function(file, response) {
 
-                        Swal.close();
-                        // dz.removeAllFiles(); // Optional: Remove files after success
+                    uploadedImages.push(response.image_url);
 
+                    renderPreview();
+
+                    Swal.close();
+
+                },
+
+                error: function() {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: @json(__('messages.management.gallery_form.swal_upload_failed')),
+                        text: 'Image upload failed'
                     });
 
-                    // Handle file upload error
-                    this.on('error', function(file, errorMessage) {
-                        console.log('Upload error:', errorMessage);
-                        $('.dropzone-drag-area').addClass('is-invalid').next('.invalid-feedback').show()
-                            .text('File upload failed: ' + errorMessage);
-                        this.removeFile(file);
-                    });
                 }
+
             });
 
-            // $("#formDropzone").on('submit', function(e) {
-            //     myDropzone.processQueue();
-            // });
+            /*
+            |--------------------------------------------------------------------------
+            | PREVIEW
+            |--------------------------------------------------------------------------
+            */
+
+            function renderPreview() {
+
+                let html = '';
+
+                uploadedImages.forEach((img, index) => {
+
+                    html += `
+                        <div class="col-md-4">
+
+                            <div class="image-card">
+
+                                <img src="/${img}">
+
+                                <button type="button"
+                                    class="remove-image"
+                                    onclick="removeImage(${index})">
+
+                                    <i class="fas fa-times"></i>
+
+                                </button>
+
+                                <input type="hidden"
+                                    name="images[]"
+                                    value="${img}">
+
+                            </div>
+
+                        </div>
+                    `;
+
+                });
+
+                $('#imagePreviewWrapper').html(html);
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | REMOVE IMAGE
+            |--------------------------------------------------------------------------
+            */
+
+            function removeImage(index) {
+
+                uploadedImages.splice(index, 1);
+
+                renderPreview();
+
+            }
         </script>
     @endpush
-
-
-
-    <!-- End of Main Content -->
 @endsection

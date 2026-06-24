@@ -10,12 +10,25 @@ class Advertise extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $table = 'advertise_tables';
+    protected $table = 'advertise_tables';
 
-    public $guarded = ['id'];
+    protected $guarded = ['id'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_block' => 'boolean',
+    ];
 
     public function places()
     {
-        return $this->belongsToMany(Place::class, 'advertise_place');
+        return $this->belongsToMany(
+            Place::class,
+            'advertise_place'
+        );
+    }
+
+    public function images()
+    {
+        return $this->hasMany(AdvertiseImage::class);
     }
 }

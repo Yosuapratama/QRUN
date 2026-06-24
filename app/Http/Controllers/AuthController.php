@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewUserRegistered;
 use App\Models\Blog;
+use App\Models\Ebook;
+use App\Models\EbookPlace;
 use App\Models\LogActivities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +19,10 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
 use App\Models\Place;
+use App\Support\EbookGate;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
@@ -56,25 +60,20 @@ class AuthController extends Controller
     {
         $Validate = $request->validate([
             'email' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'remember' => 'nullable'
         ], [
             'email.required' => 'Email is required',
             'password.required' => 'Password is required'
         ]);
 
+        $remember = $request->remember === 'on' ? true : false;
 
-        if (Auth::attempt($request->only(['email', 'password']))) {
+        if (Auth::attempt($request->only(['email', 'password']), $remember)) {
             if (!Auth::user()->email_verified_at) {
                 $this->logout($request);
                 return redirect()->route('login')->withErrors('Your Account Must be verified first, Check Your Email !');
             }
-            // Log::info([
-            //     'status' => 'User Logged in',
-            //     'time' => Date::now(),
-            //     'user_id' => Auth::user()->id,
-            //     'email' => Auth::user()->email,
-            //     'ip_address' => request()->ip()
-            // ]);
 
             LogActivities::create([
                 'ip_address' => request()->ip(),
@@ -95,7 +94,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->with('success', 'Login Success !');
         }
 
-        return redirect()->route('login')->withErrors('Login Failed Email or Password Are Incorrect !');
+        return back()->withErrors('Login Failed Email or Password Are Incorrect !')->withInput();;
     }
 
     // (3) Register View For Users
@@ -110,11 +109,23 @@ class AuthController extends Controller
     public function search(Request $request)
     {
         $query = $request->get('query');
-        $blogs = Blog::select('id', 'slug', 'title', 'description', 'image_url', 'views', 'is_published', 'created_at')
-            ->where('title', 'like', "%{$query}%")
-            ->orWhere('description', 'like', "%{$query}%")
+
+        $blogs = Blog::select(
+            'id',
+            'slug',
+            'title',
+            'description',
+            'image_url',
+            'views',
+            'is_published',
+            'created_at'
+        )
+            ->where(function ($q) use ($query) {
+                $q->where('title', 'like', "%{$query}%")
+                    ->orWhere('description', 'like', "%{$query}%");
+            })
             ->where('is_published', true)
-            ->orderBy('created_at', 'desc')
+            ->orderByDesc('created_at')
             ->limit(6)
             ->get();
 
@@ -162,6 +173,7 @@ class AuthController extends Controller
             'email.unique' => 'This email is already registered',
             'password.required' => 'Password is required',
             'password.min' => 'Password length must be more than 8 characters',
+            'password2.min' => 'Confirm Password length must be more than 8 characters',
             'password2.required' => 'Confirm Password Required',
             'password2.same' => 'Confirm Password is wrong !'
         ]);
@@ -197,7 +209,7 @@ class AuthController extends Controller
         $user->assignRole('localadmin');
 
         //Mail::to(config('mail.to.address'))->send(new NewUserRegistered($user));
-        Mail::to(env('MAIL_TO_ADDRESS', 'qrunonline@gmail.com'))->send(new NewUserRegistered($user));
+        // Mail::to(env('MAIL_TO_ADDRESS', 'qrunonline@gmail.com'))->send(new NewUserRegistered($user));
         event(new Registered($user));
 
         return redirect()->route('login')->with('success', 'Register Success, Check Your Email for verification !');
@@ -285,6 +297,119 @@ class AuthController extends Controller
         ]);
     }
 
+    public function ebookPage()
+    {
+        // The global ebook catalog is not public — ebooks are accessed via a
+        // location's QR scan page only. Hide this listing.
+        abort(404);
+    }
+
+    public function detailEbook($slug)
+    {
+        $ebook = Ebook::where('slug', $slug)->where('is_published', 1)->first();
+
+        if (!$ebook) {
+            abort(404);
+        }
+
+        // Count one view per visitor per 24 hours (cookie-based), same as blog
+        $cookieName = 'ebook_view_' . $ebook->id;
+        if (!request()->cookie($cookieName)) {
+            $ebook->increment('views');
+            cookie()->queue($cookieName, true, 60 * 24);
+        }
+
+        // "Ebook lainnya" must reflect the location the visitor came from (?ref=CODE),
+        // not a universal list. Without a valid ref, show nothing.
+        $ref = request('ref');
+        $related = collect();
+
+        // Read-gating state. The free-read counter lives in the server session
+        // (see App\Support\EbookGate), so it cannot be tampered with client-side.
+        $locked = false;
+        $gate = null;
+        $unlockAds = collect();
+        $reviewQuestions = collect();
+
+        if ($ref) {
+            $place = EbookPlace::where('code', $ref)->first();
+            if ($place) {
+                $related = $place->ebooks()
+                    ->where('is_published', 1)
+                    ->where('ebooks.slug', '!=', $slug)
+                    ->orderByDesc('ebooks.created_at')
+                    ->limit(6)
+                    ->get(['ebooks.id', 'ebooks.slug', 'ebooks.title', 'ebooks.description', 'ebooks.author', 'ebooks.category', 'ebooks.image_url', 'ebooks.views', 'ebooks.created_at']);
+
+                // Only gate ebooks that actually belong to this location.
+                $belongs = $place->ebooks()->where('ebooks.slug', $slug)->exists();
+                if ($belongs) {
+                    $config = EbookGate::effectiveConfig($place, $ebook);
+
+                    if ($config['lock_enabled'] && !EbookGate::isOpened($ref, $slug)) {
+                        // Try to spend a free read; otherwise the ebook is locked.
+                        if (!EbookGate::tryConsumeFreeRead($ref, $slug, $config['read_limit'])) {
+                            $locked = true;
+                            $gate = $config + ['code' => $ref, 'slug' => $slug];
+
+                            $methods = $config['unlock_method'] === 'both'
+                                ? ['timed', 'review']
+                                : [$config['unlock_method']];
+
+                            $unlockAds = collect();
+
+                            // Per-ebook unlock creatives take priority when overriding.
+                            if ($ebook->ad_override_enabled) {
+                                if (in_array('timed', $methods, true) && $ebook->unlock_timed_image) {
+                                    $unlockAds->push((object) [
+                                        'type' => 'timed',
+                                        'title' => null,
+                                        'image_url' => $ebook->unlock_timed_image,
+                                        'duration_seconds' => $ebook->unlock_duration,
+                                        'target_url' => $ebook->unlock_timed_target_url,
+                                    ]);
+                                }
+                                if (in_array('review', $methods, true) && $ebook->unlock_review_image) {
+                                    $unlockAds->push((object) [
+                                        'type' => 'review',
+                                        'title' => null,
+                                        'image_url' => $ebook->unlock_review_image,
+                                    ]);
+                                }
+                            }
+
+                            // Fall back to the location's ads for any method not
+                            // covered by the ebook's own creatives.
+                            $needed = array_values(array_diff($methods, $unlockAds->pluck('type')->all()));
+                            if (!empty($needed)) {
+                                $placeAds = $place->ads()
+                                    ->where('is_active', 1)
+                                    ->whereIn('type', $needed)
+                                    ->get();
+                                $unlockAds = $unlockAds->concat($placeAds);
+                            }
+
+                            if (in_array('review', $methods, true)) {
+                                $reviewQuestions = ($ebook->ad_override_enabled && $ebook->reviewQuestions()->exists())
+                                    ? $ebook->reviewQuestions()->get()
+                                    : $place->reviewQuestions()->get();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return view('Pages.EbookDetail', [
+            'data' => $ebook,
+            'ebooks' => $related,
+            'locked' => $locked,
+            'gate' => $gate,
+            'unlockAds' => $unlockAds,
+            'reviewQuestions' => $reviewQuestions,
+        ]);
+    }
+
     public function resendMailVerification(Request $request)
     {
         $request->user()->sendEmailVerificationNotification();
@@ -317,8 +442,10 @@ class AuthController extends Controller
         );
 
         if ($status == Password::RESET_THROTTLED) {
+            $seconds = config('auth.passwords.users.throttle');
+
             return back()->withErrors([
-                'throttled' => "Too many attempts. Please try again in a few minutes."
+                'email' => "Please wait {$seconds} seconds before requesting another reset link."
             ]);
         }
 
@@ -331,12 +458,51 @@ class AuthController extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 
-    public function resetPassView()
-    {
-        if (Auth::check()) {
-            Auth::logout();
+    private function validateResetToken(
+        string $email,
+        string $token
+    ): bool {
+
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $email)
+            ->first();
+
+        if (!$record) {
+            return false;
         }
-        return view('Pages.auth.ResetPassword');
+
+        if (!Hash::check($token, $record->token)) {
+            return false;
+        }
+
+        $expires = config('auth.passwords.users.expire');
+
+        if (
+            now()->diffInMinutes($record->created_at) >
+            $expires
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function resetPassView(Request $request, string $token)
+    {
+        $email = $request->email;
+
+        if (!$this->validateResetToken($email, $token)) {
+            return redirect()
+                ->route('password.request')
+                ->withErrors([
+                    'email' => 'This reset password link is invalid or has expired.'
+                ]);
+        }
+
+        return view('Pages.auth.ResetPassword', compact(
+            'token',
+            'email'
+        ));
     }
 
     public function updatePassword(Request $request)

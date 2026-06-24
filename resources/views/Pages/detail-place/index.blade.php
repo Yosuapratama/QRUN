@@ -4,7 +4,10 @@
     <title>{{ $place->title }} | Qrun Website</title>
     <meta name="description" content="{{ $place->title }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 @endpush
 
 @push('css')
@@ -27,9 +30,16 @@
         /*  margin-left: auto;*/
         /*  margin-right: auto;*/
         /*}*/
-               #translatable-content audio, canvas, embed, iframe, img, object, svg, video {
+        #translatable-content audio,
+        #translatable-content canvas,
+        #translatable-content embed,
+        #translatable-content iframe,
+        #translatable-content img,
+        #translatable-content object,
+        #translatable-content svg,
+        #translatable-content video {
             display: revert !important;
-         }
+        }
 
         .goog-te-gadget img {
             display: inline-flex !important;
@@ -38,19 +48,29 @@
             height: 20px !important;
             width: 20px !important;
         }
-        
-            #translatable-content h1,
+
+        #translatable-content h1,
         #translatable-content h2,
         #translatable-content h3,
         #translatable-content h4,
         #translatable-content h5,
         #translatable-content h6,
         #translatable-content p,
-        #translatable-content a{
-            all: revert;
+        #translatable-content a {
+            font-size: revert;
+            line-height: revert;
             margin-top: 1em;
-            margin-bottom: 0.5em;
+            margin-bottom: .5em;
             color: revert;
+        }
+
+        #translatable-content h1,
+        #translatable-content h2,
+        #translatable-content h3,
+        #translatable-content h4,
+        #translatable-content h5,
+        #translatable-content h6 {
+            font-weight: normal !important;
         }
 
         .star {
@@ -141,21 +161,139 @@
         .goog-te-gadget img {
             margin-right: 4px;
         }
-        
-        iframe[src*="youtube.com"],
-iframe[src*="youtu.be"] {
-  max-width: 90vw;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
 
-        .hidden {
-          display: none;
+        iframe[src*="youtube.com"],
+        iframe[src*="youtu.be"] {
+            max-width: 90vw;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        .eventSwiper {
+            padding-bottom: 6px;
+        }
+
+        .eventSwiper .swiper-slide {
+            height: auto;
+        }
+
+
+        .eventSwiper {
+            overflow: hidden;
+        }
+
+        .eventSwiper .swiper-slide {
+            height: auto;
+        }
+
+        .swiper-button-disabled {
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        #translatable-content {
+            color: #000;
+            line-height: 1.7;
+        }
+
+        /* Normalisasi text editor */
+        #translatable-content h1,
+        #translatable-content h2,
+        #translatable-content h3,
+        #translatable-content h4,
+        #translatable-content h5,
+        #translatable-content h6,
+        #translatable-content p,
+        #translatable-content span,
+        #translatable-content div,
+        #translatable-content a,
+        #translatable-content li,
+        #translatable-content blockquote {
+            color: inherit !important;
+        }
+
+        /* Supaya black editor tetap black */
+        #translatable-content font[color="#000000"],
+        #translatable-content [style*="color: rgb(0, 0, 0)"],
+        #translatable-content [style*="color:#000"],
+        #translatable-content [style*="color: #000"] {
+            color: #000 !important;
+        }
+
+
+        #translatable-content ul {
+            list-style-type: disc !important;
+            padding-left: 2rem !important;
+            margin: 1rem 0 !important;
+        }
+
+        #translatable-content ol {
+            list-style-type: decimal !important;
+            padding-left: 2rem !important;
+            margin: 1rem 0 !important;
+        }
+
+        #translatable-content li {
+            display: list-item !important;
+            margin-bottom: 0.5rem;
+        }
+        /* Heading normal browser default */
+        #translatable-content h1 {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        #translatable-content h2 {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        #translatable-content h3 {
+            font-size: 1.17em;
+            font-weight: bold;
+        }
+
+        #translatable-content h4 {
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        #translatable-content h5 {
+            font-size: .83em;
+            font-weight: bold;
+        }
+
+        #translatable-content h6 {
+            font-size: .67em;
+            font-weight: bold;
+        }
+
+        /* Link editor */
+        #translatable-content a {
+            text-decoration: underline;
+        }
+
+        /* Image */
+        #translatable-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* iframe responsive */
+        #translatable-content iframe {
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            min-height: 220px;
+            border-radius: 12px;
+        }
     </style>
 @endpush
 
@@ -166,7 +304,7 @@ iframe[src*="youtu.be"] {
             <div id="toc-sidebar"
                 class="toc-sidebar fixed top-1/2 right-0 transform -translate-y-1/2 z-50 bg-white rounded-l-xl shadow-2xl border border-gray-200 p-4 w-64 max-h-96 overflow-y-auto hidden md:block">
                 <div class="flex items-center justify-between mb-4">
-                     <!-- Tombol KEMBALI (hanya muncul saat sidebar tertutup) -->
+                    <!-- Tombol KEMBALI (hanya muncul saat sidebar tertutup) -->
                     <button id="toc-restore" class="p-2 hover:bg-gray-100 rounded-full transition-colors hidden">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd"
@@ -175,7 +313,7 @@ iframe[src*="youtu.be"] {
                         </svg>
                     </button>
                     <h3 class="font-bold text-gray-800 text-sm">Navigation</h3>
-                    
+
                     <!-- Tombol TUTUP -->
                     <button id="toc-toggle" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
                         <svg class="w-4 h-4 transform transition-transform" fill="currentColor" viewBox="0 0 20 20">
@@ -185,7 +323,7 @@ iframe[src*="youtu.be"] {
                         </svg>
                     </button>
 
-                   
+
                 </div>
 
                 <div class="space-y-2">
@@ -198,7 +336,7 @@ iframe[src*="youtu.be"] {
                         </svg>
                         Content
                     </a>
-                    @if ($event)
+                    @if (isset($event) && $event->isEmpty() === false)
                         <a href="#events"
                             class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
                             <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -257,7 +395,7 @@ iframe[src*="youtu.be"] {
                             </svg>
                             Content
                         </a>
-                        @if ($event)
+                        @if (isset($event) && $event->isEmpty() === false)
                             <a href="#events"
                                 class="flex items-center px-4 py-3 text-gray-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors mobile-nav-link">
                                 <svg class="w-5 h-5 mr-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -293,79 +431,221 @@ iframe[src*="youtu.be"] {
                 </div>
             @endif
 
-            @if ($ads || $customSettingAds)
-            <!-- Ads Modal -->
-            <div v-if="showAdsModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-                aria-modal="true">
-                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                    <!-- Background overlay (static, cannot close by clicking) -->
-                    <div style="opacity: .7" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                        aria-hidden="true"></div>
+            @if ($modalAds)
+                <!-- Ads Modal -->
+                <div v-if="showAdsModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
+                    role="dialog" aria-modal="true">
+                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <!-- Background overlay (static, cannot close by clicking) -->
+                        <div style="opacity: .7" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                            aria-hidden="true"></div>
 
-                    <!-- Modal panel -->
-                    <div
-                        class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-4">
-                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <div class="sm:flex sm:items-start">
-                                <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
-                                        @if ($ads)
-                                            {{ $ads->title }}
-                                        @else
-                                            {{ $customSettingAds?->title }}
-                                        @endif
-                                    </h3>
-                                    <div class="mt-2 flex justify-center">
-                                        <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
-                                            class="max-w-full h-auto rounded-lg" alt="Advertisement">
+                        <!-- Modal panel -->
+                        <div
+                            class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full mx-4">
+                            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div class="sm:flex sm:items-start">
+                                    <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
+                                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                                            {{ $modalAds->title }}
+                                        </h3>
+                                        {{-- <div class="mt-2 flex justify-center">
+                                            <img @if ($ads) src="{{ asset($ads->image_url) }}" @else src="{{ asset($customSettingAds?->image_url) }}" @endif
+                                                class="max-w-full h-auto rounded-lg" alt="Advertisement">
+                                        </div> --}}
+                                        <div class="mt-4">
+
+                                            @if ($modalAdsImages->count())
+                                                <div class="relative rounded-2xl overflow-hidden bg-black">
+
+                                                    {{-- SLIDER --}}
+                                                    <div class="flex transition-all duration-500 ease-in-out"
+                                                        :style="{
+                                                            transform: `translateX(-${currentAdsImage * 100}%)`
+                                                        }">
+
+                                                        @foreach ($modalAdsImages as $image)
+                                                            <div class="min-w-full">
+                                                                <div class="w-full h-[420px]">
+                                                                    <img src="{{ asset($image['image_url']) }}"
+                                                                        class="w-full h-full object-cover"
+                                                                        alt="Advertisement">
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+
+                                                    </div>
+
+                                                    {{-- LEFT --}}
+                                                    <button type="button" @click="prevAdsImage"
+                                                        class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur hover:bg-black/70 transition">
+                                                        <i class="fas fa-chevron-left"></i>
+                                                    </button>
+
+                                                    {{-- RIGHT --}}
+                                                    <button type="button" @click="nextAdsImage"
+                                                        class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur hover:bg-black/70 transition">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                    </button>
+
+                                                    {{-- PLAY / PAUSE --}}
+                                                    <button type="button" @click="toggleAdsSlider"
+                                                        class="absolute top-3 right-3 z-20 px-3 py-2 rounded-xl bg-black/50 text-white text-sm backdrop-blur hover:bg-black/70 transition">
+
+                                                        <span v-if="adsPaused">
+                                                            <i class="fas fa-play mr-1"></i>
+                                                            Play
+                                                        </span>
+
+                                                        <span v-else>
+                                                            <i class="fas fa-pause mr-1"></i>
+                                                            Pause
+                                                        </span>
+
+                                                    </button>
+
+                                                    {{-- INDICATOR --}}
+                                                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+
+                                                        @foreach ($modalAdsImages as $index => $image)
+                                                            <button type="button"
+                                                                @click="goToAdsImage({{ $index }})"
+                                                                class="w-3 h-3 rounded-full transition-all duration-300"
+                                                                :class="currentAdsImage === {{ $index }} ?
+                                                                    'bg-white w-8' :
+                                                                    'bg-white/50'">
+                                                            </button>
+                                                        @endforeach
+
+                                                    </div>
+
+                                                </div>
+                                            @endif
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="button" @click="closeAdsModal" :disabled="isLoadingAds"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
-                                :class="isLoadingAds ? 'bg-gray-400 cursor-not-allowed' :
-                                    'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
-                                <div v-if="isLoadingAds" class="flex items-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10"
-                                            stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
-                                    </svg>
-                                    @{{ timeAds }}s
-                                </div>
-                                <span v-else>Close</span>
-                            </button>
+                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                @php
+                                    $isBlockedAds = $modalAds?->is_block ? 'true' : 'false';
+                                @endphp
+                                <button type="button" @click="closeAdsModal"
+                                    :disabled="{{ $isBlockedAds }} ? isLoadingAds : false"
+                                    class="w-full inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm transition-all duration-300"
+                                    :class="{{ $isBlockedAds }} && isLoadingAds ?
+                                        'bg-gray-400 cursor-not-allowed opacity-70' :
+                                        'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500'">
+
+                                    <div v-if="
+                                        {{ $modalAds?->is_block ? 'isLoadingAds' : 'false' }}
+                    "
+                                        class="flex items-center">
+
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+
+                                        @{{ timeAds }}s
+
+                                    </div>
+
+                                    <span v-else>
+
+                                        Close
+
+                                    </span>
+
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
             @endif
-            
+
             <!-- Main Content -->
             <div class="container mx-auto px-4 py-8" :class="{ 'pt-16': disabledAfter > 0 }">
                 <!-- Header -->
-                <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 mb-8 fade-in">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">{{ $place->title }}</h1>
+                <div id="headerContainerRunningText"
+                    class="rounded-[14px] overflow-hidden mb-8 fade-in {{ $customSettingRunningText->is_active == 1 ? 'mt-4' : '' }}">
+                    {{-- Hero --}}
+                    <div class="bg-gradient-to-br from-blue-600 via-purple-600/80 to-purple-600 relative">
+                        <div class="absolute inset-0 pointer-events-none"
+                            style="background: radial-gradient(ellipse 300px 200px at 90% 20%, rgba(255,255,255,0.08), transparent),
+                                radial-gradient(ellipse 200px 300px at 10% 80%, rgba(0,0,0,0.12), transparent)">
+                        </div>
+                        <div class="relative z-10 px-5 pt-7 pb-5 sm:px-6 flex items-center gap-3.5">
 
-                    <!-- Translation Controls -->
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-                        <div id="google_translate_element" class="flex-1 w-full sm:w-auto"></div>
+                            <div
+                                class="w-[38px] h-[38px] rounded-[10px] bg-white/[0.13] backdrop-blur flex items-center justify-center shrink-0">
+
+                                <svg class="w-[18px] h-[18px] text-white/90" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[13.5px] font-medium text-white/[0.55] tracking-wide mb-1">
+                                    Place
+                                </p>
+
+                                <h1 class="text-3xl font-bold text-white leading-tight -tracking-[0.01em]">
+                                    {{ $place->title }}
+                                </h1>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- Translate bar (gray) --}}
+                    {{-- Translate bar --}}
+                    <div class="bg-white border-t border-gray-100 px-5 py-3 sm:px-6 flex items-center gap-3">
+
+                        <div
+                            class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 border border-gray-100 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 0 1 6.5 9l2.5 5m-1.5 0h5m5.5 5 2-5h-5l2.5 5M18 19l-2-5" />
+                            </svg>
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <p class="text-[13px] font-medium text-gray-700 leading-none">
+                                Translate Page
+                            </p>
+                            <p class="text-[11px] text-gray-400 mt-1 hidden sm:block">
+                                Change language using Google Translate
+                            </p>
+                        </div>
+
+                        <div id="google_translate_element" class="flex-1 sm:flex-none sm:max-w-[190px]">
+                        </div>
+
                         <button @click="closeTranslate"
-                            class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors w-full sm:w-auto">
-                            <svg class="w-4 h-4 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                    clip-rule="evenodd"></path>
+                            class="w-9 h-9 rounded-xl border border-gray-200 bg-white text-gray-400 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-300 flex items-center justify-center shrink-0 transition-all duration-200 shadow-sm"
+                            aria-label="Reset language">
+
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
                             </svg>
                         </button>
                     </div>
-                    <p class="text-sm text-gray-500">Translate By Google Translate</p>
                 </div>
 
                 <!-- Place Details Card -->
@@ -429,41 +709,120 @@ iframe[src*="youtu.be"] {
                     </div>
 
                     <!-- Content -->
-                    <div class="p-4 sm:p-6 prose prose-sm sm:prose-lg max-w-none" id="translatable-content" style="overflow-x:scroll">
+                    <div class="p-4 sm:p-6 max-w-none" id="translatable-content" style="overflow-x:scroll">
                         {!! $place->content !!}
                     </div>
                 </div>
 
                 <!-- Events Section -->
-                @if ($event)
-                    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 fade-in" id="events">
-                        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-4 sm:p-6">
-                            <h2 class="text-lg sm:text-xl font-bold mb-2">Upcoming Events</h2>
-                            <p class="opacity-90">Don't miss these exciting events</p>
+                @if ($event && count($event))
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 fade-in" id="events">
+                        <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-5 sm:p-6">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-1">
+                                Upcoming Events
+                            </h2>
+                            <p class="opacity-90 text-sm sm:text-base">
+                                Don't miss these exciting events
+                            </p>
                         </div>
+
                         <div class="p-4 sm:p-6">
-                            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                @foreach ($event as $evnt)
+                            {{-- Navigation --}}
+                            <div
+                                class="event-swiper-prev hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full w-10 h-10 items-center justify-center cursor-pointer">
+
+                                < </div>
+
                                     <div
-                                        class="bg-gradient-to-br from-green-50 to-teal-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                        <h3 class="font-bold text-green-800 mb-2 text-sm sm:text-base">{{ $evnt->title }}
-                                        </h3>
-                                        <div class="flex items-center text-xs sm:text-sm text-gray-600 mb-2">
-                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                                    clip-rule="evenodd"></path>
-                                            </svg>
-                                            {{ $evnt->date->format('M d, Y | H:i') }} WITA
-                                        </div>
-                                        <p class="text-xs sm:text-sm text-gray-700">{{ $evnt->description }}</p>
+                                        class="event-swiper-next hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white shadow-lg rounded-full w-10 h-10 items-center justify-center cursor-pointer">
+
+                                        ›
                                     </div>
-                                @endforeach
+
+
+                                    <div class="swiper eventSwiper pb-2 overflow-hidden">
+                                        <div class="swiper-wrapper">
+
+                                            @foreach ($event as $evnt)
+                                                <div class="swiper-slide !w-[260px] sm:!w-[300px]">
+
+                                                    <div onclick="openEventDetail({{ $evnt->id }})"
+                                                        class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full cursor-pointer active:scale-[0.98]">
+
+                                                        {{-- Image --}}
+                                                        <div class="relative">
+
+                                                            @if ($evnt->images->count())
+                                                                <img src="{{ asset($evnt->images->first()->image_url) }}"
+                                                                    class="w-full h-40 sm:h-48 object-cover"
+                                                                    loading='lazy' alt="{{ $evnt->title }}">
+                                                            @else
+                                                                <div
+                                                                    class="w-full h-40 sm:h-48 bg-gray-100 flex items-center justify-center">
+
+                                                                    <div class="text-center text-gray-400">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                            class="w-10 h-10 mx-auto mb-1" fill="none"
+                                                                            viewBox="0 0 24 24" stroke="currentColor">
+
+                                                                            <path stroke-linecap="round"
+                                                                                stroke-linejoin="round" stroke-width="1.5"
+                                                                                d="M3 16l4-4a3 3 0 014 0l5 5m-1-1l1-1a3 3 0 014 0l1 1M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                                                                        </svg>
+
+                                                                        <p class="text-[11px]">
+                                                                            No Image
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+
+                                                            {{-- Badge --}}
+                                                            <div
+                                                                class="absolute top-2 left-2 bg-green-600 text-white text-[10px] px-2 py-1 rounded-lg shadow">
+
+                                                                @if ($evnt->end_date)
+                                                                    @if ($evnt->date->format('M Y') == $evnt->end_date->format('M Y'))
+                                                                        {{ $evnt->date->format('d') }}
+                                                                        -
+                                                                        {{ $evnt->end_date->format('d M Y') }}
+                                                                    @else
+                                                                        {{ $evnt->date->format('d M') }}
+                                                                        -
+                                                                        {{ $evnt->end_date->format('d M Y') }}
+                                                                    @endif
+                                                                @else
+                                                                    {{ $evnt->date->format('d M Y') }}
+                                                                @endif
+
+                                                            </div>
+
+                                                        </div>
+
+                                                        {{-- Content --}}
+                                                        <div class="p-3 flex flex-col flex-1">
+
+                                                            <h3
+                                                                class="font-semibold text-sm text-gray-900 line-clamp-2 min-h-[42px]">
+                                                                {{ $evnt->title }}
+                                                            </h3>
+
+                                                            <p class="text-xs text-gray-600 mt-3 line-clamp-3">
+                                                                {{ $evnt->description }}
+                                                            </p>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            @endforeach
+
+                                        </div>
+                                    </div>
                             </div>
                         </div>
-                    </div>
                 @endif
-
                 <!-- Comments Section -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden fade-in" id="comments">
                     <div class="bg-gradient-to-r from-yellow-600 to-orange-600 text-white p-4 sm:p-6">
@@ -490,8 +849,11 @@ iframe[src*="youtu.be"] {
                                             experience:</label>
                                         <div class="flex gap-1">
                                             <span v-for="n in 5" :key="n"
-                                                :class="['star cursor-pointer text-xl sm:text-2xl', { 'text-yellow-400': n <=
-                                                        selectedRating, 'text-gray-300': n > selectedRating }]"
+                                                :class="['star cursor-pointer text-xl sm:text-2xl', {
+                                                    'text-yellow-400': n <=
+                                                        selectedRating,
+                                                    'text-gray-300': n > selectedRating
+                                                }]"
                                                 @click="setRating(n)" @mouseover="hoverRating(n)"
                                                 @mouseleave="resetHover">
                                                 ★
@@ -753,14 +1115,230 @@ iframe[src*="youtu.be"] {
             </div>
         </div>
     </div>
+
+    {{-- Gallery Modal --}}
+    <div class="modal fade" id="eventGalleryModal" tabindex="-1" aria-hidden="true">
+
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-black border-0">
+
+                <div class="modal-body p-0 relative">
+
+                    {{-- Close --}}
+                    <button type="button"
+                        class="absolute top-4 right-4 z-50 text-white bg-black/50 rounded-full w-10 h-10"
+                        data-bs-dismiss="modal">
+                        ✕
+                    </button>
+
+                    <div id="eventGalleryCarousel" class="carousel slide h-full" data-bs-touch="true">
+
+                        <div class="carousel-inner h-screen" id="eventGalleryContent">
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#eventGalleryCarousel"
+                            data-bs-slide="prev">
+
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#eventGalleryCarousel"
+                            data-bs-slide="next">
+
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Event Detail Modal --}}
+    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+
+            <div class="modal-content border-0 rounded-3xl overflow-hidden">
+
+                {{-- Close --}}
+                <button type="button" class="absolute top-3 right-3 z-50 bg-black/50 text-white rounded-full w-9 h-9"
+                    data-bs-dismiss="modal">
+
+                    ✕
+                </button>
+
+                {{-- Content --}}
+                <div id="eventDetailContent">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
 @endsection
 
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <script>
+        // Swiper Events
+        document.addEventListener("DOMContentLoaded", function() {
+
+            new Swiper(".eventSwiper", {
+
+                slidesPerView: "auto",
+                spaceBetween: 16,
+
+                grabCursor: true,
+                simulateTouch: true,
+                allowTouchMove: true,
+
+                centeredSlides: false,
+
+                navigation: {
+                    nextEl: ".event-swiper-next",
+                    prevEl: ".event-swiper-prev",
+                },
+
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2.2,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                    }
+                }
+
+            });
+
+        });
+
+        // Event Data
+        const eventsData = {
+            @foreach ($event as $evnt)
+                {{ $evnt->id }}: {
+                    title: @json($evnt->title),
+                    description: @json($evnt->description),
+                    date: @json($evnt->date->format('d M Y | H:i')),
+                    end_date: @json($evnt->end_date ? $evnt->end_date->format('d M Y | H:i') : null),
+                    images: [
+                        @foreach ($evnt->images as $image)
+                            "{{ asset($image->image_url) }}",
+                        @endforeach
+                    ]
+                },
+            @endforeach
+        };
+
+        function openEventDetail(eventId) {
+
+            const ev = eventsData[eventId];
+
+            let carouselItems = '';
+
+            if (ev.images.length) {
+
+                ev.images.forEach((img, index) => {
+
+                    carouselItems += `
+                    <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                        <img src="${img}"
+                            class="w-full h-[220px] sm:h-[400px] object-cover">
+                    </div>
+                `;
+                });
+
+            } else {
+
+                carouselItems = `
+                <div class="w-full h-[220px] sm:h-[400px] bg-gray-100 flex items-center justify-center text-gray-400">
+                    No Image
+                </div>
+            `;
+            }
+
+            document.getElementById('eventDetailContent').innerHTML = `
+
+            <div>
+
+                <div id="eventDetailCarousel"
+                    class="carousel slide"
+                    data-bs-touch="true">
+
+                    <div class="carousel-inner">
+                        ${carouselItems}
+                    </div>
+
+                    ${ev.images.length > 1 ? `
+                                                                                                                                                                                                                <button class="carousel-control-prev"
+                                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                                    data-bs-slide="prev">
+
+                                                                                                                                                                                                                    <span class="carousel-control-prev-icon"></span>
+                                                                                                                                                                                                                </button>
+
+                                                                                                                                                                                                                <button class="carousel-control-next"
+                                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                                    data-bs-target="#eventDetailCarousel"
+                                                                                                                                                                                                                    data-bs-slide="next">
+
+                                                                                                                                                                                                                    <span class="carousel-control-next-icon"></span>
+                                                                                                                                                                                                                </button>
+                                                                                                                                                                                                            ` : ''}
+
+                </div>
+
+                <div class="p-4 sm:p-5">
+
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                        ${ev.title}
+                    </h2>
+
+                    <div class="mt-3 text-sm text-gray-600">
+
+                        <div>
+                            <span class="font-semibold">
+                                Start:
+                            </span>
+
+                            ${ev.date} WITA
+                        </div>
+
+                        ${ev.end_date ? `
+                                                                                                                                                                                                                <div class="mt-1">
+                                                                                                                                                                                                                    <span class="font-semibold">
+                                                                                                                                                                                                                        Until:
+                                                                                                                                                                                                                    </span>
+
+                                                                                                                                                                                                                    ${ev.end_date} WITA
+                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                            ` : ''}
+
+                    </div>
+
+                    <div class="mt-4 text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-line">
+                        ${ev.description}
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+            const modal = new bootstrap.Modal(document.getElementById(
+                'eventDetailModal'));
+
+            modal.show();
+        }
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
+
             // Mobile TOC functionality
             const mobileTocBtn = document.getElementById('mobile-toc-btn');
             const mobileTocModal = document.getElementById('mobile-toc-modal');
@@ -827,15 +1405,15 @@ iframe[src*="youtu.be"] {
             const sidebar = document.getElementById('toc-sidebar');
             const toggleBtn = document.getElementById('toc-toggle');
             const restoreBtn = document.getElementById('toc-restore');
-            
+
             if (toggleBtn && restoreBtn && sidebar) {
-                toggleBtn.onclick = function () {
+                toggleBtn.onclick = function() {
                     sidebar.classList.add('closed');
                     toggleBtn.classList.add('hidden');
                     restoreBtn.classList.remove('hidden');
                 };
-            
-                restoreBtn.onclick = function () {
+
+                restoreBtn.onclick = function() {
                     sidebar.classList.remove('closed');
                     restoreBtn.classList.add('hidden');
                     toggleBtn.classList.remove('hidden');
@@ -864,6 +1442,11 @@ iframe[src*="youtu.be"] {
             data() {
                 return {
                     comments: [],
+                    currentAdsImage: 0,
+                    isBlockedAds: "{{ $modalAds?->is_block ? 'true' : 'false' }}",
+                    adsImagesCount: "{{ $modalAdsImages->count() }}",
+                    adsInterval: null,
+                    adsPaused: false,
                     selectedRating: 0,
                     hoveredRating: 0,
                     isLoadingComment: true,
@@ -876,8 +1459,8 @@ iframe[src*="youtu.be"] {
                     editUserId: null,
                     currEditId: null,
                     isLoadingAds: true,
-                    timeAds: "{!! $customSettingAds?->time !!}",
-                    isAdsActive: "{!! $customSettingAds?->is_active !!}",
+                    timeAds: "{!! $modalAds?->time ?? 0 !!}",
+                    isAdsActive: "{!! $modalAds?->is_active ?? 0 !!}",
                     disabledAfter: "{!! $customSettingRunningText->disabled_after !!}",
                     showAdsModal: false
                 }
@@ -898,14 +1481,96 @@ iframe[src*="youtu.be"] {
                 setCountdownRunningText() {
                     const intervalId = setInterval(() => {
                         this.disabledAfter--;
+
                         if (this.disabledAfter <= 0) {
                             clearInterval(intervalId);
+
+                            const header = document.getElementById('headerContainerRunningText');
+
+                            if (header) {
+                                header.classList.remove('mt-4');
+                            }
                         }
                     }, 1000);
                 },
+                startAdsSlider() {
+
+                    this.stopAdsSlider();
+
+                    this.adsInterval = setInterval(() => {
+
+                        if (!this.adsPaused) {
+                            this.nextAdsImage();
+                        }
+
+                    }, 3000);
+
+                },
+
+                stopAdsSlider() {
+
+                    if (this.adsInterval) {
+                        clearInterval(this.adsInterval);
+                    }
+
+                },
+
+                nextAdsImage() {
+
+                    this.currentAdsImage++;
+
+                    if (this.currentAdsImage >= this.adsImagesCount) {
+                        this.currentAdsImage = 0;
+                    }
+
+                },
+
+                prevAdsImage() {
+
+                    this.currentAdsImage--;
+
+                    if (this.currentAdsImage < 0) {
+                        this.currentAdsImage = this.adsImagesCount - 1;
+                    }
+
+                },
+
+                goToAdsImage(index) {
+
+                    this.currentAdsImage = index;
+
+                },
+
+                toggleAdsSlider() {
+
+                    this.adsPaused = !this.adsPaused;
+
+                },
+                // closeTranslate() {
+                //     document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+                //     window.location.reload();
+                // },
                 closeTranslate() {
-                    document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-                    window.location.reload();
+
+                    // clear google translate cookie
+                    document.cookie =
+                        "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+                    document.cookie =
+                        "googtrans=; domain=" + location.hostname +
+                        "; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+                    // reset select jika ada
+                    const select = document.querySelector('.goog-te-combo');
+
+                    if (select) {
+                        select.value = 'id';
+                        select.dispatchEvent(new Event('change'));
+                    }
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
                 },
                 setRating(rating) {
                     this.selectedRating = rating;
@@ -1076,18 +1741,17 @@ iframe[src*="youtu.be"] {
                 },
                 showModal() {
                     this.showAdsModal = true;
+                    this.startAdsSlider();
                 },
                 hideModal() {
                     this.showAdsModal = false;
+                    if (this.adsInterval) {
+                        clearInterval(this.adsInterval);
+                    }
                 }
             },
             async mounted() {
                 await this.getCommentData();
-
-                @if ($ads)
-                    this.timeAds = "{!! $ads->time !!}";
-                    this.isAdsActive = "{!! $ads->is_active !!}";
-                @endif
 
                 if (this.isAdsActive === "1") {
                     this.showModal();
@@ -1103,13 +1767,64 @@ iframe[src*="youtu.be"] {
 
     <!-- Google Translate -->
     <script>
+        console.log('Google Translate script loaded');
+
         function googleTranslateElementInit() {
+
             new google.translate.TranslateElement({
                 pageLanguage: 'id',
                 includedLanguages: 'id,en,es,fr,de,it,ja,zh-CN',
                 layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
+
+            setupGoogleTranslateAutoClose();
         }
+
+        function setupGoogleTranslateAutoClose() {
+
+            let isClosing = false;
+
+            document.addEventListener('click', function(e) {
+
+                const languageItem = e.target.closest(
+                    '.VIpgJd-ZVi9od-vH1Gmf-ibnC6b'
+                );
+
+                if (!languageItem || isClosing) return;
+
+                isClosing = true;
+
+                // tunggu translate apply
+                setTimeout(() => {
+
+                    // trigger click outside popup
+                    document.body.dispatchEvent(
+                        new MouseEvent('mousedown', {
+                            bubbles: true
+                        })
+                    );
+
+                    document.body.dispatchEvent(
+                        new MouseEvent('click', {
+                            bubbles: true
+                        })
+                    );
+
+                    // remove focus
+                    if (document.activeElement) {
+                        document.activeElement.blur();
+                    }
+
+                    // reset lock supaya next click bisa lagi
+                    setTimeout(() => {
+                        isClosing = false;
+                    }, 1000);
+
+                }, 300);
+
+            }, true);
+        }
+
+        googleTranslateElementInit();
     </script>
-    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 @endpush

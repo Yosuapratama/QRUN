@@ -24,7 +24,7 @@ class GalleryController extends Controller
                     return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
                 })
                 ->editColumn('image_url', function ($row) {
-                    return "<img src='" . asset($row->image_url) . "' width='100px'>";
+                    return "<img loading='lazy' src='" . asset($row->image_url) . "' width='100px'>";
                 })
                 ->addColumn('status', function ($row) {
                     // return $row->is_active ? 'Active' : 'Inactive';
@@ -38,13 +38,45 @@ class GalleryController extends Controller
                 })
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
+
                     $editUrl = route('gallery.edit', $row->id);
 
-                    $btn = "<div class='d-flex'>";
-                    $btn = $btn . "<a href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
-                    $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
-                    $btn = $btn . "</div>";
-                    return $btn;
+                    return "
+        <div class='dropdown'>
+            <button 
+                class='btn btn-primary btn-sm dropdown-toggle shadow-sm'
+                type='button'
+                data-toggle='dropdown'
+                aria-expanded='false'
+            >
+                <i class='fas fa-cog mr-1'></i>
+                Action
+            </button>
+
+            <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+
+                <a 
+                    href='{$editUrl}'
+                    class='dropdown-item'
+                >
+                    <i class='fas fa-edit text-secondary mr-2'></i>
+                    Edit
+                </a>
+
+                <div class='dropdown-divider'></div>
+
+                <button 
+                    id='{$row->id}'
+                    class='delete dropdown-item text-danger'
+                    type='button'
+                >
+                    <i class='fas fa-trash-alt mr-2'></i>
+                    Delete
+                </button>
+
+            </div>
+        </div>
+    ";
                 })
                 ->rawColumns(['action', 'image_url', 'status'])
                 ->make(true);

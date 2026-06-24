@@ -18,14 +18,25 @@ class Event extends Model
     protected function casts(): array
     {
         return [
-            'date' => 'datetime'
+            'date' => 'datetime',
+            'end_date' => 'datetime'
         ];
     }
 
-    public function place_id(){
-        return $this->belongsTo(Place::class, 'place_id', 'id');
+    // public function place_id()
+    // {
+    //     return $this->belongsTo(Place::class, 'place_id', 'id');
+    // }
+    public function places()
+    {
+        return $this->belongsTo(Place::class, 'place_id', 'id')->select('id', 'title', 'place_code', 'creator_id')->withTrashed();
     }
-    public function places(){
-        return $this->belongsTo(Place::class, 'place_id', 'id')->select('id', 'title', 'place_code','creator_id');
+
+    public function images()
+    {
+        return $this->hasMany(
+            EventImage::class,
+            'event_id'
+        )->orderBy('sort_order');
     }
 }

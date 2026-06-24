@@ -39,6 +39,11 @@ class Place extends Model
     {
         return $this->belongsTo(User::class, 'creator_id', 'id')->select('id', 'email');
     }
+    
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_id', 'id')->select('id', 'email');
+    }
 
      /**
      * Get the formatted created_at attribute.

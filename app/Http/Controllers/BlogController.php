@@ -75,21 +75,47 @@ class BlogController extends Controller
                     return \Carbon\Carbon::parse($row->updated_at)->format('d-M-Y H:i:s');
                 })
                 ->addIndexColumn()
-                ->addColumn('action', function ($row) {
-                    // $url = $this->applicationURLLocal . '/detail-place/' . $row->place_code;
-                    $editUrl = $this->applicationURLLocal . '/management/master/blog/' . $row->id . '/edit';
-                    // $printUrl = $this->applicationURLLocal . '/management/master/print-barcode/' . $row->place_code;
+               ->addColumn('action', function ($row) {
 
-                    $btn = "<div class='d-flex'>";
-                    // $btn = $btn . "<button id='$row->place_code' class='detailPlaceButton btn btn-primary btn-sm mr-1'>Detail</button>";
-                    // $btn = $btn . "<a target='_blank' href='$url' class='btn btn-warning btn-sm mr-1'>Visit</a>";
-                    $btn = $btn . "<a target='_blank' href='$editUrl' class='btn btn-secondary btn-sm mr-1'>Edit</a>";
-                    // $btn = $btn . "<a target='_blank' href='$printUrl' class='btn btn-success btn-sm mr-1'>Print</a>";
-                    $btn = $btn . "<button id='$row->id' class='delete btn btn-danger btn-sm mr-1'>Delete</button>";
+    $editUrl = route('blog.edit', $row->id);
 
-                    $btn = $btn . "</div>";
-                    return $btn;
-                })
+    return "
+        <div class='dropdown'>
+            <button 
+                class='btn btn-primary btn-sm dropdown-toggle shadow-sm'
+                type='button'
+                data-toggle='dropdown'
+                aria-expanded='false'
+            >
+                <i class='fas fa-cog mr-1'></i>
+                Action
+            </button>
+
+            <div class='dropdown-menu dropdown-menu-right shadow animated--fade-in'>
+
+                <a 
+                    href='{$editUrl}'
+                    class='dropdown-item'
+                >
+                    <i class='fas fa-edit text-secondary mr-2'></i>
+                    Edit
+                </a>
+
+                <div class='dropdown-divider'></div>
+
+                <button 
+                    id='{$row->id}'
+                    class='delete dropdown-item text-danger'
+                    type='button'
+                >
+                    <i class='fas fa-trash-alt mr-2'></i>
+                    Delete
+                </button>
+
+            </div>
+        </div>
+    ";
+})
                 ->rawColumns(['action'])
                 ->make(true);
         }

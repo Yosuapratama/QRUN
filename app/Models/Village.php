@@ -11,4 +11,8 @@ class Village extends Model
 
     protected $table = 'reg_villages'; // Nama tabel yang sesuai dengan konvensi Laravel
 
+    public function places()
+    {
+        return $this->hasMany(Place::class, 'village_id');
+    }
 }

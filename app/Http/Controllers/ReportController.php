@@ -8,6 +8,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
 
 class ReportController extends Controller
 {
@@ -220,6 +221,15 @@ class ReportController extends Controller
     public function reportPdf(Request $request)
     {
         // dd("paus");
+        $type = $request->get('type', 'download');
+        if ($type === 'telegram') {
+            Artisan::call('report:telegram', [
+                '--start' => $request->input('start_date'),
+                '--end' => $request->input('end_date')
+            ]);
+           return back()->withSuccess('Report successfully sent to Telegram.');
+        }
+
         $places = Place::query()
             ->when($request->start_date && $request->end_date, function ($query) use ($request) {
                 return $query->whereBetween('created_at', [
